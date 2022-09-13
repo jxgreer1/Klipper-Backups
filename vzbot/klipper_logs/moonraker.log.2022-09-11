@@ -1,0 +1,451 @@
+--------------------Moonraker Log Start--------------------
+config_file: /home/pi/klipper_config/moonraker.conf
+startup_warnings: []
+log_file: /home/pi/klipper_logs/moonraker.log
+software_version: v0.7.1-660-g5d856b9
+python_version: 3.7.3 (default, Jan 22 2021, 20:04:44)  [GCC 8.3.0]
+
+#################### Moonraker Configuration ####################
+
+[server]
+host = 0.0.0.0
+port = 7125
+enable_debug_logging = False
+max_upload_size = 1024
+
+[file_manager]
+config_path = ~/klipper_config
+log_path = ~/klipper_logs
+enable_object_processing = False
+
+[authorization]
+cors_domains = 
+	https://my.mainsail.xyz
+	http://my.mainsail.xyz
+	http://*.local
+	http://*.lan
+trusted_clients = 
+	10.0.0.0/8
+	127.0.0.0/8
+	169.254.0.0/16
+	172.16.0.0/12
+	192.168.0.0/16
+	FE80::/10
+	::1/128
+
+[octoprint_compat]
+
+[history]
+
+[announcements]
+subscriptions = 
+	mainsail
+
+[update_manager]
+refresh_interval = 168
+enable_auto_refresh = True
+
+[update_manager mainsail]
+type = web
+channel = stable
+repo = mainsail-crew/mainsail
+path = ~/mainsail
+
+[update_manager crowsnest]
+type = git_repo
+path = ~/crowsnest
+origin = https://github.com/mainsail-crew/crowsnest.git
+managed_services = crowsnest
+
+[update_manager sonar]
+type = git_repo
+path = ~/sonar
+origin = https://github.com/mainsail-crew/sonar.git
+primary_branch = main
+managed_services = sonar
+
+[update_manager KlipperScreen]
+type = git_repo
+path = /home/pi/KlipperScreen
+origin = https://github.com/jordanruthe/KlipperScreen.git
+
+[update_manager timelapse]
+type = git_repo
+primary_branch = main
+path = ~/moonraker-timelapse
+origin = https://github.com/mainsail-crew/moonraker-timelapse.git
+managed_services = klipper moonraker
+env = /home/pi/.KlipperScreen-env/bin/python
+requirements = scripts/KlipperScreen-requirements.txt
+install_script = scripts/KlipperScreen-install.sh
+
+#################################################################
+All Configuration Files:
+/home/pi/klipper_config/moonraker.conf
+#################################################################
+Unsafe Shutdown Count: 38
+
+System Info:
+
+***python***
+  version: sys.version_info(major=3, minor=7, micro=3, releaselevel='final', serial=0)
+  version_string: 3.7.3 (default, Jan 22 2021, 20:04:44)  [GCC 8.3.0]
+
+***cpu_info***
+  cpu_count: 4
+  bits: 32bit
+  processor: armv7l
+  cpu_desc: ARMv7 Processor rev 3 (v7l)
+  serial_number: 100000001d4363a7
+  hardware_desc: BCM2711
+  model: Raspberry Pi 4 Model B Rev 1.4
+  total_memory: 1734408
+  memory_units: kB
+
+***sd_info***
+  manufacturer_id: 27
+  manufacturer: Unknown
+  oem_id: 5048
+  product_name: SD32G
+  product_revision: 6.0
+  serial_number: 000002e1
+  manufacturer_date: 6/2021
+  capacity: 28.9 GiB
+  total_bytes: 30989615104
+
+***distribution***
+  name: Raspbian GNU/Linux 10 (buster)
+  id: raspbian
+  version: 10
+  version_parts: {'major': '10', 'minor': '', 'build_number': ''}
+  like: debian
+  codename: buster
+  release_info: {'name': 'MainsailOS', 'version_id': '0.7.0', 'codename': 'buster', 'id': 'mainsailos'}
+
+***virtualization***
+  virt_type: none
+  virt_identifier: none
+
+Systemd unit moonraker.service:
+unit_name: moonraker.service
+is_default: True
+Properties:
+**Requires=['network-online.target', 'system.slice', '-.mount', 'sysinit.target']
+**After=['basic.target', 'sysinit.target', 'klipper.service', 'system.slice', 'systemd-journald.socket', '-.mount', 'network-online.target']
+**SupplementaryGroups=['moonraker-admin']
+**EnvironmentFiles=[]
+**ExecStart=/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/moonraker.py -c /home/pi/klipper_config/moonraker.conf -l /home/pi/klipper_logs/moonraker.log
+**WorkingDirectory=/home/pi/moonraker
+**FragmentPath=/etc/systemd/system/moonraker.service
+**Description=API Server for Klipper
+**User=pi
+Klipper Version: v0.10.0-571-g97a5b39a
+2022-09-11 00:51:17,875 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 10.1.2.150
+2022-09-11 01:09:04,773 [job_state.py:_status_update()] - Job Started: Calibration Flower v7-vzbot-VZBOT_300mms.ini (MST_ABS - 0.4_T400).gcode
+2022-09-11 01:46:18,446 [update_manager.py:_handle_auto_refresh()] - Klippy is printing, auto refresh aborted
+2022-09-11 02:01:55,629 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: fe80::bdc9:b67f:d07b:8b81
+2022-09-11 02:01:56,318 [shell_command.py:run_with_response()] - /home/pi/moonraker-env/bin/python: Object Processing is disabled
+
+2022-09-11 02:01:56,318 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/gcode_files -f "Right Leg-vzbot-vzbot abs.gcode") successfully finished
+2022-09-11 02:01:56,326 [app.py:log_request()] - 201 POST /api/files/local (fe80::bdc9:b67f:d07b:8b81) [_TRUSTED_USER_] 673.60ms
+2022-09-11 02:01:56,558 [job_state.py:_status_update()] - Job Started: Right Leg-vzbot-vzbot abs.gcode
+2022-09-11 02:04:15,405 [klippy_connection.py:wait()] - Request 'gcode/script' pending: 60.00 seconds
+2022-09-11 02:05:15,407 [klippy_connection.py:wait()] - Request 'gcode/script' pending: 120.00 seconds
+2022-09-11 02:36:29,582 [web.py:log_exception()] - 403 POST /api/files/local (fe80::bdc9:b67f:d07b:8b81): File is loaded, upload not permitted
+2022-09-11 02:36:29,598 [app.py:log_request()] - 403 POST /api/files/local (fe80::bdc9:b67f:d07b:8b81) [_TRUSTED_USER_] 319.04ms
+2022-09-11 02:46:18,310 [update_manager.py:_handle_auto_refresh()] - Klippy is printing, auto refresh aborted
+2022-09-11 02:58:30,885 [shell_command.py:run_with_response()] - /home/pi/moonraker-env/bin/python: Object Processing is disabled
+
+2022-09-11 02:58:30,885 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/gcode_files -f "Right Leg-vzbot-vzbot abs.gcode") successfully finished
+2022-09-11 02:58:30,894 [app.py:log_request()] - 201 POST /api/files/local (fe80::bdc9:b67f:d07b:8b81) [_TRUSTED_USER_] 764.74ms
+2022-09-11 02:58:31,109 [job_state.py:_status_update()] - Job Started: Right Leg-vzbot-vzbot abs.gcode
+2022-09-11 03:04:16,806 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 10.1.2.150
+2022-09-11 03:06:42,312 [app.py:log_request()] - 201 POST /server/files/upload (10.1.2.150) [_TRUSTED_USER_] 7.18ms
+2022-09-11 03:53:26,055 [shell_command.py:run_with_response()] - /home/pi/moonraker-env/bin/python: Object Processing is disabled
+
+2022-09-11 03:53:26,055 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/gcode_files -f "Right Leg-vzbot-vzbot abs.gcode") successfully finished
+2022-09-11 03:53:26,065 [app.py:log_request()] - 201 POST /api/files/local (fe80::bdc9:b67f:d07b:8b81) [_TRUSTED_USER_] 675.11ms
+2022-09-11 03:53:26,312 [job_state.py:_status_update()] - Job Started: Right Leg-vzbot-vzbot abs.gcode
+2022-09-11 03:54:09,494 [klippy_connection.py:_process_status_update()] - Klippy has shutdown
+2022-09-11 03:54:09,504 [proc_stats.py:_handle_shutdown()] - 
+Moonraker System Usage Statistics:
+System Time: 1662864819.991613, Usage: 2.01%, Memory: 27036 kB
+System Time: 1662864820.993849, Usage: 5.4%, Memory: 27036 kB
+System Time: 1662864821.994139, Usage: 2.15%, Memory: 27036 kB
+System Time: 1662864822.995273, Usage: 2.08%, Memory: 27036 kB
+System Time: 1662864823.995492, Usage: 2.02%, Memory: 27036 kB
+System Time: 1662864824.997434, Usage: 4.2%, Memory: 27036 kB
+System Time: 1662864825.994793, Usage: 7.93%, Memory: 27036 kB
+System Time: 1662864826.999819, Usage: 1.15%, Memory: 27036 kB
+System Time: 1662864828.000302, Usage: 2.02%, Memory: 27036 kB
+System Time: 1662864829.001660, Usage: 2.03%, Memory: 27036 kB
+System Time: 1662864830.002092, Usage: 1.99%, Memory: 27036 kB
+System Time: 1662864831.004663, Usage: 5.48%, Memory: 27036 kB
+System Time: 1662864832.004888, Usage: 2.16%, Memory: 27036 kB
+System Time: 1662864833.005314, Usage: 2.1%, Memory: 27036 kB
+System Time: 1662864834.006937, Usage: 2.01%, Memory: 27036 kB
+System Time: 1662864835.008242, Usage: 2.37%, Memory: 27036 kB
+System Time: 1662864836.009694, Usage: 2.02%, Memory: 27036 kB
+System Time: 1662864837.010685, Usage: 2.06%, Memory: 27036 kB
+System Time: 1662864838.011352, Usage: 2.05%, Memory: 27036 kB
+System Time: 1662864839.011793, Usage: 2.21%, Memory: 27036 kB
+System Time: 1662864840.012387, Usage: 2.01%, Memory: 27036 kB
+System Time: 1662864841.011520, Usage: 7.9%, Memory: 27036 kB
+System Time: 1662864842.013485, Usage: 2.23%, Memory: 27036 kB
+System Time: 1662864843.015693, Usage: 7.47%, Memory: 27036 kB
+System Time: 1662864844.012962, Usage: 1.97%, Memory: 27036 kB
+System Time: 1662864845.018167, Usage: 1.51%, Memory: 27036 kB
+System Time: 1662864846.018810, Usage: 2.38%, Memory: 27036 kB
+System Time: 1662864847.019928, Usage: 2.09%, Memory: 27036 kB
+System Time: 1662864848.020009, Usage: 1.96%, Memory: 27036 kB
+System Time: 1662864849.022326, Usage: 1.96%, Memory: 27036 kB
+CPU Temperature: 46.738
+2022-09-11 03:54:09,528 [proc_stats.py:_handle_shutdown()] - Throttled Flags: 
+2022-09-11 03:54:11,091 [klippy_connection.py:_on_connection_closed()] - Klippy Connection Removed
+2022-09-11 03:54:12,349 [klippy_connection.py:_do_connect()] - Klippy Connection Established
+2022-09-11 03:54:12,746 [klippy_connection.py:_init_klippy_connection()] - Webhooks Subscribed
+2022-09-11 03:54:12,750 [klippy_connection.py:_init_klippy_connection()] - GCode Output Subscribed
+2022-09-11 03:54:20,276 [job_state.py:_handle_started()] - Job state initialized: standby
+2022-09-11 03:54:20,556 [klippy_connection.py:_check_ready()] - Klippy ready
+2022-09-11 03:54:21,043 [data_store.py:_init_sensors()] - Configuring available sensors: ['heater_bed', 'extruder']
+2022-09-11 03:56:12,872 [shell_command.py:run_with_response()] - /home/pi/moonraker-env/bin/python: Object Processing is disabled
+
+2022-09-11 03:56:12,872 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/gcode_files -f "Right Leg-vzbot-vzbot abs.gcode") successfully finished
+2022-09-11 03:56:12,885 [app.py:log_request()] - 201 POST /api/files/local (fe80::bdc9:b67f:d07b:8b81) [_TRUSTED_USER_] 482.95ms
+2022-09-11 03:56:13,130 [job_state.py:_status_update()] - Job Started: Right Leg-vzbot-vzbot abs.gcode
+2022-09-11 04:01:35,890 [app.py:log_request()] - 101 GET /websocket (10.1.2.150) [_TRUSTED_USER_] 3.10ms
+2022-09-11 04:01:35,891 [websockets.py:open()] - Websocket Opened: ID: 2823204624, Proxied: True, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.27, Host Name: vzbot.local
+2022-09-11 04:01:36,009 [websockets.py:_handle_identify()] - Websocket 2823204624 Client Identified - Name: mainsail, Version: 2.2.1, Type: web
+2022-09-11 04:02:04,651 [job_state.py:_status_update()] - Job Started: Right Leg-vzbot-vzbot abs.gcode
+2022-09-11 04:09:48,918 [job_state.py:_status_update()] - Job Started: Right Leg-vzbot-vzbot abs.gcode
+2022-09-11 04:26:38,906 [app.py:log_request()] - 101 GET /websocket (10.1.2.150) [_TRUSTED_USER_] 5.88ms
+2022-09-11 04:26:38,907 [websockets.py:open()] - Websocket Opened: ID: 2823130672, Proxied: True, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.27, Host Name: vzbot.local
+2022-09-11 04:26:39,038 [websockets.py:_handle_identify()] - Websocket 2823130672 Client Identified - Name: mainsail, Version: 2.2.1, Type: web
+2022-09-11 04:30:27,757 [shell_command.py:run_with_response()] - /home/pi/moonraker-env/bin/python: Object Processing is disabled
+
+2022-09-11 04:30:27,757 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/gcode_files -f "Right Leg-vzbot-vzbot abs.gcode") successfully finished
+2022-09-11 04:30:27,767 [app.py:log_request()] - 201 POST /api/files/local (fe80::bdc9:b67f:d07b:8b81) [_TRUSTED_USER_] 643.54ms
+2022-09-11 04:30:28,009 [job_state.py:_status_update()] - Job Started: Right Leg-vzbot-vzbot abs.gcode
+2022-09-11 04:34:39,852 [websockets.py:on_close()] - Websocket Closed: ID: 2823204624 Close Code: 1001, Close Reason: None, Pong Time Elapsed: 3.95
+2022-09-11 04:39:20,051 [shell_command.py:run_with_response()] - /home/pi/moonraker-env/bin/python: Object Processing is disabled
+
+2022-09-11 04:39:20,051 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/gcode_files -f "Right Leg-vzbot-vzbot abs.gcode") successfully finished
+2022-09-11 04:39:20,062 [app.py:log_request()] - 201 POST /api/files/local (fe80::bdc9:b67f:d07b:8b81) [_TRUSTED_USER_] 570.73ms
+2022-09-11 04:39:20,305 [job_state.py:_status_update()] - Job Started: Right Leg-vzbot-vzbot abs.gcode
+2022-09-11 04:40:21,468 [klippy_connection.py:_process_status_update()] - Klippy has shutdown
+2022-09-11 04:40:21,475 [proc_stats.py:_handle_shutdown()] - 
+Moonraker System Usage Statistics:
+System Time: 1662867592.308042, Usage: 2.76%, Memory: 27340 kB
+System Time: 1662867593.308656, Usage: 2.86%, Memory: 27340 kB
+System Time: 1662867594.310261, Usage: 6.65%, Memory: 27340 kB
+System Time: 1662867595.310677, Usage: 2.86%, Memory: 27340 kB
+System Time: 1662867596.311669, Usage: 2.63%, Memory: 27340 kB
+System Time: 1662867597.312750, Usage: 2.67%, Memory: 27340 kB
+System Time: 1662867598.314188, Usage: 2.64%, Memory: 27340 kB
+System Time: 1662867599.314328, Usage: 2.89%, Memory: 27340 kB
+System Time: 1662867600.315774, Usage: 2.63%, Memory: 27340 kB
+System Time: 1662867601.316734, Usage: 2.84%, Memory: 27340 kB
+System Time: 1662867602.317392, Usage: 2.8%, Memory: 27340 kB
+System Time: 1662867603.319376, Usage: 2.66%, Memory: 27340 kB
+System Time: 1662867604.321738, Usage: 8.0%, Memory: 27340 kB
+System Time: 1662867605.318690, Usage: 8.28%, Memory: 27340 kB
+System Time: 1662867606.323707, Usage: 1.78%, Memory: 27340 kB
+System Time: 1662867607.324309, Usage: 2.55%, Memory: 27340 kB
+System Time: 1662867608.326802, Usage: 2.5%, Memory: 27340 kB
+System Time: 1662867609.327930, Usage: 2.71%, Memory: 27340 kB
+System Time: 1662867610.328082, Usage: 2.52%, Memory: 27340 kB
+System Time: 1662867611.328539, Usage: 2.56%, Memory: 27340 kB
+System Time: 1662867612.329451, Usage: 2.44%, Memory: 27340 kB
+System Time: 1662867613.330303, Usage: 2.57%, Memory: 27340 kB
+System Time: 1662867614.331446, Usage: 6.61%, Memory: 27340 kB
+System Time: 1662867615.331090, Usage: 2.45%, Memory: 27340 kB
+System Time: 1662867616.332532, Usage: 2.18%, Memory: 27340 kB
+System Time: 1662867617.334594, Usage: 2.35%, Memory: 27340 kB
+System Time: 1662867618.335375, Usage: 2.33%, Memory: 27340 kB
+System Time: 1662867619.336025, Usage: 2.58%, Memory: 27340 kB
+System Time: 1662867620.336037, Usage: 4.67%, Memory: 27340 kB
+System Time: 1662867621.334302, Usage: 8.23%, Memory: 27340 kB
+CPU Temperature: 46.251
+2022-09-11 04:40:21,492 [proc_stats.py:_handle_shutdown()] - Throttled Flags: 
+2022-09-11 04:40:21,782 [websockets.py:build_error()] - JSON-RPC Request Error: 400
+{'error': 'WebRequestError', 'message': 'Shutdown due to webhooks request\nOnce the underlying issue is corrected, use the\n"FIRMWARE_RESTART" command to reset the firmware, reload the\nconfig, and restart the host software.\nPrinter is shutdown\n'}
+Traceback (most recent call last):
+  File "/home/pi/moonraker/moonraker/websockets.py", line 253, in execute_method
+    result = await callback(params)
+  File "/home/pi/moonraker/moonraker/websockets.py", line 364, in func
+    ip_addr=ws.ip_addr, user=ws.current_user))
+  File "/home/pi/moonraker/moonraker/components/klippy_apis.py", line 65, in _gcode_pause
+    return await self.pause_print()
+  File "/home/pi/moonraker/moonraker/components/klippy_apis.py", line 126, in pause_print
+    "pause_resume/pause", {}, default)
+  File "/home/pi/moonraker/moonraker/components/klippy_apis.py", line 90, in _send_klippy_request
+    WebRequest(method, params, conn=self))
+  File "/home/pi/moonraker/moonraker/klippy_connection.py", line 477, in request
+    return await self._request_standard(web_request)
+  File "/home/pi/moonraker/moonraker/klippy_connection.py", line 532, in _request_standard
+    return await base_request.wait()
+  File "/home/pi/moonraker/moonraker/klippy_connection.py", line 604, in wait
+    raise self.response
+utils.ServerError: {'error': 'WebRequestError', 'message': 'Shutdown due to webhooks request\nOnce the underlying issue is corrected, use the\n"FIRMWARE_RESTART" command to reset the firmware, reload the\nconfig, and restart the host software.\nPrinter is shutdown\n'}
+2022-09-11 04:40:22,420 [klippy_connection.py:_on_connection_closed()] - Klippy Connection Removed
+2022-09-11 04:40:23,681 [klippy_connection.py:_do_connect()] - Klippy Connection Established
+2022-09-11 04:40:24,085 [klippy_connection.py:_init_klippy_connection()] - Webhooks Subscribed
+2022-09-11 04:40:24,089 [klippy_connection.py:_init_klippy_connection()] - GCode Output Subscribed
+2022-09-11 04:40:31,882 [job_state.py:_handle_started()] - Job state initialized: standby
+2022-09-11 04:40:32,159 [klippy_connection.py:_check_ready()] - Klippy ready
+2022-09-11 04:40:32,634 [data_store.py:_init_sensors()] - Configuring available sensors: ['heater_bed', 'extruder']
+2022-09-11 04:40:39,951 [shell_command.py:run_with_response()] - /home/pi/moonraker-env/bin/python: Object Processing is disabled
+
+2022-09-11 04:40:39,951 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/gcode_files -f "duct.gcode") successfully finished
+2022-09-11 04:40:39,956 [app.py:log_request()] - 201 POST /api/files/local (fe80::bdc9:b67f:d07b:8b81) [_TRUSTED_USER_] 722.77ms
+2022-09-11 04:41:48,359 [job_state.py:_status_update()] - Job Started: duct.gcode
+2022-09-11 05:03:15,533 [shell_command.py:run_with_response()] - /home/pi/moonraker-env/bin/python: Object Processing is disabled
+
+2022-09-11 05:03:15,533 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/gcode_files -f "Right Leg-vzbot-vzbot abs.gcode") successfully finished
+2022-09-11 05:03:15,548 [app.py:log_request()] - 201 POST /api/files/local (fe80::bdc9:b67f:d07b:8b81) [_TRUSTED_USER_] 590.35ms
+2022-09-11 05:03:15,788 [job_state.py:_status_update()] - Job Started: Right Leg-vzbot-vzbot abs.gcode
+2022-09-11 05:31:17,939 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 10.1.2.150
+2022-09-11 05:47:25,788 [shell_command.py:run_with_response()] - /home/pi/moonraker-env/bin/python: Object Processing is disabled
+
+2022-09-11 05:47:25,788 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/gcode_files -f "Right Leg-vzbot-vzbot abs.gcode") successfully finished
+2022-09-11 05:47:25,798 [app.py:log_request()] - 201 POST /api/files/local (fe80::bdc9:b67f:d07b:8b81) [_TRUSTED_USER_] 717.89ms
+2022-09-11 05:47:26,047 [job_state.py:_status_update()] - Job Started: Right Leg-vzbot-vzbot abs.gcode
+2022-09-11 05:59:44,364 [websockets.py:_process_messages()] - Websocket closed while writing: 2823117008
+2022-09-11 05:59:49,181 [websockets.py:on_close()] - Websocket Closed: ID: 2823117008 Close Code: None, Close Reason: None, Pong Time Elapsed: 45.00
+2022-09-11 06:05:25,442 [job_state.py:_status_update()] - Job Started: Right Leg-vzbot-vzbot abs.gcode
+2022-09-11 06:10:55,033 [websockets.py:build_error()] - JSON-RPC Request Error: 400
+{'error': 'WebRequestError', 'message': 'Must home axis first: 107.000 117.000 8.598 [2683.935]'}
+Traceback (most recent call last):
+  File "/home/pi/moonraker/moonraker/websockets.py", line 253, in execute_method
+    result = await callback(params)
+  File "/home/pi/moonraker/moonraker/websockets.py", line 351, in func
+    user=ws.current_user))
+  File "/home/pi/moonraker/moonraker/klippy_connection.py", line 477, in request
+    return await self._request_standard(web_request)
+  File "/home/pi/moonraker/moonraker/klippy_connection.py", line 532, in _request_standard
+    return await base_request.wait()
+  File "/home/pi/moonraker/moonraker/klippy_connection.py", line 604, in wait
+    raise self.response
+utils.ServerError: {'error': 'WebRequestError', 'message': 'Must home axis first: 107.000 117.000 8.598 [2683.935]'}
+2022-09-11 06:11:25,820 [job_state.py:_status_update()] - Job Started: Right Leg-vzbot-vzbot abs.gcode
+2022-09-11 06:11:32,461 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 10.1.2.150
+2022-09-11 06:11:32,464 [app.py:log_request()] - 101 GET /websocket (10.1.2.150) [_TRUSTED_USER_] 7.07ms
+2022-09-11 06:11:32,465 [websockets.py:open()] - Websocket Opened: ID: 2823256304, Proxied: True, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.27, Host Name: vzbot.local
+2022-09-11 06:11:32,473 [websockets.py:_handle_identify()] - Websocket 2823256304 Client Identified - Name: mainsail, Version: 2.2.1, Type: web
+2022-09-11 06:13:02,569 [websockets.py:_process_messages()] - Websocket closed while writing: 2823256304
+2022-09-11 06:13:07,467 [websockets.py:on_close()] - Websocket Closed: ID: 2823256304 Close Code: None, Close Reason: None, Pong Time Elapsed: 44.99
+2022-09-11 06:15:49,652 [app.py:log_request()] - 101 GET /websocket (10.1.2.150) [_TRUSTED_USER_] 5.42ms
+2022-09-11 06:15:49,653 [websockets.py:open()] - Websocket Opened: ID: 2823318928, Proxied: True, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.27, Host Name: vzbot.local
+2022-09-11 06:15:49,661 [websockets.py:_handle_identify()] - Websocket 2823318928 Client Identified - Name: mainsail, Version: 2.2.1, Type: web
+2022-09-11 06:17:49,678 [websockets.py:_process_messages()] - Websocket closed while writing: 2823318928
+2022-09-11 06:17:52,792 [websockets.py:on_close()] - Websocket Closed: ID: 2823318928 Close Code: None, Close Reason: None, Pong Time Elapsed: 0.47
+2022-09-11 06:49:07,295 [app.py:log_request()] - 101 GET /websocket (10.1.2.150) [_TRUSTED_USER_] 2.81ms
+2022-09-11 06:49:07,295 [websockets.py:open()] - Websocket Opened: ID: 2823104304, Proxied: True, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.27, Host Name: vzbot.local
+2022-09-11 06:49:07,300 [websockets.py:_handle_identify()] - Websocket 2823104304 Client Identified - Name: mainsail, Version: 2.2.1, Type: web
+2022-09-11 06:51:17,954 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: fe80::bdc9:b67f:d07b:8b81
+2022-09-11 07:36:38,939 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: fe80::bdc9:b67f:d07b:8b81
+2022-09-11 07:36:39,445 [shell_command.py:run_with_response()] - /home/pi/moonraker-env/bin/python: Object Processing is disabled
+
+2022-09-11 07:36:39,446 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/gcode_files -f "Right Leg-vzbot-vzbot abs.gcode") successfully finished
+2022-09-11 07:36:39,455 [app.py:log_request()] - 201 POST /api/files/local (fe80::bdc9:b67f:d07b:8b81) [_TRUSTED_USER_] 499.29ms
+2022-09-11 07:36:39,658 [job_state.py:_status_update()] - Job Started: Right Leg-vzbot-vzbot abs.gcode
+2022-09-11 07:47:35,054 [job_state.py:_status_update()] - Job Started: Right Leg-vzbot-vzbot abs.gcode
+2022-09-11 07:51:17,967 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 10.1.2.150
+2022-09-11 08:00:31,419 [job_state.py:_status_update()] - Job Started: Right Leg-vzbot-vzbot abs.gcode
+2022-09-11 08:17:56,549 [shell_command.py:run_with_response()] - /home/pi/moonraker-env/bin/python: Object Processing is disabled
+
+2022-09-11 08:17:56,549 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/gcode_files -f "Right Leg-vzbot-vzbot abs.gcode") successfully finished
+2022-09-11 08:17:56,560 [app.py:log_request()] - 201 POST /api/files/local (fe80::bdc9:b67f:d07b:8b81) [_TRUSTED_USER_] 1102.51ms
+2022-09-11 08:17:56,748 [job_state.py:_status_update()] - Job Started: Right Leg-vzbot-vzbot abs.gcode
+2022-09-11 08:50:27,473 [websockets.py:_process_messages()] - Websocket closed while writing: 2823104304
+2022-09-11 08:50:32,300 [websockets.py:on_close()] - Websocket Closed: ID: 2823104304 Close Code: None, Close Reason: None, Pong Time Elapsed: 45.00
+2022-09-11 09:13:09,301 [websockets.py:on_close()] - Websocket Closed: ID: 2823130672 Close Code: 1001, Close Reason: None, Pong Time Elapsed: 0.39
+2022-09-11 09:13:09,510 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 10.1.2.150
+2022-09-11 09:13:09,513 [app.py:log_request()] - 101 GET /websocket (10.1.2.150) [_TRUSTED_USER_] 5.87ms
+2022-09-11 09:13:09,513 [websockets.py:open()] - Websocket Opened: ID: 2823833008, Proxied: True, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.27, Host Name: vzbot.local
+2022-09-11 09:13:09,595 [websockets.py:_handle_identify()] - Websocket 2823833008 Client Identified - Name: mainsail, Version: 2.2.1, Type: web
+2022-09-11 09:17:26,017 [app.py:log_request()] - 201 POST /server/files/upload (10.1.2.150) [_TRUSTED_USER_] 12.10ms
+2022-09-11 09:17:27,117 [klippy_connection.py:_on_connection_closed()] - Klippy Connection Removed
+2022-09-11 09:17:28,376 [klippy_connection.py:_do_connect()] - Klippy Connection Established
+2022-09-11 09:17:28,748 [klippy_connection.py:_init_klippy_connection()] - Webhooks Subscribed
+2022-09-11 09:17:28,752 [klippy_connection.py:_init_klippy_connection()] - GCode Output Subscribed
+2022-09-11 09:17:36,561 [job_state.py:_handle_started()] - Job state initialized: standby
+2022-09-11 09:17:36,841 [klippy_connection.py:_check_ready()] - Klippy ready
+2022-09-11 09:17:37,337 [data_store.py:_init_sensors()] - Configuring available sensors: ['heater_bed', 'extruder']
+2022-09-11 09:17:46,852 [job_state.py:_status_update()] - Job Started: Right Leg-vzbot-vzbot abs.gcode
+2022-09-11 09:21:17,985 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: fe80::bdc9:b67f:d07b:8b81
+2022-09-11 10:21:17,999 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 10.1.2.150
+2022-09-11 11:20:49,637 [websockets.py:_process_messages()] - Websocket closed while writing: 2823833008
+2022-09-11 11:20:54,517 [websockets.py:on_close()] - Websocket Closed: ID: 2823833008 Close Code: None, Close Reason: None, Pong Time Elapsed: 45.00
+2022-09-11 18:18:23,189 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 10.1.2.150
+2022-09-11 18:18:23,196 [app.py:log_request()] - 101 GET /websocket (10.1.2.150) [_TRUSTED_USER_] 11.26ms
+2022-09-11 18:18:23,197 [websockets.py:open()] - Websocket Opened: ID: 2823115280, Proxied: True, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.27, Host Name: vzbot.local
+2022-09-11 18:18:23,205 [websockets.py:_handle_identify()] - Websocket 2823115280 Client Identified - Name: mainsail, Version: 2.2.1, Type: web
+2022-09-11 18:29:57,637 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: fe80::bdc9:b67f:d07b:8b81
+2022-09-11 18:29:58,192 [shell_command.py:run_with_response()] - /home/pi/moonraker-env/bin/python: Object Processing is disabled
+
+2022-09-11 18:29:58,192 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/gcode_files -f "Shape-Box-vzbot-vzbot abs.gcode") successfully finished
+2022-09-11 18:29:58,202 [app.py:log_request()] - 201 POST /api/files/local (fe80::bdc9:b67f:d07b:8b81) [_TRUSTED_USER_] 551.43ms
+2022-09-11 18:29:58,407 [job_state.py:_status_update()] - Job Started: Shape-Box-vzbot-vzbot abs.gcode
+2022-09-11 18:38:54,206 [klippy_connection.py:_on_connection_closed()] - Klippy Connection Removed
+2022-09-11 18:38:55,466 [klippy_connection.py:_do_connect()] - Klippy Connection Established
+2022-09-11 18:38:55,902 [klippy_connection.py:_init_klippy_connection()] - Webhooks Subscribed
+2022-09-11 18:38:55,906 [klippy_connection.py:_init_klippy_connection()] - GCode Output Subscribed
+2022-09-11 18:38:58,658 [job_state.py:_handle_started()] - Job state initialized: standby
+2022-09-11 18:38:58,939 [klippy_connection.py:_check_ready()] - Klippy ready
+2022-09-11 18:38:59,445 [data_store.py:_init_sensors()] - Configuring available sensors: ['heater_bed', 'extruder']
+2022-09-11 18:39:14,713 [job_state.py:_status_update()] - Job Started: Shape-Box-vzbot-vzbot abs.gcode
+2022-09-11 18:47:40,166 [klippy_connection.py:_on_connection_closed()] - Klippy Connection Removed
+2022-09-11 18:47:41,430 [klippy_connection.py:_do_connect()] - Klippy Connection Established
+2022-09-11 18:47:41,832 [klippy_connection.py:_init_klippy_connection()] - Webhooks Subscribed
+2022-09-11 18:47:41,836 [klippy_connection.py:_init_klippy_connection()] - GCode Output Subscribed
+2022-09-11 18:47:44,589 [job_state.py:_handle_started()] - Job state initialized: standby
+2022-09-11 18:47:44,873 [klippy_connection.py:_check_ready()] - Klippy ready
+2022-09-11 18:47:45,353 [data_store.py:_init_sensors()] - Configuring available sensors: ['heater_bed', 'extruder']
+2022-09-11 18:47:55,122 [job_state.py:_status_update()] - Job Started: Shape-Box-vzbot-vzbot abs.gcode
+2022-09-11 18:55:20,361 [klippy_connection.py:_on_connection_closed()] - Klippy Connection Removed
+2022-09-11 18:55:21,622 [klippy_connection.py:_do_connect()] - Klippy Connection Established
+2022-09-11 18:55:22,033 [klippy_connection.py:_init_klippy_connection()] - Webhooks Subscribed
+2022-09-11 18:55:22,037 [klippy_connection.py:_init_klippy_connection()] - GCode Output Subscribed
+2022-09-11 18:55:24,792 [job_state.py:_handle_started()] - Job state initialized: standby
+2022-09-11 18:55:25,072 [klippy_connection.py:_check_ready()] - Klippy ready
+2022-09-11 18:55:25,555 [data_store.py:_init_sensors()] - Configuring available sensors: ['heater_bed', 'extruder']
+2022-09-11 19:07:38,823 [job_state.py:_status_update()] - Job Started: Shape-Box-vzbot-vzbot abs.gcode
+2022-09-11 19:21:18,132 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 10.1.2.150
+2022-09-11 19:31:18,134 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: fe80::bdc9:b67f:d07b:8b81
+2022-09-11 19:38:23,532 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: fe80::bdc9:b67f:d07b:8b81
+2022-09-11 19:38:23,953 [shell_command.py:run_with_response()] - /home/pi/moonraker-env/bin/python: Object Processing is disabled
+
+2022-09-11 19:38:23,953 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/gcode_files -f "Shape-Box-vzbot-vzbot abs.gcode") successfully finished
+2022-09-11 19:38:23,964 [app.py:log_request()] - 201 POST /api/files/local (fe80::bdc9:b67f:d07b:8b81) [_TRUSTED_USER_] 415.67ms
+2022-09-11 19:38:23,970 [job_state.py:_status_update()] - Job Started: Shape-Box-vzbot-vzbot abs.gcode
+2022-09-11 20:15:37,198 [shell_command.py:run_with_response()] - /home/pi/moonraker-env/bin/python: Object Processing is disabled
+
+2022-09-11 20:15:37,198 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/gcode_files -f "Shape-Box-vzbot-vzbot abs.gcode") successfully finished
+2022-09-11 20:15:37,210 [app.py:log_request()] - 201 POST /api/files/local (fe80::bdc9:b67f:d07b:8b81) [_TRUSTED_USER_] 582.18ms
+2022-09-11 20:15:37,399 [job_state.py:_status_update()] - Job Started: Shape-Box-vzbot-vzbot abs.gcode
+2022-09-11 20:17:47,771 [websockets.py:on_close()] - Websocket Closed: ID: 2823115280 Close Code: 1001, Close Reason: None, Pong Time Elapsed: 4.57
+2022-09-11 20:17:48,008 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 10.1.2.150
+2022-09-11 20:17:48,011 [app.py:log_request()] - 101 GET /websocket (10.1.2.150) [_TRUSTED_USER_] 5.31ms
+2022-09-11 20:17:48,011 [websockets.py:open()] - Websocket Opened: ID: 2823376624, Proxied: True, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.27, Host Name: vzbot.local
+2022-09-11 20:17:48,109 [websockets.py:_handle_identify()] - Websocket 2823376624 Client Identified - Name: mainsail, Version: 2.2.1, Type: web
+2022-09-11 20:31:03,547 [shell_command.py:run_with_response()] - /home/pi/moonraker-env/bin/python: Object Processing is disabled
+
+2022-09-11 20:31:03,547 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/gcode_files -f "Shape-Box-vzbot-vzbot abs.gcode") successfully finished
+2022-09-11 20:31:03,561 [app.py:log_request()] - 201 POST /api/files/local (fe80::bdc9:b67f:d07b:8b81) [_TRUSTED_USER_] 423.83ms
+2022-09-11 20:31:03,571 [job_state.py:_status_update()] - Job Started: Shape-Box-vzbot-vzbot abs.gcode
+2022-09-11 21:21:18,155 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 10.1.2.150
+2022-09-11 21:31:18,157 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: fe80::bdc9:b67f:d07b:8b81
+2022-09-11 22:46:58,099 [websockets.py:_process_messages()] - Websocket closed while writing: 2823376624
+2022-09-11 22:47:03,016 [websockets.py:on_close()] - Websocket Closed: ID: 2823376624 Close Code: None, Close Reason: None, Pong Time Elapsed: 45.00
+2022-09-11 23:29:39,128 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: fe80::bdc9:b67f:d07b:8b81
+2022-09-11 23:29:40,202 [shell_command.py:run_with_response()] - /home/pi/moonraker-env/bin/python: Object Processing is disabled
+
+2022-09-11 23:29:40,202 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/gcode_files -f "3DBenchy-vzbot-vzbot abs.gcode") successfully finished
+2022-09-11 23:29:40,212 [app.py:log_request()] - 201 POST /api/files/local (fe80::bdc9:b67f:d07b:8b81) [_TRUSTED_USER_] 1060.95ms
+2022-09-11 23:29:40,421 [job_state.py:_status_update()] - Job Started: 3DBenchy-vzbot-vzbot abs.gcode
+2022-09-11 23:38:04,792 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 10.1.2.150
+2022-09-11 23:38:04,795 [app.py:log_request()] - 101 GET /websocket (10.1.2.150) [_TRUSTED_USER_] 6.50ms
+2022-09-11 23:38:04,795 [websockets.py:open()] - Websocket Opened: ID: 2823119568, Proxied: True, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.27, Host Name: vzbot.local
+2022-09-11 23:38:04,911 [websockets.py:_handle_identify()] - Websocket 2823119568 Client Identified - Name: mainsail, Version: 2.2.1, Type: web
+2022-09-11 23:45:07,129 [job_state.py:_status_update()] - Job Started: 3DBenchy-vzbot-vzbot abs.gcode

@@ -1,0 +1,2 @@
+10.1.2.150 - - [12/Sep/2022:04:29:17 +0100] "GET /server/files/gcodes/.thumbs/3DBenchy-TRIDENT-abs%20trident%20pif-400x300.png?timestamp=1662933831.8127384 HTTP/1.1" 304 0 "http://trident.local/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.27"
+10.1.2.150 - - [12/Sep/2022:06:31:02 +0100] "GET /websocket HTTP/1.1" 101 141451677 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36 Edg/105.0.1343.27"

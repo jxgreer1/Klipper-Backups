@@ -1,0 +1,34 @@
+{
+    "connection": {
+        "moonraker_socket_url": "ws://127.0.0.1/websocket",
+        "moonraker_url": "http://127.0.0.1",
+        "moonraker_token": "",
+        "bot_token": ""
+    },
+    "language": {
+        "messages": "en",
+        "command_syntax": "en",
+        "buttons_use_syntax_locale": false
+    },
+    "permission": {
+        "controllers": {
+            "roles": [],
+            "users": "526176762917421056"
+        }
+    },
+    "webcam": {
+        "url": "http://127.0.0.1/webcam/?action=snapshot"
+    }
+        "botadmins": {
+            "_comment": "this Section is managed by the /admin command",
+            "users": [],
+            "roles": []
+        },
+        "selections": {
+            "printlist_view_printjob": {
+                "command_assign": "fileinfo",
+                "botadmin": true,
+                "guildadmin": false,
+                "users": [],
+                "roles": []
+}
