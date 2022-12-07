@@ -1,0 +1,183 @@
+--------------------Moonraker Log Start--------------------
+config_file: /home/pi/klipper_config/moonraker.conf
+startup_warnings: []
+log_file: /home/pi/klipper_logs/moonraker.log
+software_version: v0.7.1-665-gdf24e3e
+python_version: 3.7.3 (default, Jan 22 2021, 20:04:44)  [GCC 8.3.0]
+
+#################### Moonraker Configuration ####################
+
+[server]
+host = 0.0.0.0
+port = 7125
+enable_debug_logging = False
+max_upload_size = 1024
+
+[file_manager]
+config_path = ~/klipper_config
+log_path = ~/klipper_logs
+enable_object_processing = False
+
+[authorization]
+cors_domains = 
+	https://my.mainsail.xyz
+	http://my.mainsail.xyz
+	http://*.local
+	http://*.lan
+trusted_clients = 
+	10.0.0.0/8
+	127.0.0.0/8
+	169.254.0.0/16
+	172.16.0.0/12
+	192.168.0.0/16
+	FE80::/10
+	::1/128
+
+[octoprint_compat]
+
+[history]
+
+[announcements]
+subscriptions = 
+	mainsail
+
+[update_manager]
+refresh_interval = 168
+enable_auto_refresh = True
+
+[update_manager mainsail]
+type = web
+channel = stable
+repo = mainsail-crew/mainsail
+path = ~/mainsail
+
+[virtual_sdcard]
+path = ~/gcode_files
+
+[update_manager timelapse]
+type = git_repo
+primary_branch = main
+path = ~/moonraker-timelapse
+origin = https://github.com/mainsail-crew/moonraker-timelapse.git
+managed_services = klipper moonraker
+
+[update_manager crowsnest]
+type = git_repo
+path = ~/crowsnest
+origin = https://github.com/mainsail-crew/crowsnest.git
+managed_services = crowsnest
+
+[update_manager sonar]
+type = git_repo
+path = ~/sonar
+origin = https://github.com/mainsail-crew/sonar.git
+primary_branch = main
+managed_services = sonar
+
+[timelapse]
+output_path = ~/timelapse/
+frame_path = /tmp/timelapse/
+ffmpeg_binary_path = /usr/bin/ffmpeg
+
+#################################################################
+All Configuration Files:
+/home/pi/klipper_config/moonraker.conf
+#################################################################
+Unsafe Shutdown Count: 7
+
+System Info:
+
+***python***
+  version: sys.version_info(major=3, minor=7, micro=3, releaselevel='final', serial=0)
+  version_string: 3.7.3 (default, Jan 22 2021, 20:04:44)  [GCC 8.3.0]
+
+***cpu_info***
+  cpu_count: 4
+  bits: 32bit
+  processor: armv7l
+  cpu_desc: ARMv7 Processor rev 3 (v7l)
+  serial_number: 10000000e8e97a46
+  hardware_desc: BCM2711
+  model: Raspberry Pi 4 Model B Rev 1.2
+  total_memory: 1734408
+  memory_units: kB
+
+***sd_info***
+  manufacturer_id: 27
+  manufacturer: Unknown
+  oem_id: 5048
+  product_name: SD32G
+  product_revision: 6.0
+  serial_number: 000002f1
+  manufacturer_date: 6/2021
+  capacity: 28.9 GiB
+  total_bytes: 30989615104
+
+***distribution***
+  name: Raspbian GNU/Linux 10 (buster)
+  id: raspbian
+  version: 10
+  version_parts: {'major': '10', 'minor': '', 'build_number': ''}
+  like: debian
+  codename: buster
+  release_info: {'name': 'MainsailOS', 'version_id': '0.7.1', 'codename': 'buster', 'id': 'mainsailos'}
+
+***virtualization***
+  virt_type: none
+  virt_identifier: none
+
+Systemd unit moonraker.service:
+unit_name: moonraker.service
+is_default: True
+Properties:
+**Requires=['system.slice', 'sysinit.target', '-.mount', 'network-online.target']
+**After=['systemd-journald.socket', 'system.slice', 'network-online.target', 'klipper.service', 'sysinit.target', 'basic.target', '-.mount']
+**SupplementaryGroups=['moonraker-admin']
+**EnvironmentFiles=[]
+**ExecStart=/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/moonraker.py -c /home/pi/klipper_config/moonraker.conf -l /home/pi/klipper_logs/moonraker.log
+**WorkingDirectory=/home/pi/moonraker
+**FragmentPath=/etc/systemd/system/moonraker.service
+**Description=API Server for Klipper
+**User=pi
+Klipper Version: v0.10.0-589-g34870d3e
+2022-11-07 20:23:05,001 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/info
+2022-11-07 20:23:05,002 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.info
+2022-11-07 20:23:05,003 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/emergency_stop
+2022-11-07 20:23:05,003 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.emergency_stop
+2022-11-07 20:23:05,004 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/gcode/help
+2022-11-07 20:23:05,004 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.gcode.help
+2022-11-07 20:23:05,004 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/gcode/script
+2022-11-07 20:23:05,005 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.gcode.script
+2022-11-07 20:23:05,005 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/gcode/restart
+2022-11-07 20:23:05,006 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.gcode.restart
+2022-11-07 20:23:05,007 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/gcode/firmware_restart
+2022-11-07 20:23:05,007 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.gcode.firmware_restart
+2022-11-07 20:23:05,008 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/objects/list
+2022-11-07 20:23:05,008 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.objects.list
+2022-11-07 20:23:05,008 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/objects/query
+2022-11-07 20:23:05,009 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.objects.query
+2022-11-07 20:23:05,009 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/objects/subscribe
+2022-11-07 20:23:05,010 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.objects.subscribe
+2022-11-07 20:23:05,010 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/pause_resume/cancel
+2022-11-07 20:23:05,011 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.pause_resume.cancel
+2022-11-07 20:23:05,011 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/pause_resume/pause
+2022-11-07 20:23:05,013 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.pause_resume.pause
+2022-11-07 20:23:05,013 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/pause_resume/resume
+2022-11-07 20:23:05,014 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.pause_resume.resume
+2022-11-07 20:23:05,014 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/motion_report/dump_stepper
+2022-11-07 20:23:05,015 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.motion_report.dump_stepper
+2022-11-07 20:23:05,015 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/query_endstops/status
+2022-11-07 20:23:05,016 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.query_endstops.status
+2022-11-07 20:23:05,017 [klippy_connection.py:_check_ready()] - 
+mcu 'mcu': Unable to connect
+Once the underlying issue is corrected, use the
+"FIRMWARE_RESTART" command to reset the firmware, reload the
+config, and restart the host software.
+Error configuring printer
+
+2022-11-07 20:29:35,654 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 10.1.2.150
+2022-11-07 20:29:35,656 [app.py:log_request()] - 101 GET /websocket (10.1.2.150) [_TRUSTED_USER_] 3.62ms
+2022-11-07 20:29:35,656 [websockets.py:open()] - Websocket Opened: ID: 2822724720, Proxied: True, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36 Edg/106.0.1370.52, Host Name: sidewinder.local
+2022-11-07 20:29:35,664 [websockets.py:_handle_identify()] - Websocket 2822724720 Client Identified - Name: mainsail, Version: 2.3.1, Type: web
+2022-11-07 20:32:55,733 [websockets.py:_process_messages()] - Websocket closed while writing: 2822724720
+2022-11-07 20:32:57,873 [websockets.py:on_close()] - Websocket Closed: ID: 2822724720 Close Code: None, Close Reason: None, Pong Time Elapsed: 0.04
