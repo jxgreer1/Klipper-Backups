@@ -1,0 +1,10 @@
+*.pyc
+*.swp
+.idea
+.vscode
+*.iml
+build
+dist
+*.egg*
+.DS_Store
+moonraker-obico.cfg
