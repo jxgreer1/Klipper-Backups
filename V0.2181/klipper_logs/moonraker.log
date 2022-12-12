@@ -1,0 +1,235 @@
+--------------------Moonraker Log Start--------------------
+data_path: /home/pi/printer_data
+is_default_data_path: False
+config_file: /home/pi/klipper_config/moonraker.conf
+startup_warnings: []
+verbose: False
+debug: False
+asyncio_debug: False
+is_backup_config: False
+log_file: /home/pi/klipper_logs/moonraker.log
+software_version: v0.7.1-780-gdde9bcc
+python_version: 3.7.3 (default, Jan 22 2021, 20:04:44)  [GCC 8.3.0]
+
+#################### Moonraker Configuration ####################
+
+[server]
+host = 0.0.0.0
+port = 7125
+max_upload_size = 1024
+
+[file_manager]
+enable_object_processing = false
+
+[authorization]
+cors_domains = 
+	https://my.mainsail.xyz
+	http://my.mainsail.xyz
+	http://*.local
+	http://*.lan
+trusted_clients = 
+	10.0.0.0/8
+	127.0.0.0/8
+	169.254.0.0/16
+	172.16.0.0/12
+	192.168.0.0/16
+	FE80::/10
+	::1/128
+
+[octoprint_compat]
+
+[history]
+
+[announcements]
+subscriptions = 
+	mainsail
+
+[update_manager]
+refresh_interval = 168
+enable_auto_refresh = True
+
+[update_manager mainsail]
+type = web
+channel = stable
+repo = mainsail-crew/mainsail
+path = ~/mainsail
+
+[timelapse]
+
+[update_manager timelapse]
+type = git_repo
+primary_branch = main
+path = ~/moonraker-timelapse
+origin = https://github.com/mainsail-crew/moonraker-timelapse.git
+managed_services = klipper moonraker
+
+[update_manager crowsnest]
+type = git_repo
+path = ~/crowsnest
+origin = https://github.com/mainsail-crew/crowsnest.git
+managed_services = crowsnest
+
+[update_manager sonar]
+type = git_repo
+path = ~/sonar
+origin = https://github.com/mainsail-crew/sonar.git
+primary_branch = main
+managed_services = sonar
+
+#################################################################
+All Configuration Files:
+/home/pi/klipper_config/moonraker.conf
+#################################################################
+Unsafe Shutdown Count: 13
+
+System Info:
+
+***python***
+  version: sys.version_info(major=3, minor=7, micro=3, releaselevel='final', serial=0)
+  version_string: 3.7.3 (default, Jan 22 2021, 20:04:44)  [GCC 8.3.0]
+
+***cpu_info***
+  cpu_count: 4
+  bits: 32bit
+  processor: armv7l
+  cpu_desc: ARMv7 Processor rev 3 (v7l)
+  serial_number: 10000000e8e97a46
+  hardware_desc: BCM2711
+  model: Raspberry Pi 4 Model B Rev 1.2
+  total_memory: 1734408
+  memory_units: kB
+
+***sd_info***
+  manufacturer_id: 9f
+  manufacturer: Unknown
+  oem_id: 5449
+  product_name: SD16G
+  product_revision: 6.1
+  serial_number: a4a80afd
+  manufacturer_date: 7/2021
+  capacity: 14.6 GiB
+  total_bytes: 15646851072
+
+***distribution***
+  name: Raspbian GNU/Linux 10 (buster)
+  id: raspbian
+  version: 10
+  version_parts: {'major': '10', 'minor': '', 'build_number': ''}
+  like: debian
+  codename: buster
+  release_info: {'name': 'MainsailOS', 'version_id': '0.7.1', 'codename': 'buster', 'id': 'mainsailos'}
+
+***virtualization***
+  virt_type: none
+  virt_identifier: none
+
+***network***
+
+***canbus***
+
+Systemd unit moonraker.service:
+unit_name: moonraker.service
+is_default: True
+Properties:
+**Requires=['system.slice', 'network-online.target', 'sysinit.target', '-.mount']
+**After=['network-online.target', '-.mount', 'sysinit.target', 'basic.target', 'systemd-journald.socket', 'klipper.service', 'system.slice']
+**SupplementaryGroups=['moonraker-admin']
+**EnvironmentFiles=/home/pi/printer_data/systemd/moonraker.env
+**ExecStart=/home/pi/moonraker-env/bin/python $MOONRAKER_ARGS
+**WorkingDirectory=/home/pi/moonraker
+**FragmentPath=/etc/systemd/system/moonraker.service
+**Description=API Server for Klipper SV1
+**User=pi
+
+Systemd unit klipper.service:
+unit_name: klipper.service
+is_default: True
+Properties:
+**Description=Starts Klipper and provides klippy Unix Domain Socket API
+**ExecStart=/home/pi/klippy-env/bin/python /home/pi/klipper/klippy/klippy.py ${KLIPPER_CONFIG} -l ${KLIPPER_LOG} -a ${KLIPPER_SOCKET}
+**FragmentPath=/etc/systemd/system/klipper.service
+Klipper Version: v0.11.0-5-ga42f6158
+2022-12-07 00:05:08,541 [job_state.py:_status_update()] - Job Started: LL_USB_Cam_Top_Cover.gcode
+2022-12-07 00:17:16,543 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 10.1.2.150
+2022-12-07 00:17:16,547 [app.py:log_request()] - 101 GET /websocket (10.1.2.150) [_TRUSTED_USER_] 7.26ms
+2022-12-07 00:17:16,548 [websockets.py:open()] - Websocket Opened: ID: 2823057552, Proxied: False, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.62, Host Name: baby.local
+2022-12-07 00:17:16,560 [file_manager.py:get_file_list()] - Updating File List <config>...
+2022-12-07 00:18:48,909 [websockets.py:build_error()] - JSON-RPC Request Error: -32601
+Metadata not available for <>
+Traceback (most recent call last):
+  File "/home/pi/moonraker/moonraker/websockets.py", line 253, in execute_method
+    result = await callback(params)
+  File "/home/pi/moonraker/moonraker/websockets.py", line 364, in func
+    ip_addr=sc.ip_addr, user=sc.user_info))
+  File "/home/pi/moonraker/moonraker/components/file_manager/file_manager.py", line 354, in _handle_metadata_request
+    f"Metadata not available for <{requested_file}>", 404)
+utils.ServerError: Metadata not available for <>
+2022-12-07 00:25:04,842 [shell_command.py:run_with_response()] - /home/pi/moonraker-env/bin/python: Object Processing is disabled
+
+2022-12-07 00:25:04,842 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/printer_data/gcodes -f "serial plates.gcode") successfully finished
+2022-12-07 00:25:04,857 [app.py:log_request()] - 201 POST /api/files/local (fe80::ed95:29f2:b2b2:8f23) [_TRUSTED_USER_] 738.03ms
+2022-12-07 00:25:09,531 [job_state.py:_status_update()] - Job Started: serial plates.gcode
+2022-12-07 00:38:18,751 [update_manager.py:_handle_auto_refresh()] - Klippy is printing, auto refresh aborted
+2022-12-07 01:18:18,112 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 10.1.2.150
+2022-12-07 01:19:26,590 [websockets.py:write_to_socket()] - Websocket closed while writing: 2823057552
+2022-12-07 01:19:31,552 [websockets.py:on_close()] - Websocket Closed: ID: 2823057552 Close Code: None, Close Reason: None, Pong Time Elapsed: 45.00
+2022-12-07 01:27:16,394 [websockets.py:write_to_socket()] - Websocket closed while writing: 2823074064
+2022-12-07 01:27:21,291 [websockets.py:on_close()] - Websocket Closed: ID: 2823074064 Close Code: None, Close Reason: None, Pong Time Elapsed: 45.00
+2022-12-07 01:28:18,114 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: fe80::ed95:29f2:b2b2:8f23
+2022-12-07 01:38:18,886 [update_manager.py:_handle_auto_refresh()] - Klippy is printing, auto refresh aborted
+2022-12-07 06:55:39,588 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 10.1.2.110
+2022-12-07 06:55:39,591 [app.py:log_request()] - 101 GET /websocket (10.1.2.110) [_TRUSTED_USER_] 6.19ms
+2022-12-07 06:55:39,592 [websockets.py:open()] - Websocket Opened: ID: 2804697520, Proxied: True, User Agent: Dart/2.18 (dart:io), Host Name: baby.local
+2022-12-07 06:55:56,805 [websockets.py:on_close()] - Websocket Closed: ID: 2804697520 Close Code: None, Close Reason: None, Pong Time Elapsed: 7.17
+2022-12-07 06:55:58,392 [app.py:log_request()] - 101 GET /websocket (10.1.2.110) [_TRUSTED_USER_] 5.42ms
+2022-12-07 06:55:58,393 [websockets.py:open()] - Websocket Opened: ID: 2823106512, Proxied: True, User Agent: Dart/2.18 (dart:io), Host Name: baby.local
+2022-12-07 06:56:01,017 [websockets.py:on_close()] - Websocket Closed: ID: 2823106512 Close Code: None, Close Reason: None, Pong Time Elapsed: 2.63
+2022-12-07 06:57:06,750 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: fe80::8b2:d1fd:a038:953a
+2022-12-07 06:57:06,756 [app.py:log_request()] - 101 GET /websocket (fe80::8b2:d1fd:a038:953a) [_TRUSTED_USER_] 9.68ms
+2022-12-07 06:57:06,756 [websockets.py:open()] - Websocket Opened: ID: 3050307888, Proxied: True, User Agent: Dart/2.18 (dart:io), Host Name: baby.local
+2022-12-07 06:57:36,983 [websockets.py:write_to_socket()] - Websocket closed while writing: 3050307888
+2022-12-07 06:57:41,764 [websockets.py:on_close()] - Websocket Closed: ID: 3050307888 Close Code: None, Close Reason: None, Pong Time Elapsed: 35.01
+2022-12-07 07:26:47,547 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: fe80::ed95:29f2:b2b2:8f23
+2022-12-07 07:26:47,550 [app.py:log_request()] - 101 GET /websocket (fe80::ed95:29f2:b2b2:8f23) [_TRUSTED_USER_] 6.93ms
+2022-12-07 07:26:47,551 [websockets.py:open()] - Websocket Opened: ID: 3050240624, Proxied: True, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.62, Host Name: baby.local
+2022-12-07 07:26:47,554 [websockets.py:_handle_identify()] - Websocket 3050240624 Client Identified - Name: mainsail, Version: 2.4.0, Type: web
+2022-12-07 07:26:49,999 [app.py:log_request()] - 201 POST /server/files/upload (fe80::ed95:29f2:b2b2:8f23) [_TRUSTED_USER_] 17.70ms
+2022-12-07 07:27:02,361 [job_state.py:_status_update()] - Job Started: serial plates.gcode
+2022-12-07 07:27:09,755 [websockets.py:build_error()] - JSON-RPC Request Error: 400
+{'error': 'WebRequestError', 'message': 'SD busy'}
+Traceback (most recent call last):
+  File "/home/pi/moonraker/moonraker/websockets.py", line 253, in execute_method
+    result = await callback(params)
+  File "/home/pi/moonraker/moonraker/websockets.py", line 364, in func
+    ip_addr=sc.ip_addr, user=sc.user_info))
+  File "/home/pi/moonraker/moonraker/components/klippy_apis.py", line 75, in _gcode_start_print
+    return await self.start_print(filename)
+  File "/home/pi/moonraker/moonraker/components/klippy_apis.py", line 119, in start_print
+    return await self.run_gcode(script)
+  File "/home/pi/moonraker/moonraker/components/klippy_apis.py", line 103, in run_gcode
+    GCODE_ENDPOINT, params, default)
+  File "/home/pi/moonraker/moonraker/components/klippy_apis.py", line 90, in _send_klippy_request
+    WebRequest(method, params, conn=self))
+  File "/home/pi/moonraker/moonraker/klippy_connection.py", line 481, in request
+    return await self._request_standard(web_request)
+  File "/home/pi/moonraker/moonraker/klippy_connection.py", line 536, in _request_standard
+    return await base_request.wait()
+  File "/home/pi/moonraker/moonraker/klippy_connection.py", line 608, in wait
+    raise self.response
+utils.ServerError: {'error': 'WebRequestError', 'message': 'SD busy'}
+2022-12-07 07:27:12,913 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 10.1.2.150
+2022-12-07 07:27:12,917 [app.py:log_request()] - 101 GET /websocket (10.1.2.150) [_TRUSTED_USER_] 6.69ms
+2022-12-07 07:27:12,917 [websockets.py:open()] - Websocket Opened: ID: 2823061136, Proxied: False, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.62, Host Name: baby.local
+2022-12-07 07:27:12,981 [app.py:log_request()] - 101 GET /websocket (10.1.2.150) [_TRUSTED_USER_] 2.49ms
+2022-12-07 07:27:12,982 [websockets.py:open()] - Websocket Opened: ID: 2824025008, Proxied: False, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.62, Host Name: baby.local
+2022-12-07 07:27:12,992 [file_manager.py:get_file_list()] - Updating File List <config>...
+2022-12-07 07:58:18,214 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 10.1.2.110
+2022-12-07 07:58:18,215 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: fe80::8b2:d1fd:a038:953a
+2022-12-07 08:28:18,220 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: fe80::ed95:29f2:b2b2:8f23
+2022-12-07 08:28:18,221 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 10.1.2.150
+2022-12-07 09:06:17,740 [websockets.py:write_to_socket()] - Websocket closed while writing: 3050240624
+2022-12-07 09:06:22,554 [websockets.py:on_close()] - Websocket Closed: ID: 3050240624 Close Code: None, Close Reason: None, Pong Time Elapsed: 45.00
+2022-12-07 09:06:33,037 [websockets.py:write_to_socket()] - Websocket closed while writing: 2824025008
+2022-12-07 09:06:37,984 [websockets.py:on_close()] - Websocket Closed: ID: 2824025008 Close Code: None, Close Reason: None, Pong Time Elapsed: 44.45
+2022-12-07 09:07:43,032 [websockets.py:write_to_socket()] - Websocket closed while writing: 2823061136
+2022-12-07 09:07:47,923 [websockets.py:on_close()] - Websocket Closed: ID: 2823061136 Close Code: None, Close Reason: None, Pong Time Elapsed: 45.00

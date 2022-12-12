@@ -1,0 +1,318 @@
+--------------------Moonraker Log Start--------------------
+data_path: /home/pi/printer_data
+is_default_data_path: False
+config_file: /home/pi/klipper_config/moonraker.conf
+startup_warnings: []
+verbose: False
+debug: False
+asyncio_debug: False
+is_backup_config: False
+log_file: /home/pi/klipper_logs/moonraker.log
+software_version: v0.7.1-780-gdde9bcc
+python_version: 3.7.3 (default, Jan 22 2021, 20:04:44)  [GCC 8.3.0]
+
+#################### Moonraker Configuration ####################
+
+[server]
+host = 0.0.0.0
+port = 7125
+temperature_store_size = 600
+gcode_store_size = 1000
+
+[authorization]
+force_logins = True
+cors_domains = 
+	*.local
+	*.lan
+	*://app.fluidd.xyz
+trusted_clients = 
+	10.0.0.0/8
+	127.0.0.1
+	127.0.0.0/8
+	169.254.0.0/16
+	172.16.0.0/12
+	192.168.0.0/16
+	100.113.82.57
+	100.74.78.66
+	FE80::/10
+	::1/128
+
+[octoprint_compat]
+
+[history]
+
+[update_manager]
+enable_auto_refresh = True
+
+[update_manager mainsail]
+type = web
+repo = mainsail-crew/mainsail
+path = ~/mainsail
+
+[timelapse]
+output_path = ~/timelapse/
+frame_path = /tmp/timelapse/
+ffmpeg_binary_path = /usr/bin/ffmpeg
+
+[job_queue]
+load_on_startup = False
+
+[update_manager KlipperScreen]
+type = git_repo
+path = /home/pi/KlipperScreen
+origin = https://github.com/jordanruthe/KlipperScreen.git
+env = /home/pi/.KlipperScreen-env/bin/python
+requirements = scripts/KlipperScreen-requirements.txt
+install_script = scripts/KlipperScreen-install.sh
+
+[update_manager crowsnest]
+type = git_repo
+path = ~/crowsnest
+origin = https://github.com/mainsail-crew/crowsnest.git
+managed_services = crowsnest
+
+[update_manager moonraker-obico]
+type = git_repo
+path = ~/moonraker-obico
+origin = https://github.com/TheSpaghettiDetective/moonraker-obico.git
+env = /home/pi/moonraker-env/bin/python
+requirements = requirements.txt
+install_script = install.sh
+managed_services = 
+	moonraker-obico
+
+#################################################################
+All Configuration Files:
+/home/pi/klipper_config/moonraker.conf
+/home/pi/klipper_config/moonraker-obico-update.cfg
+#################################################################
+Unsafe Shutdown Count: 36
+
+System Info:
+
+***python***
+  version: sys.version_info(major=3, minor=7, micro=3, releaselevel='final', serial=0)
+  version_string: 3.7.3 (default, Jan 22 2021, 20:04:44)  [GCC 8.3.0]
+
+***cpu_info***
+  cpu_count: 4
+  bits: 32bit
+  processor: armv7l
+  cpu_desc: ARMv7 Processor rev 3 (v7l)
+  serial_number: 100000001d4363a7
+  hardware_desc: BCM2711
+  model: Raspberry Pi 4 Model B Rev 1.4
+  total_memory: 1734408
+  memory_units: kB
+
+***sd_info***
+  manufacturer_id: 03
+  manufacturer: Sandisk
+  oem_id: 5344
+  product_name: SB16G
+  product_revision: 8.0
+  serial_number: aee62172
+  manufacturer_date: 3/2020
+  capacity: 14.8 GiB
+  total_bytes: 15931539456
+
+***distribution***
+  name: Raspbian GNU/Linux 10 (buster)
+  id: raspbian
+  version: 10
+  version_parts: {'major': '10', 'minor': '', 'build_number': ''}
+  like: debian
+  codename: buster
+  release_info: {'name': 'MainsailOS', 'version_id': '0.7.1', 'codename': 'buster', 'id': 'mainsailos'}
+
+***virtualization***
+  virt_type: none
+  virt_identifier: none
+
+***network***
+
+***canbus***
+
+Systemd unit moonraker.service:
+unit_name: moonraker.service
+is_default: True
+Properties:
+**Requires=['sysinit.target', 'system.slice', 'network-online.target', '-.mount']
+**After=['system.slice', 'network-online.target', 'klipper.service', 'basic.target', 'systemd-journald.socket', '-.mount', 'sysinit.target']
+**SupplementaryGroups=['moonraker-admin']
+**EnvironmentFiles=/home/pi/printer_data/systemd/moonraker.env
+**ExecStart=/home/pi/moonraker-env/bin/python $MOONRAKER_ARGS
+**WorkingDirectory=/home/pi/moonraker
+**FragmentPath=/etc/systemd/system/moonraker.service
+**Description=API Server for Klipper SV1
+**User=pi
+CPU Throttled Flags: ['Under-Voltage Detected', 'Currently Throttled', 'Previously Under-Volted', 'Previously Throttled']
+
+Systemd unit klipper.service:
+unit_name: klipper.service
+is_default: True
+Properties:
+**Description=Starts Klipper and provides klippy Unix Domain Socket API
+**ExecStart=/home/pi/klippy-env/bin/python /home/pi/klipper/klippy/klippy.py ${KLIPPER_CONFIG} -l ${KLIPPER_LOG} -a ${KLIPPER_SOCKET}
+**FragmentPath=/etc/systemd/system/klipper.service
+Klipper Version: v0.11.0-5-ga42f6158
+2022-12-07 00:15:36,236 [job_state.py:_status_update()] - Job Started: Michelangelo David-Troodon 300-troodon abs.gcode
+2022-12-07 00:17:14,590 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: fe80::ed95:29f2:b2b2:8f23
+2022-12-07 00:17:14,592 [app.py:log_request()] - 101 GET /websocket (fe80::ed95:29f2:b2b2:8f23) [_TRUSTED_USER_] 3.91ms
+2022-12-07 00:17:14,592 [websockets.py:open()] - Websocket Opened: ID: 2793109168, Proxied: True, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.62, Host Name: troodon.local
+2022-12-07 00:17:14,609 [websockets.py:_handle_identify()] - Websocket 2793109168 Client Identified - Name: mainsail, Version: 2.4.0, Type: web
+2022-12-07 00:17:16,543 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 10.1.2.150
+2022-12-07 00:17:16,547 [app.py:log_request()] - 101 GET /websocket (10.1.2.150) [_TRUSTED_USER_] 7.88ms
+2022-12-07 00:17:16,548 [websockets.py:open()] - Websocket Opened: ID: 2793092560, Proxied: False, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.62, Host Name: troodon.local
+2022-12-07 00:17:16,563 [file_manager.py:get_file_list()] - Updating File List <config>...
+2022-12-07 00:22:50,444 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 127.0.0.1
+2022-12-07 00:57:50,875 [update_manager.py:_handle_auto_refresh()] - Klippy is printing, auto refresh aborted
+2022-12-07 01:17:50,460 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: fe80::ed95:29f2:b2b2:8f23
+2022-12-07 01:17:50,460 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 10.1.2.150
+2022-12-07 01:19:04,803 [websockets.py:write_to_socket()] - Websocket closed while writing: 2793109168
+2022-12-07 01:19:09,599 [websockets.py:on_close()] - Websocket Closed: ID: 2793109168 Close Code: None, Close Reason: None, Pong Time Elapsed: 45.00
+2022-12-07 01:19:26,605 [websockets.py:write_to_socket()] - Websocket closed while writing: 2793092560
+2022-12-07 01:19:31,551 [websockets.py:on_close()] - Websocket Closed: ID: 2793092560 Close Code: None, Close Reason: None, Pong Time Elapsed: 44.99
+2022-12-07 01:57:50,753 [update_manager.py:_handle_auto_refresh()] - Klippy is printing, auto refresh aborted
+2022-12-07 02:57:50,975 [update_manager.py:_handle_auto_refresh()] - Klippy is printing, auto refresh aborted
+2022-12-07 03:57:50,846 [update_manager.py:_handle_auto_refresh()] - Klippy is printing, auto refresh aborted
+2022-12-07 06:55:39,589 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 10.1.2.110
+2022-12-07 06:55:39,592 [app.py:log_request()] - 101 GET /websocket (10.1.2.110) [_TRUSTED_USER_] 6.85ms
+2022-12-07 06:55:39,593 [websockets.py:open()] - Websocket Opened: ID: 2782692144, Proxied: True, User Agent: Dart/2.18 (dart:io), Host Name: troodon.local
+2022-12-07 06:55:56,803 [websockets.py:on_close()] - Websocket Closed: ID: 2782692144 Close Code: None, Close Reason: None, Pong Time Elapsed: 7.17
+2022-12-07 06:55:58,388 [app.py:log_request()] - 101 GET /websocket (10.1.2.110) [_TRUSTED_USER_] 4.69ms
+2022-12-07 06:55:58,389 [websockets.py:open()] - Websocket Opened: ID: 2823677552, Proxied: True, User Agent: Dart/2.18 (dart:io), Host Name: troodon.local
+2022-12-07 06:56:01,016 [websockets.py:on_close()] - Websocket Closed: ID: 2823677552 Close Code: None, Close Reason: None, Pong Time Elapsed: 2.63
+2022-12-07 06:57:06,748 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: fe80::8b2:d1fd:a038:953a
+2022-12-07 06:57:06,751 [app.py:log_request()] - 101 GET /websocket (fe80::8b2:d1fd:a038:953a) [_TRUSTED_USER_] 7.06ms
+2022-12-07 06:57:06,752 [websockets.py:open()] - Websocket Opened: ID: 2782453168, Proxied: True, User Agent: Dart/2.18 (dart:io), Host Name: troodon.local
+2022-12-07 06:57:36,774 [websockets.py:write_to_socket()] - Websocket closed while writing: 2782453168
+2022-12-07 06:57:41,757 [websockets.py:on_close()] - Websocket Closed: ID: 2782453168 Close Code: None, Close Reason: None, Pong Time Elapsed: 35.01
+2022-12-07 07:13:48,250 [klippy_connection.py:_process_status_update()] - Klippy has shutdown
+2022-12-07 07:13:48,261 [proc_stats.py:_handle_shutdown()] - 
+Moonraker System Usage Statistics:
+System Time: 1670425998.868200, Usage: 2.33%, Memory: 29644 kB
+System Time: 1670425999.869845, Usage: 2.66%, Memory: 29644 kB
+System Time: 1670426000.870106, Usage: 2.38%, Memory: 29644 kB
+System Time: 1670426001.871277, Usage: 2.32%, Memory: 29644 kB
+System Time: 1670426002.871389, Usage: 2.31%, Memory: 29644 kB
+System Time: 1670426003.872674, Usage: 2.02%, Memory: 29644 kB
+System Time: 1670426004.876183, Usage: 6.61%, Memory: 29644 kB
+System Time: 1670426005.875630, Usage: 2.3%, Memory: 29644 kB
+System Time: 1670426006.877940, Usage: 2.6%, Memory: 29644 kB
+System Time: 1670426007.878402, Usage: 2.17%, Memory: 29644 kB
+System Time: 1670426008.879589, Usage: 2.06%, Memory: 29644 kB
+System Time: 1670426009.880737, Usage: 2.32%, Memory: 29644 kB
+System Time: 1670426010.881666, Usage: 2.09%, Memory: 29644 kB
+System Time: 1670426011.884500, Usage: 2.2%, Memory: 29644 kB
+System Time: 1670426012.886489, Usage: 2.33%, Memory: 29644 kB
+System Time: 1670426013.882575, Usage: 2.14%, Memory: 29644 kB
+System Time: 1670426014.888125, Usage: 3.39%, Memory: 29644 kB
+System Time: 1670426015.889349, Usage: 2.22%, Memory: 29644 kB
+System Time: 1670426016.889056, Usage: 2.66%, Memory: 29644 kB
+System Time: 1670426017.890378, Usage: 2.11%, Memory: 29644 kB
+System Time: 1670426018.890949, Usage: 2.17%, Memory: 29644 kB
+System Time: 1670426019.892356, Usage: 2.38%, Memory: 29644 kB
+System Time: 1670426020.892073, Usage: 2.12%, Memory: 29644 kB
+System Time: 1670426021.893537, Usage: 2.02%, Memory: 29644 kB
+System Time: 1670426022.895059, Usage: 2.19%, Memory: 29644 kB
+System Time: 1670426023.892833, Usage: 1.95%, Memory: 29644 kB
+System Time: 1670426024.898947, Usage: 3.58%, Memory: 29644 kB
+System Time: 1670426025.898608, Usage: 2.47%, Memory: 29644 kB
+System Time: 1670426026.898860, Usage: 2.69%, Memory: 29644 kB
+System Time: 1670426027.900773, Usage: 2.12%, Memory: 29644 kB
+CPU Temperature: 42.842
+2022-12-07 07:13:48,298 [proc_stats.py:_handle_shutdown()] - Throttled Flags: Previously Under-Volted Previously Throttled
+2022-12-07 07:27:12,553 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: fe80::ed95:29f2:b2b2:8f23
+2022-12-07 07:27:12,557 [app.py:log_request()] - 101 GET /websocket (fe80::ed95:29f2:b2b2:8f23) [_TRUSTED_USER_] 8.51ms
+2022-12-07 07:27:12,558 [websockets.py:open()] - Websocket Opened: ID: 2793244400, Proxied: True, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.62, Host Name: troodon.local
+2022-12-07 07:27:12,564 [websockets.py:_handle_identify()] - Websocket 2793244400 Client Identified - Name: mainsail, Version: 2.4.0, Type: web
+2022-12-07 07:27:12,919 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 10.1.2.150
+2022-12-07 07:27:12,923 [app.py:log_request()] - 101 GET /websocket (10.1.2.150) [_TRUSTED_USER_] 7.30ms
+2022-12-07 07:27:12,923 [websockets.py:open()] - Websocket Opened: ID: 2782833424, Proxied: False, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.62, Host Name: troodon.local
+2022-12-07 07:27:12,980 [app.py:log_request()] - 101 GET /websocket (10.1.2.150) [_TRUSTED_USER_] 3.98ms
+2022-12-07 07:27:12,981 [websockets.py:open()] - Websocket Opened: ID: 2793094160, Proxied: False, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.62, Host Name: troodon.local
+2022-12-07 07:27:12,999 [file_manager.py:get_file_list()] - Updating File List <config>...
+2022-12-07 07:27:23,690 [klippy_connection.py:_on_connection_closed()] - Klippy Connection Removed
+2022-12-07 07:27:23,736 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 127.0.0.1
+2022-12-07 07:27:23,760 [app.py:log_request()] - 404 GET /machine/device_power/devices (127.0.0.1) [No User] 4.77ms
+2022-12-07 07:27:24,922 [websockets.py:build_error()] - JSON-RPC Request Error: 503
+Klippy Host not connected
+Traceback (most recent call last):
+  File "/home/pi/moonraker/moonraker/websockets.py", line 253, in execute_method
+    result = await callback(params)
+  File "/home/pi/moonraker/moonraker/websockets.py", line 351, in func
+    user=sc.user_info))
+  File "/home/pi/moonraker/moonraker/klippy_connection.py", line 471, in request
+    raise ServerError("Klippy Host not connected", 503)
+utils.ServerError: Klippy Host not connected
+2022-12-07 07:27:24,989 [klippy_connection.py:_do_connect()] - Klippy Connection Established
+2022-12-07 07:27:26,691 [klippy_connection.py:_init_klippy_connection()] - Webhooks Subscribed
+2022-12-07 07:27:26,700 [klippy_connection.py:_init_klippy_connection()] - GCode Output Subscribed
+2022-12-07 07:27:27,545 [app.py:log_request()] - 404 GET /machine/device_power/devices (127.0.0.1) [No User] 4.62ms
+2022-12-07 07:27:28,166 [file_manager.py:get_file_list()] - Updating File List <gcodes>...
+2022-12-07 07:27:29,717 [job_state.py:_handle_started()] - Job state initialized: standby
+2022-12-07 07:27:30,021 [klippy_connection.py:_check_ready()] - Klippy ready
+2022-12-07 07:27:30,042 [file_manager.py:get_file_list()] - Updating File List <config>...
+2022-12-07 07:27:30,098 [file_manager.py:get_file_list()] - Updating File List <config>...
+2022-12-07 07:27:30,511 [data_store.py:_init_sensors()] - Configuring available sensors: ['heater_bed', 'extruder']
+2022-12-07 07:27:30,555 [websockets.py:build_error()] - JSON-RPC Request Error: -32601
+Metadata not available for <>
+Traceback (most recent call last):
+  File "/home/pi/moonraker/moonraker/websockets.py", line 253, in execute_method
+    result = await callback(params)
+  File "/home/pi/moonraker/moonraker/websockets.py", line 364, in func
+    ip_addr=sc.ip_addr, user=sc.user_info))
+  File "/home/pi/moonraker/moonraker/components/file_manager/file_manager.py", line 354, in _handle_metadata_request
+    f"Metadata not available for <{requested_file}>", 404)
+utils.ServerError: Metadata not available for <>
+2022-12-07 07:27:30,560 [websockets.py:build_error()] - JSON-RPC Request Error: -32601
+Metadata not available for <>
+Traceback (most recent call last):
+  File "/home/pi/moonraker/moonraker/websockets.py", line 253, in execute_method
+    result = await callback(params)
+  File "/home/pi/moonraker/moonraker/websockets.py", line 364, in func
+    ip_addr=sc.ip_addr, user=sc.user_info))
+  File "/home/pi/moonraker/moonraker/components/file_manager/file_manager.py", line 354, in _handle_metadata_request
+    f"Metadata not available for <{requested_file}>", 404)
+utils.ServerError: Metadata not available for <>
+2022-12-07 07:27:41,021 [job_state.py:_status_update()] - Job Started: Michelangelo David-Troodon 300-troodon abs.gcode
+2022-12-07 07:28:07,676 [websockets.py:build_error()] - JSON-RPC Request Error: 400
+{'error': 'WebRequestError', 'message': 'No trigger on x after full movement'}
+Traceback (most recent call last):
+  File "/home/pi/moonraker/moonraker/websockets.py", line 253, in execute_method
+    result = await callback(params)
+  File "/home/pi/moonraker/moonraker/websockets.py", line 351, in func
+    user=sc.user_info))
+  File "/home/pi/moonraker/moonraker/klippy_connection.py", line 481, in request
+    return await self._request_standard(web_request)
+  File "/home/pi/moonraker/moonraker/klippy_connection.py", line 536, in _request_standard
+    return await base_request.wait()
+  File "/home/pi/moonraker/moonraker/klippy_connection.py", line 608, in wait
+    raise self.response
+utils.ServerError: {'error': 'WebRequestError', 'message': 'No trigger on x after full movement'}
+2022-12-07 07:57:50,565 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 10.1.2.110
+2022-12-07 07:57:50,565 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: fe80::8b2:d1fd:a038:953a
+2022-12-07 08:04:34,009 [websockets.py:build_error()] - JSON-RPC Request Error: 400
+{'error': 'WebRequestError', 'message': 'No trigger on x after full movement'}
+Traceback (most recent call last):
+  File "/home/pi/moonraker/moonraker/websockets.py", line 253, in execute_method
+    result = await callback(params)
+  File "/home/pi/moonraker/moonraker/websockets.py", line 351, in func
+    user=sc.user_info))
+  File "/home/pi/moonraker/moonraker/klippy_connection.py", line 481, in request
+    return await self._request_standard(web_request)
+  File "/home/pi/moonraker/moonraker/klippy_connection.py", line 536, in _request_standard
+    return await base_request.wait()
+  File "/home/pi/moonraker/moonraker/klippy_connection.py", line 608, in wait
+    raise self.response
+utils.ServerError: {'error': 'WebRequestError', 'message': 'No trigger on x after full movement'}
+2022-12-07 08:27:50,573 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: fe80::ed95:29f2:b2b2:8f23
+2022-12-07 08:27:50,574 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 10.1.2.150
+2022-12-07 08:27:50,574 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 127.0.0.1
+2022-12-07 09:05:53,825 [websockets.py:write_to_socket()] - Websocket closed while writing: 2782833424
+2022-12-07 09:05:57,928 [websockets.py:on_close()] - Websocket Closed: ID: 2782833424 Close Code: None, Close Reason: None, Pong Time Elapsed: 40.54
+2022-12-07 09:06:02,615 [websockets.py:write_to_socket()] - Websocket closed while writing: 2793244400
+2022-12-07 09:06:07,563 [websockets.py:on_close()] - Websocket Closed: ID: 2793244400 Close Code: None, Close Reason: None, Pong Time Elapsed: 44.99
+2022-12-07 09:06:23,186 [websockets.py:write_to_socket()] - Websocket closed while writing: 2793094160
+2022-12-07 09:06:27,984 [websockets.py:on_close()] - Websocket Closed: ID: 2793094160 Close Code: None, Close Reason: None, Pong Time Elapsed: 36.72
