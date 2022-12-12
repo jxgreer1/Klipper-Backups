@@ -1,0 +1,18 @@
+#Systemd service file for moonraker
+[Unit]
+Description=API Server for Klipper
+Requires=network-online.target
+After=network-online.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=simple
+User=pi
+SupplementaryGroups=moonraker-admin
+RemainAfterExit=yes
+WorkingDirectory=/home/pi/moonraker
+ExecStart=/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/moonraker.py -c /home/pi/klipper_config/moonraker.conf -l /home/pi/klipper_logs/moonraker.log
+Restart=always
+RestartSec=10

@@ -1,0 +1,60 @@
+Starting Klippy...
+Args: ['/home/pi/klipper/klippy/klippy.py', '/home/pi/printer_data/config/printer.cfg', '-I', '/home/pi/printer_data/comms/klippy.serial', '-l', '/home/pi/printer_data/logs/klippy.log', '-a', '/home/pi/printer_data/comms/klippy.sock']
+Git version: 'v0.11.0-6-g336cc92a'
+CPU: 4 core ARMv7 Processor rev 4 (v7l)
+Python: '3.7.3 (default, Oct 31 2022, 14:04:00) \n[GCC 8.3.0]'
+Building C code module c_helper.so
+Start printer at Fri Dec  9 23:03:15 2022 (1670655795.9 335.4)
+===== Config file =====
+[mcu]
+serial = /dev/serial/by-id/<your-mcu-id>
+
+[printer]
+kinematics = none
+max_velocity = 1000
+max_accel = 1000
+=======================
+mcu 'mcu': Starting serial connect
+mcu 'mcu': Unable to open serial port: [Errno 2] could not open port /dev/serial/by-id/<your-mcu-id>: [Errno 2] No such file or directory: '/dev/serial/by-id/<your-mcu-id>'
+mcu 'mcu': Unable to open serial port: [Errno 2] could not open port /dev/serial/by-id/<your-mcu-id>: [Errno 2] No such file or directory: '/dev/serial/by-id/<your-mcu-id>'
+mcu 'mcu': Unable to open serial port: [Errno 2] could not open port /dev/serial/by-id/<your-mcu-id>: [Errno 2] No such file or directory: '/dev/serial/by-id/<your-mcu-id>'
+mcu 'mcu': Unable to open serial port: [Errno 2] could not open port /dev/serial/by-id/<your-mcu-id>: [Errno 2] No such file or directory: '/dev/serial/by-id/<your-mcu-id>'
+mcu 'mcu': Unable to open serial port: [Errno 2] could not open port /dev/serial/by-id/<your-mcu-id>: [Errno 2] No such file or directory: '/dev/serial/by-id/<your-mcu-id>'
+mcu 'mcu': Unable to open serial port: [Errno 2] could not open port /dev/serial/by-id/<your-mcu-id>: [Errno 2] No such file or directory: '/dev/serial/by-id/<your-mcu-id>'
+mcu 'mcu': Unable to open serial port: [Errno 2] could not open port /dev/serial/by-id/<your-mcu-id>: [Errno 2] No such file or directory: '/dev/serial/by-id/<your-mcu-id>'
+mcu 'mcu': Unable to open serial port: [Errno 2] could not open port /dev/serial/by-id/<your-mcu-id>: [Errno 2] No such file or directory: '/dev/serial/by-id/<your-mcu-id>'
+mcu 'mcu': Unable to open serial port: [Errno 2] could not open port /dev/serial/by-id/<your-mcu-id>: [Errno 2] No such file or directory: '/dev/serial/by-id/<your-mcu-id>'
+mcu 'mcu': Unable to open serial port: [Errno 2] could not open port /dev/serial/by-id/<your-mcu-id>: [Errno 2] No such file or directory: '/dev/serial/by-id/<your-mcu-id>'
+mcu 'mcu': Unable to open serial port: [Errno 2] could not open port /dev/serial/by-id/<your-mcu-id>: [Errno 2] No such file or directory: '/dev/serial/by-id/<your-mcu-id>'
+mcu 'mcu': Unable to open serial port: [Errno 2] could not open port /dev/serial/by-id/<your-mcu-id>: [Errno 2] No such file or directory: '/dev/serial/by-id/<your-mcu-id>'
+mcu 'mcu': Unable to open serial port: [Errno 2] could not open port /dev/serial/by-id/<your-mcu-id>: [Errno 2] No such file or directory: '/dev/serial/by-id/<your-mcu-id>'
+mcu 'mcu': Unable to open serial port: [Errno 2] could not open port /dev/serial/by-id/<your-mcu-id>: [Errno 2] No such file or directory: '/dev/serial/by-id/<your-mcu-id>'
+mcu 'mcu': Unable to open serial port: [Errno 2] could not open port /dev/serial/by-id/<your-mcu-id>: [Errno 2] No such file or directory: '/dev/serial/by-id/<your-mcu-id>'
+mcu 'mcu': Unable to open serial port: [Errno 2] could not open port /dev/serial/by-id/<your-mcu-id>: [Errno 2] No such file or directory: '/dev/serial/by-id/<your-mcu-id>'
+mcu 'mcu': Unable to open serial port: [Errno 2] could not open port /dev/serial/by-id/<your-mcu-id>: [Errno 2] No such file or directory: '/dev/serial/by-id/<your-mcu-id>'
+mcu 'mcu': Unable to open serial port: [Errno 2] could not open port /dev/serial/by-id/<your-mcu-id>: [Errno 2] No such file or directory: '/dev/serial/by-id/<your-mcu-id>'
+MCU error during connect
+Traceback (most recent call last):
+  File "/home/pi/klipper/klippy/mcu.py", line 777, in _mcu_identify
+    self._serial.connect_uart(self._serialport, self._baud, rts)
+  File "/home/pi/klipper/klippy/serialhdl.py", line 182, in connect_uart
+    self._error("Unable to connect")
+  File "/home/pi/klipper/klippy/serialhdl.py", line 61, in _error
+    raise error(self.warn_prefix + (msg % params))
+serialhdl.error: mcu 'mcu': Unable to connect
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/pi/klipper/klippy/klippy.py", line 176, in _connect
+    self.send_event("klippy:mcu_identify")
+  File "/home/pi/klipper/klippy/klippy.py", line 263, in send_event
+    return [cb(*params) for cb in self.event_handlers.get(event, [])]
+  File "/home/pi/klipper/klippy/klippy.py", line 263, in <listcomp>
+    return [cb(*params) for cb in self.event_handlers.get(event, [])]
+  File "/home/pi/klipper/klippy/mcu.py", line 782, in _mcu_identify
+    raise error(str(e))
+mcu.error: mcu 'mcu': Unable to connect
+No build file /home/pi/klipper/klippy/../.config
+No build file /home/pi/klipper/klippy/../out/klipper.dict
+No build file /home/pi/klipper/klippy/../out/klipper.elf
