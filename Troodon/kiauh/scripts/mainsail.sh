@@ -39,29 +39,29 @@ function install_mainsail() {
   ### check if another site already listens to port 80
   mainsail_port_check
 
-  ### ask user to install mjpg-streamer
-  local install_mjpg_streamer
-  if [[ ! -f "${SYSTEMD}/webcamd.service" ]]; then
-    while true; do
-      echo
-      top_border
-      echo -e "| Install MJPG-Streamer for webcam support?             |"
-      bottom_border
-      read -p "${cyan}###### Please select (y/N):${white} " yn
-      case "${yn}" in
-        Y|y|Yes|yes)
-          select_msg "Yes"
-          install_mjpg_streamer="true"
-          break;;
-        N|n|No|no|"")
-          select_msg "No"
-          install_mjpg_streamer="false"
-          break;;
-        *)
-          error_msg "Invalid command!";;
-      esac
-    done
-  fi
+#  ### ask user to install mjpg-streamer
+#  local install_mjpg_streamer
+#  if [[ ! -f "${SYSTEMD}/webcamd.service" ]]; then
+#    while true; do
+#      echo
+#      top_border
+#      echo -e "| Install MJPG-Streamer for webcam support?             |"
+#      bottom_border
+#      read -p "${cyan}###### Please select (y/N):${white} " yn
+#      case "${yn}" in
+#        Y|y|Yes|yes)
+#          select_msg "Yes"
+#          install_mjpg_streamer="true"
+#          break;;
+#        N|n|No|no|"")
+#          select_msg "No"
+#          install_mjpg_streamer="false"
+#          break;;
+#        *)
+#          error_msg "Invalid command!";;
+#      esac
+#    done
+#  fi
 
   ### download mainsail
   download_mainsail
@@ -83,7 +83,7 @@ function install_mainsail() {
   patch_mainsail_update_manager
 
   ### install mjpg-streamer
-  [[ ${install_mjpg_streamer} == "true" ]] && install_mjpg-streamer
+#  [[ ${install_mjpg_streamer} == "true" ]] && install_mjpg-streamer
 
   fetch_webui_ports #WIP
 
@@ -124,9 +124,11 @@ function install_mainsail_macros() {
 }
 
 function download_mainsail_macros() {
-  local ms_cfg="https://raw.githubusercontent.com/mainsail-crew/MainsailOS/master/src/modules/mainsail/filesystem/home/pi/klipper_config/mainsail.cfg"
-  local configs path
-  configs=$(find "${KLIPPER_CONFIG}" -type f -name "printer.cfg" | sort)
+  local ms_cfg path configs regex
+
+  ms_cfg="https://raw.githubusercontent.com/mainsail-crew/mainsail-config/master/mainsail.cfg"
+  regex="\/home\/${USER}\/([A-Za-z0-9_]+)\/config\/printer\.cfg"
+  configs=$(find "${HOME}" -maxdepth 3 -regextype posix-extended -regex "${regex}" | sort)
 
   if [[ -n ${configs} ]]; then
     for config in ${configs}; do
@@ -219,8 +221,23 @@ function remove_mainsail_logs() {
 }
 
 function remove_mainsail_log_symlinks() {
+  local files regex
+
+  regex="\/home\/${USER}\/([A-Za-z0-9_]+)\/logs\/mainsail-.*"
+  files=$(find "${HOME}" -maxdepth 3 -regextype posix-extended -regex "${regex}" 2> /dev/null | sort)
+
+  if [[ -n ${files} ]]; then
+    for file in ${files}; do
+      status_msg "Removing ${file} ..."
+      rm -f "${file}"
+      ok_msg "${file} removed!"
+    done
+  fi
+}
+
+function remove_legacy_mainsail_log_symlinks() {
   local files
-  files=$(find "${KLIPPER_LOGS}" -name "mainsail*" 2> /dev/null | sort)
+  files=$(find "${HOME}/klipper_logs" -name "mainsail*" 2> /dev/null | sort)
 
   if [[ -n ${files} ]]; then
     for file in ${files}; do
@@ -236,6 +253,7 @@ function remove_mainsail() {
   remove_mainsail_config
   remove_mainsail_logs
   remove_mainsail_log_symlinks
+  remove_legacy_mainsail_log_symlinks
 
   ### remove mainsail_port from ~/.kiauh.ini
   sed -i "/^mainsail_port=/d" "${INI_FILE}"
@@ -397,13 +415,13 @@ function ms_theme_install() {
     for folder in "${folder_arr[@]}"; do
       ### instance names/identifier of only numbers need to be prefixed with 'printer_'
       if [[ ${folder} =~ ^[0-9]+$ ]]; then
-        target_folders+=("${KLIPPER_CONFIG}/printer_${folder}")
+        target_folders+=("${HOME}/printer_${folder}_data/config")
       else
-        target_folders+=("${KLIPPER_CONFIG}/${folder}")
+        target_folders+=("${HOME}/${folder}_data/config")
       fi
     done
   else
-    target_folders+=("${KLIPPER_CONFIG}")
+    target_folders+=("${HOME}/printer_data/config")
   fi
 
   if (( ${#target_folders[@]} > 1 )); then
@@ -411,7 +429,7 @@ function ms_theme_install() {
     echo -e "| Please select the printer you want to apply the theme |"
     echo -e "| installation to:                                      |"
     for (( i=0; i < ${#target_folders[@]}; i++ )); do
-      folder=$(echo "${target_folders[${i}]}" | rev | cut -d "/" -f1 | rev)
+      folder=$(echo "${target_folders[${i}]}" | rev | cut -d "/" -f2 | cut -d"_" -f2- | rev)
       printf "|${cyan}%-55s${white}|\n" " ${i}) ${folder}"
     done
     bottom_border
@@ -440,8 +458,11 @@ function ms_theme_install() {
 }
 
 function ms_theme_delete() {
-  local theme_folders target_folders=()
-  theme_folders=$(find "${KLIPPER_CONFIG}" -mindepth 1 -type d -name ".theme" | sort)
+  local regex theme_folders target_folders=()
+
+  regex="\/home\/${USER}\/([A-Za-z0-9_]+)\/config\/\.theme"
+  theme_folders=$(find "${HOME}" -maxdepth 3 -type d -regextype posix-extended -regex "${regex}" | sort)
+#  theme_folders=$(find "${KLIPPER_CONFIG}" -mindepth 1 -type d -name ".theme" | sort)
 
   ### build target folder array
   for folder in ${theme_folders}; do
@@ -481,8 +502,10 @@ function ms_theme_delete() {
 #================================================#
 
 function get_mainsail_download_url() {
-  local tags latest_tag latest_url stable_tag stable_url url
-  tags=$(curl -s "${MAINSAIL_TAGS}" | grep "name" | cut -d'"' -f4)
+  local ms_tags tags latest_tag latest_url stable_tag stable_url url
+
+  ms_tags="https://api.github.com/repos/mainsail-crew/mainsail/tags"
+  tags=$(curl -s "${ms_tags}" | grep "name" | cut -d'"' -f4)
 
   ### latest download url including pre-releases (alpha, beta, rc)
   latest_tag=$(echo "${tags}" | head -1)
@@ -570,12 +593,13 @@ function enable_mainsail_remotemode() {
 }
 
 function patch_mainsail_update_manager() {
-  local patched="false"
-  local moonraker_configs
-  moonraker_configs=$(find "${KLIPPER_CONFIG}" -type f -name "moonraker.conf" | sort)
+  local patched moonraker_configs regex
+  regex="\/home\/${USER}\/([A-Za-z0-9_]+)\/config\/moonraker\.conf"
+  moonraker_configs=$(find "${HOME}" -maxdepth 3 -type f -regextype posix-extended -regex "${regex}" | sort)
 
+  patched="false"
   for conf in ${moonraker_configs}; do
-    if ! grep -Eq "^\[update_manager mainsail\]$" "${conf}"; then
+    if ! grep -Eq "^\[update_manager mainsail\]\s*$" "${conf}"; then
       ### add new line to conf if it doesn't end with one
       [[ $(tail -c1 "${conf}" | wc -l) -eq 0 ]] && echo "" >> "${conf}"
 

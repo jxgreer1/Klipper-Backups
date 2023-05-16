@@ -34,8 +34,6 @@ function set_globals() {
   KLIPPY_ENV="${HOME}/klippy-env"
   KLIPPER_DIR="${HOME}/klipper"
   KLIPPER_REPO="https://github.com/Klipper3d/klipper.git"
-  KLIPPER_LOGS="${HOME}/klipper_logs"
-  KLIPPER_CONFIG="$(get_klipper_cfg_dir)" # default: ${HOME}/klipper_config
 
   #================= MOONRAKER ==================#
   MOONRAKER_ENV="${HOME}/moonraker-env"
@@ -44,13 +42,9 @@ function set_globals() {
 
   #================= MAINSAIL ===================#
   MAINSAIL_DIR="${HOME}/mainsail"
-  MAINSAIL_REPO_API="https://api.github.com/repos/mainsail-crew/mainsail/releases"
-  MAINSAIL_TAGS="https://api.github.com/repos/mainsail-crew/mainsail/tags"
 
   #================== FLUIDD ====================#
   FLUIDD_DIR="${HOME}/fluidd"
-  FLUIDD_REPO_API="https://api.github.com/repos/fluidd-core/fluidd/releases"
-  FLUIDD_TAGS="https://api.github.com/repos/fluidd-core/fluidd/tags"
 
   #=============== KLIPPERSCREEN ================#
   KLIPPERSCREEN_ENV="${HOME}/.KlipperScreen-env"
@@ -74,4 +68,9 @@ function set_globals() {
   #=============== MOONRAKER-OBICO ================#
   MOONRAKER_OBICO_DIR="${HOME}/moonraker-obico"
   MOONRAKER_OBICO_REPO="https://github.com/TheSpaghettiDetective/moonraker-obico.git"
+
+  #=============== Crowsnest ================#
+  CROWSNEST_DIR="${HOME}/crowsnest"
+  CROWSNEST_REPO="https://github.com/mainsail-crew/crowsnest.git"
+
 }

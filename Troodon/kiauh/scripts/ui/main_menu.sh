@@ -12,6 +12,10 @@
 set -e
 
 function main_ui() {
+  echo -e "${yellow}/=======================================================\\"
+  echo -e "| Please read the newest changelog carefully:           |"
+  echo -e "| https://git.io/JnmlX                                  |"
+  echo -e "\=======================================================/${white}"
   top_border
   echo -e "|     $(title_msg "~~~~~~~~~~~~~~~ [ Main Menu ] ~~~~~~~~~~~~~~~")     |"
   hr
@@ -21,9 +25,11 @@ function main_ui() {
   echo -e "|  2) [Update]       |     Moonraker: $(print_status "moonraker")|"
   echo -e "|  3) [Remove]       |                                  |"
   echo -e "|  4) [Advanced]     |      Mainsail: $(print_status "mainsail")|"
-  echo -e "|  5) [Backup]       |        Fluidd: $(print_status "fluidd")|"
+#  echo -e "|  5) [Backup]       |        Fluidd: $(print_status "fluidd")|"
+  echo -e "|                    |        Fluidd: $(print_status "fluidd")|"
   echo -e "|                    | KlipperScreen: $(print_status "klipperscreen")|"
   echo -e "|  6) [Settings]     |  Telegram Bot: $(print_status "telegram_bot")|"
+  echo -e "|                    |     Crowsnest: $(print_status "crowsnest")|"
   echo -e "|                    |         Obico: $(print_status "moonraker_obico")|"
   echo -e "|                    |                                  |"
   echo -e "|  $(print_kiauh_version)|     Octoprint: $(print_status "octoprint")|"
@@ -83,7 +89,8 @@ function print_klipper_repo() {
 
 
 function main_menu() {
-  print_header && main_ui
+  clear && print_header
+  main_ui
 
   ### initialize kiauh.ini
   init_ini
@@ -101,10 +108,14 @@ function main_menu() {
       "start octoprint") do_action_service "start" "octoprint"; main_ui;;
       "stop octoprint") do_action_service "stop" "octoprint"; main_ui;;
       "restart octoprint") do_action_service "restart" "octoprint"; main_ui;;
+      "start crowsnest") do_action_service "start" "crowsnest"; main_ui;;
+      "stop crowsnest") do_action_service "stop" "crowsnest"; main_ui;;
+      "restart crowsnest") do_action_service "restart" "crowsnest"; main_ui;;
       update) do_action "update_kiauh" "main_ui";;
       0)clear && print_header
-        upload_selection
-        break;;
+        #upload_selection
+        print_error "Function currently disabled! Sorry!"
+        main_ui;;
       1)clear && print_header
         install_menu
         break;;
@@ -118,8 +129,9 @@ function main_menu() {
         advanced_menu
         break;;
       5)clear && print_header
-        backup_menu
-        break;;
+        #backup_menu
+        print_error "Function currently disabled! Sorry!"
+        main_ui;;
       6)clear && print_header
         settings_menu
         break;;
@@ -130,5 +142,5 @@ function main_menu() {
         deny_action "main_ui";;
     esac
   done
-  clear; main_menu
+  main_menu
 }

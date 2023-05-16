@@ -1,4 +1,4 @@
-#!/home/pi/klippy-env/bin/python2
+#!/home/pi/klippy-env/bin/python
 # coding: utf-8
 
 """

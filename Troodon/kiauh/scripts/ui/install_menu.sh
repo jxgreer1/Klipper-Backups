@@ -28,7 +28,7 @@ function install_ui() {
   echo -e "|  4) [Fluidd]             |  9) $(obico_install_title) |"
   echo -e "|                          |                            |"
   echo -e "| Touchscreen GUI:         | Webcam Streamer:           |"
-  echo -e "|  5) [KlipperScreen]      | 10) [MJPG-Streamer]        |"
+  echo -e "|  5) [KlipperScreen]      | 10) [Crowsnest]            |"
   back_footer
 }
 
@@ -47,7 +47,7 @@ function install_menu() {
     read -p "${cyan}####### Perform action:${white} " action
     case "${action}" in
       1)
-        do_action "select_klipper_python_version" "install_ui";;
+        do_action "start_klipper_setup" "install_ui";;
       2)
         do_action "moonraker_setup_dialog" "install_ui";;
       3)
@@ -64,8 +64,8 @@ function install_menu() {
         do_action "telegram_bot_setup_dialog" "install_ui";;
       9)
         do_action "moonraker_obico_setup_dialog" "install_ui";;
-      10)
-        do_action "install_mjpg-streamer" "install_ui";;
+      10) 
+        do_action "install_crowsnest" "install_ui";;
       B|b)
         clear; main_menu; break;;
       *)
@@ -73,34 +73,4 @@ function install_menu() {
     esac
   done
   install_menu
-}
-
-function select_klipper_python_version() {
-  top_border
-  echo -e "| Please select the preferred Python version.           | "
-  echo -e "| The recommended version is Python 2.7.                | "
-  blank_line
-  echo -e "| Installing Klipper with Python 3 is officially not    | "
-  echo -e "| recommended and should be considered as experimental. | "
-  hr
-  echo -e "|  1) [Python 2.7]  (recommended)                       | "
-  echo -e "|  2) [Python 3.x]  ${yellow}(experimental)${white}                      | "
-  back_footer
-  while true; do
-    read -p "${cyan}###### Select Python version:${white} " action
-    case "${action}" in
-      1)
-        select_msg "Python 2.7"
-        klipper_setup_dialog "python2"
-        break;;
-      2)
-        select_msg "Python 3.x"
-        klipper_setup_dialog "python3"
-        break;;
-      B|b)
-        clear; install_menu; break;;
-      *)
-        error_msg "Invalid Input!\n";;
-    esac
-  done
 }

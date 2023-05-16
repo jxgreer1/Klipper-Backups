@@ -1,4 +1,4 @@
-#!/home/pi/klippy-env/bin/python2
+#!/home/pi/klippy-env/bin/python
 #
 # Very simple serial terminal
 #
