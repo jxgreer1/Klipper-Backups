@@ -107,21 +107,6 @@ class SentryWrapper:
             sentry_sdk.capture_message(*args, **kwargs)
 
 
-def pi_version():
-    try:
-        with open(
-            '/sys/firmware/devicetree/base/model', 'r'
-        ) as firmware_model:
-            model = re.search('Raspberry Pi(.*)',
-                              firmware_model.read()).group(1)
-            if model:
-                return "0" if re.search('Zero', model, re.IGNORECASE) else "3"
-            else:
-                return None
-    except Exception:
-        return None
-
-
 system_tags = None
 tags_mutex = threading.RLock()
 
@@ -137,27 +122,34 @@ def get_tags():
     tags = dict(os=os, os_ver=ver, arch=arch)
     try:
         v4l2 = run('v4l2-ctl --list-devices', stdout=Capture())
-        v4l2_out = ''.join(
-            re.compile(
-                r"^([^\t]+)", re.MULTILINE
-            ).findall(
-                v4l2.stdout.text
-            )
-        ).replace('\n', '')
+        v4l2_out = ''.join(re.compile(r"^([^\t]+)", re.MULTILINE).findall(v4l2.stdout.text)).replace('\n', '')
         if v4l2_out:
             tags['v4l2'] = v4l2_out
-    except Exception:
+    except:
         pass
 
     try:
-        usb = run(
-            "lsusb | cut -d ' ' -f 7- | grep -vE ' hub|"
-            "Hub' | grep -v 'Standard Microsystems Corp'",
-            stdout=Capture())
+        usb = run("lsusb | cut -d ' ' -f 7- | grep -vE ' hub| Hub' | grep -v 'Standard Microsystems Corp'", stdout=Capture())
         usb_out = ''.join(usb.stdout.text).replace('\n', '')
         if usb_out:
             tags['usb'] = usb_out
-    except Exception:
+    except:
+        pass
+
+    try:
+        distro = run("cat /etc/os-release | grep PRETTY_NAME | sed s/PRETTY_NAME=//", stdout=Capture())
+        distro_out = ''.join(distro.stdout.text).replace('"', '').replace('\n', '')
+        if distro_out:
+            tags['distro'] = distro_out
+    except:
+        pass
+
+    try:
+        long_bit = run("getconf LONG_BIT", stdout=Capture())
+        long_bit_out = ''.join(long_bit.stdout.text).replace('\n', '')
+        if long_bit_out:
+            tags['long_bit'] = long_bit_out
+    except:
         pass
 
     with tags_mutex:

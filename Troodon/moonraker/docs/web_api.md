@@ -135,6 +135,61 @@ test interface with example usage for most of the requests below.  It also
 includes a basic JSON-RPC implementation that uses promises to return responses
 and errors (see json-rpc.js).
 
+### Websocket Connections
+
+#### Primary websocket
+
+The primary websocket supports Moonraker's JSON-RPC API.  Most applications that
+desire a websocket connection will make use of the primary websocket.
+
+The primary websocket is available at:
+```
+ ws://host_or_ip:port/websocket`
+```
+
+The primary websocket will remain connected until the application disconnects
+or Moonraker is shutdown.
+
+#### Bridge websocket
+
+The "bridge" websocket provides a near direct passthrough to Klipper's API
+Server.  Klipper uses its own RPC protocol, which is effectively a simplified
+version of the JSON-RPC specification. Developers should refer to
+[Klipper's API documentation](https://www.klipper3d.org/API_Server.html)
+for details on the protocol and available APIs.
+
+!!! Note
+    The bridge websocket is described as "near direct passthrough" because
+    Moonraker handles the ETX (`0x03`) terminator internally.  Applications
+    can expect to receive complete JSON encoded messages in a text frame
+    without the ETX terminator.  Likewise applications should send JSON encoded
+    messages without the ETX terminator.  Messages may be sent using either
+    text frames or binary frames.
+
+The bridge websocket provides access to diagnostic APIs that are not generally
+suitable for Moonraker's primary connection.  These requests stream a
+substantial amount of data; bridge connections allow Moonraker to avoid
+decoding and re-encoding this data, reducing CPU load on the host. The "dump"
+requests, such as `motion_report/dump_stepper` and `adxl345/dump_adxl345`, are
+examples of APIs that should make use of the bridge websocket.
+
+The bridge websocket is available at:
+```
+ws://host_or_ip:port/klippysocket
+```
+
+The availability of bridge connections depends on Klippy's availablility.
+If Klippy is not running or its API server is not enabled then a bridge
+websocket connection cannot be established.  Established bridge connections
+will close when Klippy is shutdown or restarted.  Such connections will also
+be closed if Moonraker is restarted or shutdown.
+
+!!! Note
+    If JWT or API Key authentication is required the application must use a
+    [oneshot token](#generate-a-oneshot-token) when connecting to a bridge
+    socket.  Since Moonraker does not decode bridge requests it is not possible
+    to authenticate post connection.
+
 ### Unix Socket Connection
 
 All JSON-RPC APIs available over the websocket are also made available over a
@@ -185,350 +240,7 @@ on_release:
                     payload="Button Released") %}
 ```
 
-### Printer Administration
-
-#### Identify Connection
-This method provides a way for persistent clients to identify
-themselves to Moonraker.  This information may be used by Moonraker
-perform an action or present information based on if a specific
-client is connected.  Currently this method is only available
-to websocket and unix socket connections.  This endpoint should only
-be called once per session, repeated calls will result in an error.
-
-HTTP request: `Not Available`
-
-JSON-RPC request (Websocket/Unix Socket Only):
-```json
-{
-    "jsonrpc": "2.0",
-    "method": "server.connection.identify",
-    "params": {
-        "client_name": "moontest",
-        "version": "0.0.1",
-        "type": "web",
-        "url": "http://github.com/arksine/moontest"
-    },
-    "id": 4656
-}
-```
-
-All parameters are required. Below is an explanation of each parameter.
-
-- `client_name`: The name of your client, such as `Mainsail`, `Fluidd`,
-  `KlipperScreen`, `MoonCord`, etc.
-- `version`: The current version of the connected client
-- `type`:  Application type. May be one of `web`, `mobile`, `desktop`,
-  `display`, `bot`, `agent` or `other`.  These should be self explanatory,
-  use `other` if your client does not fit any of the prescribed options.
-- `url`: The url for your client's homepage
-
-!!! Note
-    When identifying as an `agent`, only one instance should be connected
-    to moonraker at a time.  If multiple agents of the same `client_name`
-    attempt to identify themselves this endpoint will return an error.
-    See the [extension APIs](#extension-apis) for more information about
-    `agents`.
-
-Returns:
-
-The connection's unique identifier.
-```json
-{
-    "connection_id": 1730367696
-}
-```
-
-#### Get Websocket ID
-
-!!! Warning
-    This method is deprecated.  Please use the
-    [identify endpoint](#identify-connection) to retrieve the
-    Websocket's UID
-
-HTTP request: `Not Available`
-
-JSON-RPC request (Websocket/Unix Socket Only):
-```json
-{
-    "jsonrpc": "2.0",
-    "method": "server.websocket.id",
-    "id": 4656
-}
-```
-Returns:
-
-The connected websocket's unique identifier.
-```json
-{
-    "websocket_id": 1730367696
-}
-```
-
-#### Get Klippy host information
-
-HTTP Request:
-```http
-GET /printer/info
-```
-JSON-RPC Request:
-```json
-{
-    "jsonrpc": "2.0",
-    "method": "printer.info",
-    "id": 5445
-}
-```
-Returns:
-
-An object containing the build version, cpu info, Klippy's current state.
-
-```json
-{
-    "state": "ready",
-    "state_message": "Printer is ready",
-    "hostname": "my-pi-hostname",
-    "software_version": "v0.9.1-302-g900c7396",
-    "cpu_info": "4 core ARMv7 Processor rev 4 (v7l)",
-    "klipper_path": "/home/pi/klipper",
-    "python_path": "/home/pi/klippy-env/bin/python",
-    "log_file": "/tmp/klippy.log",
-    "config_file": "/home/pi/printer.cfg",
-}
-```
-
-#### Emergency Stop
-HTTP request:
-```http
-POST /printer/emergency_stop
-```
-JSON-RPC request:
-```json
-{
-    "jsonrpc": "2.0",
-    "method": "printer.emergency_stop",
-    "id": 4564
-}
-```
-
-!!! note
-    This endpoint will immediately halt the printer and put it in a "shutdown"
-    state.  It should be used to implement an "emergency stop" button and
-    also used if a user enters `M112`(emergency stop) via a console.
-
-Returns:
-
-`ok`
-
-#### Host Restart
-HTTP request:
-```http
-POST /printer/restart
-```
-JSON-RPC request:
-```json
-{
-    "jsonrpc": "2.0",
-    "method": "printer.restart",
-    "id": 4894
-}
-```
-Returns:
-
-`ok`
-
-#### Firmware Restart
-HTTP request:
-```http
-POST /printer/firmware_restart
-```
-
-JSON-RPC request:
-```json
-{
-    "jsonrpc": "2.0",
-    "method": "printer.firmware_restart",
-    "id": 8463
-}
-```
-Returns:
-
-`ok`
-
-### Printer Status
-
-#### List available printer objects
-HTTP request:
-```http
-GET /printer/objects/list
-```
-
-JSON-RPC request:
-```json
-{
-    "jsonrpc": "2.0",
-    "method": "printer.objects.list",
-    "id": 1454
-}
-```
-
-Returns:
-
-An array of "printer objects" that are currently available for query
-or subscription.  This list will be passed in an `objects` parameter.
-
-```json
-{
-    "objects": ["gcode", "toolhead", "bed_mesh", "configfile",...]
-}
-```
-
-#### Query printer object status
-HTTP request:
-```http
-GET /printer/objects/query?gcode_move&toolhead&extruder=target,temperature
-```
-The above will request a status update for all `gcode_move` and `toolhead`
-attributes.  Only the `temperature` and `target` attributes are requested
-for the `extruder`.
-
-JSON-RPC request:
-```json
-{
-    "jsonrpc": "2.0",
-    "method": "printer.objects.query",
-    "params": {
-        "objects": {
-            "gcode_move": null,
-            "toolhead": ["position", "status"]
-        }
-    },
-    "id": 4654
-}
-```
-!!! note
-    A `null` value will fetch all available attributes for its key.
-
-Returns:
-
-An object where the top level items are "eventtime" and "status".  The
-"status" item contains data about the requested update.
-
-```json
-{
-    "eventtime": 578243.57824499,
-    "status": {
-        "gcode_move": {
-            "absolute_coordinates": true,
-            "absolute_extrude": true,
-            "extrude_factor": 1,
-            "gcode_position": [0, 0, 0, 0],
-            "homing_origin": [0, 0, 0, 0],
-            "position": [0, 0, 0, 0],
-            "speed": 1500,
-            "speed_factor": 1,
-        },
-        "toolhead": {
-            "position": [0, 0, 0, 0],
-            "status": "Ready"
-        }
-    }
-}
-```
-See [printer_objects.md](printer_objects.md) for details on the printer objects
-available for query.
-
-#### Subscribe to printer object status
-HTTP request:
-```http
-POST /printer/objects/subscribe?connection_id=123456789&gcode_move&extruder`
-```
-!!! note
-    The HTTP API requires that a `connection_id` is passed via the query
-    string or as part of the form.   This should be the
-    [ID reported](#get-websocket-id) from a currently connected websocket. A
-    request that includes only the `connection_id` argument will cancel the
-    subscription on the specified websocket.
-
-    This request is not available over MQTT as it can not be set per client.
-    Instead MQTT can publish printer status by setting the `status_objects`
-    option in the `[mqtt]` section.
-
-JSON-RPC request:
-```json
-{
-    "jsonrpc": "2.0",
-    "method": "printer.objects.subscribe",
-    "params": {
-        "objects": {
-            "gcode_move": null,
-            "toolhead": ["position", "status"]
-        }
-    },
-    "id": 5434
-}
-```
-!!! note
-    If `objects` is set to an empty object then the subscription will
-    be cancelled.
-
-Returns:
-
-Status data for objects in the request, with the format matching that of
-the `/printer/objects/query`:
-
-```json
-{
-    "eventtime": 578243.57824499,
-    "status": {
-        "gcode_move": {
-            "absolute_coordinates": true,
-            "absolute_extrude": true,
-            "extrude_factor": 1,
-            "gcode_position": [0, 0, 0, 0],
-            "homing_origin": [0, 0, 0, 0],
-            "position": [0, 0, 0, 0],
-            "speed": 1500,
-            "speed_factor": 1,
-        },
-        "toolhead": {
-            "position": [0, 0, 0, 0],
-            "status": "Ready"
-        }
-    }
-}
-```
-
-See [printer_objects.md](printer_objects.md) for details on the printer objects
-available for subscription.
-
-Status updates for subscribed objects are sent asynchronously over the
-websocket.  See the [notify_status_update](#subscriptions)
-notification for details.
-
-#### Query Endstops
-HTTP request:
-```http
-GET /printer/query_endstops/status
-```
-JSON-RPC request:
-```json
-{
-    "jsonrpc": "2.0",
-    "method": "printer.query_endstops.status",
-    "id": 3456
-}
-```
-Returns:
-
-An object containing the current endstop state, where each field is an
-endstop identifier, with a string value of "open" or "TRIGGERED".
-```json
-{
-    "x": "TRIGGERED",
-    "y": "open",
-    "z": "open"
-}
-```
+### Server Administration
 
 #### Query Server Info
 HTTP request:
@@ -873,6 +585,65 @@ The `type` field will either be `command` or `response`.
 }
 ```
 
+#### Rollover Logs
+
+Requests a manual rollover for log files registered with Moonraker's
+log management facility.  Currently these are limited to `moonraker.log`
+and `klippy.log`.
+
+HTTP request:
+```http
+POST /server/logs/rollover
+Content-Type: application/json
+
+{
+    "application": "moonraker"
+}
+```
+
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "server.logs.rollover",
+    "params": {
+        "application": "moonraker"
+    },
+    "id": 4656
+}
+```
+
+Parameters:
+
+- `application` - (Optional) The name of the application to rollover.
+  Currently can be `moonraker` or `klipper`.  The default is to rollover
+  all logs.
+
+!!! Note
+    Moonraker must be able to manage Klipper's systemd service to
+    perform a manual rollover.  The rollover will fail under the following
+    conditions:
+
+    - Moonraker cannot detect Klipper's systemd unit
+    - Moonraker cannot detect the location of Klipper's files
+    - A print is in progress
+
+Returns:  An object in the following format:
+
+```json
+{
+    "rolled_over": [
+        "moonraker",
+        "klipper"
+    ],
+    "failed": {}
+}
+```
+
+- `rolled_over` - An array of application names successfully rolled over.
+- `failed` - An object containing information about failed applications.  The
+  key will match an application name and its value will be an error message.
+
 #### Restart Server
 HTTP request:
 ```http
@@ -892,6 +663,361 @@ Returns:
 is returns, the server will restart.  Any existing connection
 will be disconnected.  A restart will result in the creation
 of a new server instance where the configuration is reloaded.
+
+#### Identify Connection
+This method provides a way for persistent clients to identify
+themselves to Moonraker.  This information may be used by Moonraker
+perform an action or present information based on if a specific
+client is connected.  Currently this method is only available
+to websocket and unix socket connections.  Once this endpoint returns
+success it cannot be called again, repeated calls will result in an error.
+
+HTTP request: `Not Available`
+
+JSON-RPC request (Websocket/Unix Socket Only):
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "server.connection.identify",
+    "params": {
+        "client_name": "moontest",
+        "version": "0.0.1",
+        "type": "web",
+        "url": "http://github.com/arksine/moontest",
+        "access_token": "<base64 encoded token>",
+        "api_key": "<system API key>"
+    },
+    "id": 4656
+}
+```
+
+Parameters:
+
+- `client_name`: (required) The name of your client, such as `Mainsail`,
+  `Fluidd`, `KlipperScreen`, `MoonCord`, etc.
+- `version`: (required) The current version of the connected client
+- `type`: (required)  Application type. May be one of `web`, `mobile`,
+  `desktop`, `display`, `bot`, `agent` or `other`.  These should be self
+  explanatory, use `other` if your client does not fit any of the prescribed
+  options.
+- `url`: (required) The url for your client's homepage
+- `access_token`: (optional) A JSON Web Token that may be used to assign a
+  logged in user to the connection. See the [authorization](#authorization)
+  section for APIs used to create and refresh the access token.
+- `api_key`:. (optional) The system API Key.  This key may be used to grant
+  access to clients that do not wish to implement user authentication.  Note
+  that if the `access_token` is also supplied then this parameter will be
+  ignored.
+
+!!! Note
+    When identifying as an `agent`, only one instance should be connected
+    to Moonraker at a time.  If multiple agents of the same `client_name`
+    attempt to identify themselves this endpoint will return an error.
+    See the [extension APIs](#extension-apis) for more information about
+    `agents`.
+
+Returns:
+
+The connection's unique identifier.
+```json
+{
+    "connection_id": 1730367696
+}
+```
+
+#### Get Websocket ID
+
+!!! Warning
+    This method is deprecated.  Please use the
+    [identify endpoint](#identify-connection) to retrieve the
+    Websocket's UID
+
+HTTP request: `Not Available`
+
+JSON-RPC request (Websocket/Unix Socket Only):
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "server.websocket.id",
+    "id": 4656
+}
+```
+Returns:
+
+The connected websocket's unique identifier.
+```json
+{
+    "websocket_id": 1730367696
+}
+```
+
+### Printer Administration
+
+#### Get Klippy host information
+
+HTTP Request:
+```http
+GET /printer/info
+```
+JSON-RPC Request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "printer.info",
+    "id": 5445
+}
+```
+Returns:
+
+An object containing the build version, cpu info, Klippy's current state.
+
+```json
+{
+    "state": "ready",
+    "state_message": "Printer is ready",
+    "hostname": "my-pi-hostname",
+    "software_version": "v0.9.1-302-g900c7396",
+    "cpu_info": "4 core ARMv7 Processor rev 4 (v7l)",
+    "klipper_path": "/home/pi/klipper",
+    "python_path": "/home/pi/klippy-env/bin/python",
+    "log_file": "/tmp/klippy.log",
+    "config_file": "/home/pi/printer.cfg",
+}
+```
+
+#### Emergency Stop
+HTTP request:
+```http
+POST /printer/emergency_stop
+```
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "printer.emergency_stop",
+    "id": 4564
+}
+```
+
+!!! note
+    This endpoint will immediately halt the printer and put it in a "shutdown"
+    state.  It should be used to implement an "emergency stop" button and
+    also used if a user enters `M112`(emergency stop) via a console.
+
+Returns:
+
+`ok`
+
+#### Host Restart
+HTTP request:
+```http
+POST /printer/restart
+```
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "printer.restart",
+    "id": 4894
+}
+```
+Returns:
+
+`ok`
+
+#### Firmware Restart
+HTTP request:
+```http
+POST /printer/firmware_restart
+```
+
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "printer.firmware_restart",
+    "id": 8463
+}
+```
+Returns:
+
+`ok`
+
+### Printer Status
+
+#### List available printer objects
+HTTP request:
+```http
+GET /printer/objects/list
+```
+
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "printer.objects.list",
+    "id": 1454
+}
+```
+
+Returns:
+
+An array of "printer objects" that are currently available for query
+or subscription.  This list will be passed in an `objects` parameter.
+
+```json
+{
+    "objects": ["gcode", "toolhead", "bed_mesh", "configfile",...]
+}
+```
+
+#### Query printer object status
+HTTP request:
+```http
+GET /printer/objects/query?gcode_move&toolhead&extruder=target,temperature
+```
+The above will request a status update for all `gcode_move` and `toolhead`
+attributes.  Only the `temperature` and `target` attributes are requested
+for the `extruder`.
+
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "printer.objects.query",
+    "params": {
+        "objects": {
+            "gcode_move": null,
+            "toolhead": ["position", "status"]
+        }
+    },
+    "id": 4654
+}
+```
+!!! note
+    A `null` value will fetch all available attributes for its key.
+
+Returns:
+
+An object where the top level items are "eventtime" and "status".  The
+"status" item contains data about the requested update.
+
+```json
+{
+    "eventtime": 578243.57824499,
+    "status": {
+        "gcode_move": {
+            "absolute_coordinates": true,
+            "absolute_extrude": true,
+            "extrude_factor": 1,
+            "gcode_position": [0, 0, 0, 0],
+            "homing_origin": [0, 0, 0, 0],
+            "position": [0, 0, 0, 0],
+            "speed": 1500,
+            "speed_factor": 1,
+        },
+        "toolhead": {
+            "position": [0, 0, 0, 0],
+            "status": "Ready"
+        }
+    }
+}
+```
+See [printer_objects.md](printer_objects.md) for details on the printer objects
+available for query.
+
+#### Subscribe to printer object status
+HTTP request:
+```http
+POST /printer/objects/subscribe?connection_id=123456789&gcode_move&extruder`
+```
+!!! note
+    The HTTP API requires that a `connection_id` is passed via the query
+    string or as part of the form.   This should be the
+    [ID reported](#get-websocket-id) from a currently connected websocket. A
+    request that includes only the `connection_id` argument will cancel the
+    subscription on the specified websocket.
+
+    This request is not available over MQTT as it can not be set per client.
+    Instead MQTT can publish printer status by setting the `status_objects`
+    option in the `[mqtt]` section.
+
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "printer.objects.subscribe",
+    "params": {
+        "objects": {
+            "gcode_move": null,
+            "toolhead": ["position", "status"]
+        }
+    },
+    "id": 5434
+}
+```
+!!! note
+    If `objects` is set to an empty object then the subscription will
+    be cancelled.
+
+Returns:
+
+Status data for objects in the request, with the format matching that of
+the `/printer/objects/query`:
+
+```json
+{
+    "eventtime": 578243.57824499,
+    "status": {
+        "gcode_move": {
+            "absolute_coordinates": true,
+            "absolute_extrude": true,
+            "extrude_factor": 1,
+            "gcode_position": [0, 0, 0, 0],
+            "homing_origin": [0, 0, 0, 0],
+            "position": [0, 0, 0, 0],
+            "speed": 1500,
+            "speed_factor": 1,
+        },
+        "toolhead": {
+            "position": [0, 0, 0, 0],
+            "status": "Ready"
+        }
+    }
+}
+```
+
+See [printer_objects.md](printer_objects.md) for details on the printer objects
+available for subscription.
+
+Status updates for subscribed objects are sent asynchronously over the
+websocket.  See the [notify_status_update](#subscriptions)
+notification for details.
+
+#### Query Endstops
+HTTP request:
+```http
+GET /printer/query_endstops/status
+```
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "printer.query_endstops.status",
+    "id": 3456
+}
+```
+Returns:
+
+An object containing the current endstop state, where each field is an
+endstop identifier, with a string value of "open" or "TRIGGERED".
+```json
+{
+    "x": "TRIGGERED",
+    "y": "open",
+    "z": "open"
+}
+```
 
 ### GCode APIs
 
@@ -1641,18 +1767,14 @@ A list of objects, where each object contains file data:
 ```
 
 #### Get gcode metadata
-Get metadata for a specified gcode file.  If the file is located in
-a subdirectory, then the file name should include the path relative to
-the "gcodes" root.  For example, if the file is located at:
-```
-http://host.local/server/files/gcodes/my_sub_dir/my_print.gcode
-```
-Then the `{filename}` argument should be `my_sub_dir/my_print.gcode`.
+
+Get metadata for a specified gcode file.
 
 HTTP request:
 ```http
 GET /server/files/metadata?filename={filename}
 ```
+
 JSON-RPC request:
 ```json
 {
@@ -1664,6 +1786,13 @@ JSON-RPC request:
     "id": 3545
 }
 ```
+
+Parameters:
+
+- `filename`: Path to the gcode file, relative to the `gcodes` root.
+  For example, if the file is located at
+  `http://host/server/files/gcodes/tools/drill_head.gcode`,
+  the `filename` should be specified as `tools/drill_head.gcode`
 
 Returns:
 
@@ -1709,6 +1838,65 @@ modified time, and size.
     The `print_start_time` and `job_id` fields are initialized to
     `null`.  They will be updated for each print job if the user has the
     `[history]` component configured
+
+#### Get Gcode Thumbnails
+
+Returns thumbnail information for a supplied gcode file. If no thumbnail
+information is available
+
+HTTP request:
+```http
+GET /server/files/thumbnails?filename={filename}
+```
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "server.files.thumbnails",
+    "params": {
+        "filename": "{filename}"
+    },
+    "id": 3545
+}
+```
+
+Parameters:
+
+- `filename`: Path to the gcode file, relative to the `gcodes` root.
+  For example, if the file is located at
+  `http://host/server/files/gcodes/tools/drill_head.gcode`,
+  the `filename` should be specified as `tools/drill_head.gcode`
+
+Returns:
+
+An array of objects containing thumbnail information.  If no
+thumbnail information exists for the specified file then the
+returned array wil be empty.
+
+```json
+[
+    {
+        "width": 32,
+        "height": 32,
+        "size": 1551,
+        "thumbnail_path": "test/.thumbs/CE2_FanCover-120mm-Mesh-32x32.png"
+    },
+    {
+        "width": 300,
+        "height": 300,
+        "size": 31819,
+        "thumbnail_path": "test/.thumbs/CE2_FanCover-120mm-Mesh.png"
+    }
+]
+```
+
+!!! Note
+    This information is the same as reported in the `thumbnails` field
+    of a [metadata](#get-gcode-metadata) object, with one exception.
+    The `thumbnail_path` field in the result above contains a
+    path relative to the `gcodes` root, whereas the `relative_path`
+    field reported in the metadata is relative to the gcode file's
+    parent folder.
 
 #### Get directory information
 Returns a list of files and subdirectories given a supplied path.
@@ -1823,7 +2011,7 @@ Returns: Information about the created directory
 ```json
 {
     "item": {
-        "path": "gcodes/testdir",
+        "path": "my_new_dir",
         "root": "gcodes"
     },
     "action": "create_dir"
@@ -1843,7 +2031,7 @@ JSON-RPC request:
     "jsonrpc": "2.0",
     "method": "server.files.delete_directory",
     "params": {
-        "path": "gcodes/my_new_dir",
+        "path": "gcodes/my_subdir",
         "force": false
     },
     "id": 6545
@@ -1857,7 +2045,7 @@ Returns:  Information about the deleted directory
 ```json
 {
     "item": {
-        "path": "gcodes/testdir",
+        "path": "my_subdir",
         "root": "gcodes"
     },
     "action": "delete_dir"
@@ -1884,7 +2072,7 @@ in *moving* the source directory into the destination directory.
 
 HTTP request:
 ```http
-POST /server/files/move?source=gcodes/my_file.gcode&dest=gcodes/subdir/my_file.gcode
+POST /server/files/move?source=gcodes/testdir/my_file.gcode&dest=gcodes/subdir/my_file.gcode
 ```
 JSON-RPC request:
 ```json
@@ -1892,7 +2080,7 @@ JSON-RPC request:
     "jsonrpc": "2.0",
     "method": "server.files.move",
     "params": {
-        "source": "gcodes/my_file.gcode",
+        "source": "gcodes/testdir/my_file.gcode",
         "dest": "gcodes/subdir/my_file.gcode"
     },
     "id": 5664
@@ -1905,10 +2093,10 @@ Returns:  Information about the moved file or directory
     "result": {
         "item": {
             "root": "gcodes",
-            "path": "test4/test3"
+            "path": "subdir/my_file.gcode"
         },
         "source_item": {
-            "path": "gcodes/test4/test3",
+            "path": "testdir/my_file.gcode",
             "root": "gcodes"
         },
         "action": "move_dir"
@@ -1944,11 +2132,82 @@ Returns: Information about the copied file or directory
 {
     "item": {
         "root": "gcodes",
-        "path": "test4/Voron_v2_350_afterburner_Filament Cover_0.2mm_ABS.gcode"
+        "path": "subdir/my_file.gcode"
     },
     "action": "create_file"
 }
 ```
+
+#### Create a ZIP archive
+
+Creates a `zip` file consisting of one or more files.
+
+HTTP request:
+```http
+POST /server/files/zip
+Content-Type: application/json
+
+{
+    "dest": "config/errorlogs.zip",
+    "items": [
+        "config/printer.cfg",
+        "logs",
+        "gcodes/subfolder"
+    ],
+    "store_only": false
+}
+```
+
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "server.files.zip",
+    "params": {
+        "dest": "config/errorlogs.zip",
+        "items": [
+            "config/printer.cfg",
+            "logs",
+            "gcodes/subfolder"
+        ],
+        "store_only": false
+    },
+    "id": 5623
+}
+```
+
+Parameters:
+
+- `dest` - (Optional) - Relative path to the destination zip.  The first element
+  of the path must be valid `root` with write access.  If the path contains subfolders
+  the parent folder must exist.  The default is `config/collection-{timestamp}.zip`,
+  where `{timestamp}` is generated based on the localtime.
+- `items` - (Required) - An array of relative paths containing files and or folders
+  to include in the archive.  Each item must meet the following requirements:
+    - The first element of the item must be a registered `root` with read access.
+    - Each item must point to a valid file or folder.
+    - Moonraker must have permission to read the specified files and/or directories.
+    - If the path is to a directory then all files with read permissions are included.
+      Subfolders are not included recursively.
+- `store_only` - (Optional) - If set to `true` then the archive will not compress its
+  contents.  Otherwise the traditional `deflation` algorithm is used to compress the
+  archives contents.  The default is `false`.
+
+Returns:  An object in the following format:
+
+```json
+{
+    "destination": {
+        "root": "config",
+        "path": "errorlogs.zip"
+    },
+    "action": "zip_files"
+}
+```
+
+- `destination` - an object containing the destination `root` and a path to the file
+  relative to the root.
+- `action` - The file action, will be `zip_files`
 
 #### File download
 Retrieves file `filename` at root `root`.  The `filename` must include
@@ -2082,11 +2341,22 @@ Moonraker's HTTP APIs.  JWTs should be included in the `Authorization`
 header as a `Bearer` type for each HTTP request.  If using an API Key it
 should be included in the `X-Api-Key` header for each HTTP Request.
 
+Websocket authentication can be achieved via the request itself or
+post connection.  Unlike HTTP requests it is not necessasry to pass a
+token and/or API Key to each request.  The
+[identify connection](#identify-connection) endpoint takes optional
+`access_token` and `api_key` parameters that may be used to authentiate
+a user already logged in, otherwise the `login` API may be used for
+authentication.  Websocket connections will stay authenticated until
+the connection is closed or the user logs out.
+
 !!! note
-    For requests in which clients cannot modify headers it is acceptable
-    to pass the JWT via the query string's `access_token` argument.
-    Alternatively client developers may request a `oneshot_token` and
-    send the result via the `token` query string argument.
+    ECMAScript imposes limitations on certain requests that prohibit the
+    developer from modifying the HTTP headers (ie: The request to open a
+    websocket, "download" requests that open a dialog).  In these cases
+    it is recommended for the developer to request a `oneshot_token`, then
+    send the result via the `token` query string argument in the desired
+    request.
 
 !!! warning
     It is strongly recommended that arguments for the below APIs are
@@ -2104,7 +2374,20 @@ Content-Type: application/json
     "source": "moonraker"
 }
 ```
-JSON-RPC request: Not Available
+
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "access.login",
+    "params": {
+        "username": "my_user",
+        "password": "my_password",
+        "source": "moonraker"
+    },
+    "id": 1323
+}
+```
 
 Arguments:
 - `username`: The user login name.  This argument is required.
@@ -2139,7 +2422,15 @@ HTTP Request:
 ```http
 POST /access/logout
 ```
-JSON-RPC request: Not Available
+
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "access.logout",
+    "id": 1323
+}
+```
 
 Returns: An object containing the logged out username and action summary.
 ```json
@@ -2155,7 +2446,15 @@ HTTP Request:
 ```http
 GET /access/user
 ```
-JSON-RPC request: Not Available
+
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "access.get_user",
+    "id": 1323
+}
+```
 
 Returns: An object containing the currently logged in user name, the source and
 the date on which the user was created (in unix time).
@@ -2178,7 +2477,19 @@ Content-Type: application/json
     "password": "my_password"
 }
 ```
-JSON-RPC request: Not Available
+
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "access.post_user",
+    "params": {
+        "username": "my_user",
+        "password": "my_password"
+    },
+    "id": 1323
+}
+```
 
 Returns: An object containing the created user name, an auth token,
 a refresh token, the source, and an action summary.  Creating a user also
@@ -2215,7 +2526,18 @@ Content-Type: application/json
     "username": "my_username"
 }
 ```
-JSON-RPC request: Not Available
+
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "access.delete_user",
+    "params": {
+        "username": "my_username"
+    },
+    "id": 1323
+}
+```
 
 Returns: The username of the deleted user and an action summary.  This
 effectively logs the user out, as all outstanding tokens will be invalid.
@@ -2231,7 +2553,15 @@ HTTP Request:
 ```http
 GET /access/users/list
 ```
-JSON-RPC request: Not Available
+
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "access.users.list",
+    "id": 1323
+}
+```
 
 Returns: A list of created users on the system
 ```json
@@ -2262,7 +2592,19 @@ Content-Type: application/json
     "new_password": "my_new_pass"
 }
 ```
-JSON-RPC request: Not Available
+
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "access.user.password",
+    "params": {
+        "password": "my_current_password",
+        "new_password": "my_new_pass"
+    },
+    "id": 1323
+}
+```
 
 Returns:  The username and action summary.
 ```json
@@ -2287,7 +2629,17 @@ Content-Type: application/json
 }
 ```
 
-JSON-RPC request: Not Available
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "access.refresh_jwt",
+    "params": {
+        "refresh_token": "eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJpc3MiOiAiTW9vbnJha2VyIiwgImlhdCI6IDE2MTg4Nzc0ODUuNzcyMjg5OCwgImV4cCI6IDE2MjY2NTM0ODUuNzcyMjg5OCwgInVzZXJuYW1lIjogInRlc3R1c2VyIiwgInRva2VuX3R5cGUiOiAicmVmcmVzaCJ9.Y5YxGuYSzwJN2WlunxlR7XNa2Y3GWK-2kt-MzHvLbP8"
+    },
+    "id": 1323
+}
+```
 
 Returns:  The username, new auth token, the source and action summary.
 ```json
@@ -2315,7 +2667,15 @@ HTTP request:
 ```http
 GET /access/oneshot_token
 ```
-JSON-RPC request: Not Available
+
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "access.oneshot_token",
+    "id": 1323
+}
+```
 
 Returns:
 
@@ -2330,7 +2690,15 @@ HTTP Request:
 ```http
 GET /access/info
 ```
-JSON-RPC request: Not Available
+
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "access.info",
+    "id": 1323
+}
+```
 
 Returns: An object containing information about authorization endpoints, such as
 default_source and available_sources.
@@ -2349,7 +2717,15 @@ HTTP request:
 ```http
 GET /access/api_key
 ```
-JSON-RPC request: Not Available
+
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "access.get_api_key",
+    "id": 1323
+}
+```
 
 Returns:
 
@@ -2360,13 +2736,22 @@ HTTP request:
 ```http
 POST /access/api_key
 ```
-JSON-RPC request: Not Available
+
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "access.post_api_key",
+    "id": 1323
+}
+```
 
 Returns:
 
 The newly generated API key.  This overwrites the previous key.  Note that
 the API key change is applied immediately, all subsequent HTTP requests
-from untrusted clients must use the new key.
+from untrusted clients must use the new key.  Changing the API Key will
+not affect open websockets authenticated using the previous API Key.
 
 ### Database APIs
 The following endpoints provide access to Moonraker's lmdb database.  The
@@ -2665,7 +3050,8 @@ Content-Type: application/json
         "job1.gcode",
         "job2.gcode",
         "subdir/job3.gcode"
-    ]
+    ],
+    "reset": false
 }
 ```
 
@@ -2679,11 +3065,17 @@ JSON-RPC request:
             "job1.gcode",
             "job2.gcode",
             "subdir/job3.gcode"
-        ]
+        ],
+        "reset": false
     },
     "id": 4654
 }
 ```
+
+Parameters:
+
+- `reset`: A boolean value indicating whether Moonraker should clear the
+  existing queued jobs before adding the new jobs. Defaults to `false`.
 
 Returns:
 
@@ -2854,6 +3246,56 @@ The current state of the job queue:
             "job_id": "0000000066D991F0",
             "time_added": 1636151050.7766452,
             "time_in_queue": 21.88680004119873
+        },
+        {
+            "filename": "subdir/job3.gcode",
+            "job_id": "0000000066D99D80",
+            "time_added": 1636151050.7866452,
+            "time_in_queue": 21.90680004119873
+        }
+    ],
+    "queue_state": "loading"
+}
+```
+
+#### Perform a Queue Jump
+
+Jumps a job to the front of the queue.
+
+HTTP request:
+```http
+POST /server/job_queue/jump?job_id=0000000066D991F0
+```
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "server.job_queue.jump",
+    "params" {
+        "job_id": "0000000066D991F0"
+    },
+    "id": 4654
+}
+```
+
+Returns:
+
+The current state of the job queue:
+
+```json
+{
+    "queued_jobs": [
+        {
+            "filename": "job2.gcode",
+            "job_id": "0000000066D991F0",
+            "time_added": 1636151050.7766452,
+            "time_in_queue": 21.88680004119873
+        },
+        {
+            "filename": "job1.gcode",
+            "job_id": "0000000066D99C90",
+            "time_added": 1636151050.7666452,
+            "time_in_queue": 21.89680004119873
         },
         {
             "filename": "subdir/job3.gcode",
@@ -3520,20 +3962,16 @@ The following endpoints are available when the `[update_manager]` component has
 been configured:
 
 #### Get update status
-Retrieves the current state of each "package" available for update.  Typically
-this will consist of information regarding `moonraker`, `klipper`, `system`
-packages, along with configured clients.  If moonraker has not yet received
-information from Klipper then its status will be omitted.  One may request that
-the update info be refreshed by setting the `refresh` argument to `true`.  Note
-that the `refresh` argument is ignored if an update is in progress or if a print
-is in progress. In these cases the current status will be returned immediately
-and no refresh will take place.  If the `refresh` argument is omitted its value
-defaults to `false`.
+Retrieves the current state of each item available for update.  Items may
+include the linux package manager (`system`), applications such as `moonraker` and
+`klipper`, web clients such as `mainsail` and `fluidd`, and other configured
+applications/extensions.
 
 HTTP request:
 ```http
 GET /machine/update/status?refresh=false
 ```
+
 JSON-RPC request:
 ```json
 {
@@ -3545,6 +3983,21 @@ JSON-RPC request:
     "id": 4644
 }
 ```
+
+Parameters:
+
+- `refresh`: (Optional) When set to true state for all updaters will be refreshed.
+  The default is `false`.  A request to refresh is aborted under the following
+  conditions:
+    - An update is in progress
+    - A print is in progress
+    - The update manager hasn't completed initialization
+    - A previous refresh has occured within the last 60 seconds
+
+!!! Note
+    The `refresh` parameter is deprecated.  Client developers should use the
+    [refresh endpoint](#refresh-application-state) to request a refresh.
+
 Returns:
 
 Status information for each update package.  Note that `mainsail`
@@ -3743,7 +4196,53 @@ The `system` package has the following fields:
 - `package_list`: an array containing the names of packages available
   for update
 
-### Perform a full update
+#### Refresh update status
+
+Refreshes the internal update state for the requested item(s).
+
+HTTP request:
+```http
+POST /machine/update/refresh?name=klipper
+```
+
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "machine.update.refresh",
+    "params": {
+        "name": "klipper"
+    },
+    "id": 4644
+}
+```
+
+Parameters:
+
+- `name`: (Optional) The name of the specified application.  If omitted
+  all registered applications will be refreshed.
+
+Returns:
+
+An object containing full update status matching the response in the
+[status endpoint](#get-update-status).
+
+!!! Note
+    This endpoint will raise 503 error under the following conditions:
+
+      - An update is in progress
+      - A print is in progress
+      - The update manager hasn't completed initialization
+
+!!! Warning
+    Applications should use care when calling this method as a refresh
+    is CPU intensive and may be time consuming.  Moonraker can be
+    configured to refresh state periodically, thus it is recommended
+    that applications avoid their own procedural implementations.
+    Instead it is best to call this API only when a user requests a
+    refresh.
+
+#### Perform a full update
 Attempts to update all configured items in Moonraker.  Updates are
 performed in the following order:
 
@@ -4412,6 +4911,154 @@ State of the strip.
             "speed": 255,
             "error": null
         }
+    }
+}
+```
+
+### Sensor APIs
+The APIs below are available when the `[sensor]` component has been configured.
+
+#### Get Sensor List
+HTTP request:
+```http
+GET /server/sensors/list
+```
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method":"server.sensors.list",
+    "id": 5646
+}
+```
+Returns:
+
+An array of objects containing info for each configured sensor.
+```json
+{
+    "sensors": {
+        "sensor1": {
+            "id": "sensor1",
+            "friendly_name": "Sensor 1",
+            "type": "mqtt",
+            "values": {
+                "value1": 0,
+                "value2": 119.8
+            }
+        }
+    }
+}
+```
+
+#### Get Sensor Information
+Returns the status for a single configured sensor.
+
+HTTP request:
+```http
+GET /server/sensors/info?sensor=sensor1
+```
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "server.sensors.info",
+    "params": {
+        "sensor": "sensor1"
+    },
+    "id": 4564
+}
+```
+Returns:
+
+An object containing sensor information for the requested sensor:
+```json
+{
+    "id": "sensor1",
+    "friendly_name": "Sensor 1",
+    "type": "mqtt",
+    "values": {
+        "value1": 0.0,
+        "value2": 120.0
+    }
+}
+```
+
+#### Get Sensor Measurements
+Returns all recorded measurements for a configured sensor.
+
+HTTP request:
+```http
+GET /server/sensors/measurements?sensor=sensor1
+```
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "server.sensors.measurements",
+    "params": {
+        "sensor": "sensor1"
+    },
+    "id": 4564
+}
+```
+Returns:
+
+An object containing all recorded measurements for the requested sensor:
+```json
+{
+    "sensor1": {
+        "value1": [
+            3.1,
+            3.2,
+            3.0
+        ],
+        "value2": [
+            120.0,
+            120.0,
+            119.9
+        ]
+    }
+}
+```
+
+#### Get Batch Sensor Measurements
+Returns recorded measurements for all sensors.
+
+HTTP request:
+```http
+GET /server/sensors/measurements
+```
+JSON-RPC request:
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "server.sensors.measurements",
+    "id": 4564
+}
+```
+Returns:
+
+An object containing all measurements for every configured sensor:
+```json
+{
+    "sensor1": {
+        "value1": [
+            3.1,
+            3.2,
+            3.0
+        ],
+        "value2": [
+            120.0,
+            120.0,
+            119.9
+        ]
+    },
+    "sensor2": {
+        "value_a": [
+            1,
+            1,
+            0
+        ]
     }
 }
 ```
@@ -5526,6 +6173,21 @@ sent when an existing user is deleted.
 }
 ```
 
+#### Authorized User Logged Out
+If the `[authorization]` module is enabled the following notification is
+sent when an existing user is logged out.
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "notify_user_logged_out",
+    "params": [
+        {
+            "username": "<username>"
+        }
+    ]
+}
+```
+
 #### Service State Changed
 Moonraker monitors the state of systemd services it is authorized to track.
 When the state of a service changes the following notification is sent:
@@ -5775,6 +6437,31 @@ for that agent, with its identity info in the `data` field.  When an agent
 disconnects clients will receive a `disconnected` event with the data field
 omitted.  All other events are determined by the agent, where each event may
 or may not include optional `data`.
+
+#### Sensor Events
+
+Moonraker will emit a `sensors:sensor_update` notification when a measurement
+from at least one monitored sensor changes.
+
+```json
+{
+    "jsonrpc": "2.0",
+    "method": "sensors:sensor_update",
+    "params": [
+        {
+            "sensor1": {
+                "humidity": 28.9,
+                "temperature": 22.4
+            }
+        }
+    ]
+}
+```
+
+When a sensor reading changes, all connections will receive a
+`sensors:sensor_update` event where the params contains a data struct
+with the sensor id as the key and the sensors letest measurements as value
+struct.
 
 ### Appendix
 

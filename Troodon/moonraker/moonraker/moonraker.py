@@ -17,12 +17,12 @@ import socket
 import logging
 import signal
 import confighelper
-import utils
 import asyncio
 from eventloop import EventLoop
 from app import MoonrakerApp
 from klippy_connection import KlippyConnection
-from utils import ServerError, SentinelClass
+from utils import ServerError, SentinelClass, get_software_version
+from loghelper import LogManager
 
 # Annotation imports
 from typing import (
@@ -45,7 +45,7 @@ if TYPE_CHECKING:
     FlexCallback = Callable[..., Optional[Coroutine]]
     _T = TypeVar("_T")
 
-API_VERSION = (1, 0, 5)
+API_VERSION = (1, 2, 1)
 CORE_COMPONENTS = [
     'dbus_manager', 'database', 'file_manager', 'klippy_apis',
     'machine', 'data_store', 'shell_command', 'proc_stats',
@@ -57,18 +57,20 @@ SENTINEL = SentinelClass.get_instance()
 
 class Server:
     error = ServerError
+    config_error = confighelper.ConfigError
     def __init__(self,
                  args: Dict[str, Any],
-                 file_logger: Optional[utils.MoonrakerLoggingHandler],
+                 log_manager: LogManager,
                  event_loop: EventLoop
                  ) -> None:
         self.event_loop = event_loop
-        self.file_logger = file_logger
+        self.log_manager = log_manager
         self.app_args = args
         self.events: Dict[str, List[FlexCallback]] = {}
         self.components: Dict[str, Any] = {}
         self.failed_components: List[str] = []
         self.warnings: Dict[str, str] = {}
+        self._is_configured: bool = False
 
         self.config = config = self._parse_config()
         self.host: str = config.get('host', "0.0.0.0")
@@ -92,6 +94,7 @@ class Server:
         self.register_static_file_handler = app.register_static_file_handler
         self.register_upload_handler = app.register_upload_handler
         self.register_api_transport = app.register_api_transport
+        self.log_manager.set_server(self)
 
         for warning in args.get("startup_warnings", []):
             self.add_warning(warning)
@@ -122,6 +125,9 @@ class Server:
 
     def is_running(self) -> bool:
         return self.server_running
+
+    def is_configured(self) -> bool:
+        return self._is_configured
 
     def is_debug_enabled(self) -> bool:
         return self.debug
@@ -190,8 +196,7 @@ class Server:
 
     def add_log_rollover_item(self, name: str, item: str,
                               log: bool = True) -> None:
-        if self.file_logger is not None:
-            self.file_logger.set_rollover_info(name, item)
+        self.log_manager.set_rollover_info(name, item)
         if log and item is not None:
             logging.info(item)
 
@@ -238,6 +243,7 @@ class Server:
 
         self.klippy_connection.configure(config)
         config.validate_config()
+        self._is_configured = True
 
     def load_component(self,
                        config: confighelper.ConfigHelper,
@@ -259,7 +265,7 @@ class Server:
             if component_name not in self.failed_components:
                 self.failed_components.append(component_name)
             if isinstance(default, SentinelClass):
-                raise ServerError(msg)
+                raise
             return default
         self.components[component_name] = component
         logging.info(f"Component ({component_name}) loaded")
@@ -479,7 +485,7 @@ def main(cmd_line_args: argparse.Namespace) -> None:
     }
 
     # Setup Logging
-    version = utils.get_software_version()
+    version = get_software_version()
     if cmd_line_args.nologfile:
         app_args["log_file"] = ""
     elif cmd_line_args.logfile:
@@ -489,9 +495,7 @@ def main(cmd_line_args: argparse.Namespace) -> None:
         app_args["log_file"] = str(data_path.joinpath("logs/moonraker.log"))
     app_args["software_version"] = version
     app_args["python_version"] = sys.version.replace("\n", " ")
-    ql, file_logger, warning = utils.setup_logging(app_args)
-    if warning is not None:
-        startup_warnings.append(warning)
+    log_manager = LogManager(app_args, startup_warnings)
 
     # Start asyncio event loop and server
     event_loop = EventLoop()
@@ -499,7 +503,7 @@ def main(cmd_line_args: argparse.Namespace) -> None:
     estatus = 0
     while True:
         try:
-            server = Server(app_args, file_logger, event_loop)
+            server = Server(app_args, log_manager, event_loop)
             server.load_components()
         except confighelper.ConfigError as e:
             backup_cfg = confighelper.find_config_backup(cfg_file)
@@ -548,7 +552,7 @@ def main(cmd_line_args: argparse.Namespace) -> None:
         event_loop.reset()
     event_loop.close()
     logging.info("Server Shutdown")
-    ql.stop()
+    log_manager.stop_logging()
     exit(estatus)
 
 

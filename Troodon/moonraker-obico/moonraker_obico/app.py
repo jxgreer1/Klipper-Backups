@@ -12,6 +12,7 @@ import json
 import re
 import signal
 import backoff
+import pathlib
 
 import requests  # type: ignore
 
@@ -43,7 +44,6 @@ class App(object):
         linked_printer: Dict
         printer_state: PrinterState
         seen_refs: collections.deque
-        downloading_gcode_file: bool = False
 
         def is_configured(self):
             return True  # FIXME
@@ -241,36 +241,47 @@ class App(object):
             self._received_klippy_update(event.data['result'])
 
 
-    def _download_and_print(self, gcode_file):
-        filename = gcode_file['filename']
+    def _download_and_print(self, g_code_file):
 
         _logger.info(
-            f'downloading "{filename}" from {gcode_file["url"]}')
+            f'downloading from {g_code_file["url"]}')
 
-        safe_filename = sanitize_filename(filename)
-        path = self.model.config.server.upload_dir
-
+        safe_filename = sanitize_filename(g_code_file['safe_filename'])
         r = requests.get(
-            gcode_file['url'],
+            g_code_file['url'],
             allow_redirects=True,
             timeout=60 * 30
         )
         r.raise_for_status()
 
-        self.model.downloading_gcode_file = False
-
-        _logger.info(f'uploading "{filename}" to moonraker')
-        resp_data = self.moonrakerconn.api_post(
+        try:
+            _logger.info(f'uploading "{safe_filename}" to moonraker')
+            resp_data = self.moonrakerconn.api_post(
                 'server/files/upload',
-                filename=filename,
-                fileobj=r.content,
-                path=path,
-                print='true',
-        )
+                multipart_filename=safe_filename,
+                multipart_fileobj=r.content,
+                path=self.model.config.server.upload_dir,
+            )
+            _logger.debug(f'upload response: {resp_data}')
 
-        _logger.debug(f'upload response: {resp_data}')
-        _logger.info(
-            f'uploading "{filename}" finished.')
+            filepath_on_mr = resp_data['item']['path']
+            file_metadata = self.moonrakerconn.api_get('server/files/metadata', raise_for_status=True, filename=filepath_on_mr)
+            basename = pathlib.Path(filepath_on_mr).name  # filename in the response is actually the relative path
+            g_code_data = dict(
+                safe_filename=basename,
+                agent_signature='ts:{}'.format(file_metadata['modified'])
+                )
+
+            resp = self.server_conn.send_http_request('PATCH', '/api/v1/octo/g_code_files/{}/'.format(g_code_file['id']), timeout=60, data=g_code_data, raise_exception=True)
+
+            _logger.info(
+                f'uploading "{safe_filename}" finished.')
+
+            # Print start call needs to happen after PATCH /api/v1/octo/g_code_files/{}/ is called so that the file can be properly matched to the server record at the moment of PrintStarted Event
+            resp_data = self.moonrakerconn.api_post('printer/print/start', filename=filepath_on_mr)
+        except:
+            self.model.printer_state.set_obico_g_code_file_id(None)
+            self.sentry.captureException()
 
 
     def find_current_print_ts(self, cur_status):
@@ -281,12 +292,29 @@ class App(object):
             _logger.error(f'Active job indicate in print_stats: {cur_status}, but not in job history: {cur_job}')
             return None
 
+
+    def find_obico_g_code_file_id(self, cur_status):
+        filename = cur_status.get('print_stats', {}).get('filename')
+        file_metadata = self.moonrakerconn.api_get('server/files/metadata', raise_for_status=True, filename=filename)
+
+        basename = pathlib.Path(filename).name if filename else None  # filename in the response is actually the relative path
+        g_code_data = dict(
+            filename=basename,
+            safe_filename=basename,
+            num_bytes=file_metadata['size'],
+            agent_signature='ts:{}'.format(file_metadata['modified'])
+            )
+        resp = self.server_conn.send_http_request('POST', '/api/v1/octo/g_code_files/', timeout=60, data=g_code_data, raise_exception=True)
+        return resp.json()['id']
+
+
     def post_print_event(self, print_event):
         ts = self.model.printer_state.current_print_ts
         if ts == -1:
-            _logger.error('current_print_ts is -1 on a print_event, which is not supposed to happen.')
+            raise Exception('current_print_ts is -1 on a print_event, which is not supposed to happen.')
 
         _logger.info(f'print event: {print_event} ({ts})')
+
         self.server_conn.post_status_update_to_server(print_event=print_event)
 
 
@@ -320,28 +348,29 @@ class App(object):
 
         if cur_state == PrinterState.STATE_PRINTING:
             if prev_state == PrinterState.STATE_PAUSED:
-                self.post_print_event('PrintResumed')
+                self.post_print_event(PrinterState.EVENT_RESUMED)
                 return
             if prev_state == PrinterState.STATE_OPERATIONAL:
                 printer_state.set_current_print_ts(self.find_current_print_ts(printer_state.status))
-                self.post_print_event('PrintStarted')
+                printer_state.set_obico_g_code_file_id(self.find_obico_g_code_file_id(printer_state.status))
+                self.post_print_event(PrinterState.EVENT_STARTED)
                 return
 
         if cur_state == PrinterState.STATE_PAUSED and prev_state == PrinterState.STATE_PRINTING:
-            self.post_print_event('PrintPaused')
+            self.post_print_event(PrinterState.EVENT_PAUSED)
             return
 
         if cur_state == PrinterState.STATE_OPERATIONAL and prev_state in PrinterState.ACTIVE_STATES:
                 _state = data['status'].get('print_stats', {}).get('state')
                 if _state == 'cancelled':
-                    self.post_print_event('PrintCancelled')
+                    self.post_print_event(PrinterState.EVENT_CANCELLED)
                     # PrintFailed as well to be consistent with OctoPrint
                     time.sleep(0.5)
-                    self.post_print_event('PrintFailed')
+                    self.post_print_event(PrinterState.EVENT_FAILED)
                 elif _state == 'complete':
-                    self.post_print_event('PrintDone')
+                    self.post_print_event(PrinterState.EVENT_DONE)
                 elif _state == 'error':
-                    self.post_print_event('PrintFailed')
+                    self.post_print_event(PrinterState.EVENT_FAILED)
                 else:
                     # FIXME
                     _logger.error(
@@ -381,9 +410,13 @@ class App(object):
 
         if 'passthru' in msg:
             passthru = msg['passthru']
-            target = (passthru.get('target'), passthru.get('func'))
+            target = passthru.get('target')
+            func = passthru.get('func')
             args = passthru.get('args', ())
+            kwargs = passthru.get('kwargs', {})
             ack_ref = passthru.get('ref')
+            ret_value = None
+            error = None
 
             if ack_ref is not None:
                 # same msg may arrive through both ws and datachannel
@@ -394,41 +427,52 @@ class App(object):
                 # as deque manages that when maxlen is set
                 self.model.seen_refs.append(ack_ref)
 
-            if target == ('file_downloader', 'download'):
-                ret_value = self._process_download_message(ack_ref, gcode_file=args[0])
+            if target == 'file_downloader':
+                ret_value = self._process_download_message(g_code_file=args[0])
 
-            elif target == ('_printer', 'jog'):
-                ret_value = self._process_jog_message(ack_ref, axes_dict=args[0])
+            elif target == '_printer':
+                if func == 'jog':
+                    ret_value = self._process_jog_message(ack_ref, axes_dict=args[0])
+                elif func == 'home':
+                    ret_value = self._process_home_message(ack_ref, axes=args[0])
+                elif func == 'set_temperature':
+                    ret_value = self._process_set_temperature_message(ack_ref, heater=args[0], target_temp=args[1])
 
-            elif target == ('_printer', 'home'):
-                ret_value = self._process_home_message(ack_ref, axes=args[0])
+            elif target == 'moonraker_api':
+                verb = kwargs.pop('verb', 'get')
+                api_proxy = getattr(self.moonrakerconn, f'api_{verb.lower()}', None)
 
-            elif target == ('_printer', 'set_temperature'):
-                ret_value = self._process_set_temperature_message(ack_ref, heater=args[0], target_temp=args[1])
+                try:
+                    ret_value = api_proxy(func, **kwargs)
+                except Exception as e:
+                    error = 'Error in calling "{}" - "{}"'.format(func, verb)
 
             if ack_ref is not None:
-                self.server_conn.send_ws_msg_to_server({'passthru': {'ref': ack_ref, 'ret': ret_value}})
+                if error:
+                    resp = {'ref': ack_ref, 'error': error}
+                else:
+                    resp = {'ref': ack_ref, 'ret': ret_value}
+
+                self.server_conn.send_ws_msg_to_server({'passthru': resp})
 
         if msg.get('janus') and self.janus:
             self.janus.pass_to_janus(msg.get('janus'))
 
-    def _process_download_message(self, ack_ref: str, gcode_file: Dict) -> None:
-        if (
-            not self.model.downloading_gcode_file and
-            not self.model.printer_state.is_printing()
-        ):
-
-            thread = threading.Thread(
-                target=self._download_and_print,
-                args=(gcode_file, )
-            )
-            thread.daemon = True
-            thread.start()
-
-            self.model.downloading_gcode_file = True
-            return {'target_path': gcode_file['filename']}
-        else:
+    def _process_download_message(self, g_code_file: Dict) -> None:
+        if self.model.printer_state.get_obico_g_code_file_id() or self.model.printer_state.is_printing():
             return {'error': 'Currently downloading or printing!'}
+
+        # printer_state.obico_g_code_file_id is used as a latch to prevent double-clicking
+        self.model.printer_state.set_obico_g_code_file_id(g_code_file['id'])
+
+        thread = threading.Thread(
+            target=self._download_and_print,
+            args=(g_code_file, )
+        )
+        thread.daemon = True
+        thread.start()
+
+        return {'target_path': g_code_file['filename']}
 
     def _process_jog_message(self, ack_ref: str, axes_dict) -> None:
         if not self.moonrakerconn:

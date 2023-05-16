@@ -23,7 +23,13 @@ from tornado.routing import Rule, PathMatches, AnyMatches
 from tornado.http1connection import HTTP1Connection
 from tornado.log import access_log
 from utils import ServerError
-from websockets import WebRequest, WebsocketManager, WebSocket, APITransport
+from websockets import (
+    WebRequest,
+    WebsocketManager,
+    WebSocket,
+    APITransport,
+    BridgeSocket
+)
 from streaming_form_data import StreamingFormDataParser
 from streaming_form_data.targets import FileTarget, ValueTarget, SHA256Target
 
@@ -55,15 +61,10 @@ if TYPE_CHECKING:
     AuthComp = Optional[components.authorization.Authorization]
     APICallback = Callable[[WebRequest], Coroutine]
 
-# These endpoints are reserved for klippy/server communication only and are
-# not exposed via http or the websocket
-RESERVED_ENDPOINTS = [
-    "list_endpoints", "gcode/subscribe_output",
-    "register_remote_method"
-]
 
 # 50 MiB Max Standard Body Size
 MAX_BODY_SIZE = 50 * 1024 * 1024
+MAX_WS_CONNS_DEFAULT = 50
 EXCLUDED_ARGS = ["_", "token", "access_token", "connection_id"]
 AUTHORIZED_EXTS = [".png", ".jpg"]
 DEFAULT_KLIPPY_LOG_PATH = "/tmp/klippy.log"
@@ -175,6 +176,9 @@ class MoonrakerApp:
         self.registered_base_handlers: List[str] = []
         self.max_upload_size = config.getint('max_upload_size', 1024)
         self.max_upload_size *= 1024 * 1024
+        max_ws_conns = config.getint(
+            'max_websocket_connections', MAX_WS_CONNS_DEFAULT
+        )
 
         # SSL config
         self.cert_path: pathlib.Path = self._get_path_option(
@@ -199,6 +203,7 @@ class MoonrakerApp:
             'websocket_ping_interval': 10,
             'websocket_ping_timeout': 30,
             'server': self.server,
+            'max_websocket_connections': max_ws_conns,
             'default_handler_class': AuthorizedErrorHandler,
             'default_handler_args': {},
             'log_function': self.log_request,
@@ -211,6 +216,7 @@ class MoonrakerApp:
             (AnyMatches(), self.mutable_router),
             (r"/", WelcomeHandler),
             (r"/websocket", WebSocket),
+            (r"/klippysocket", BridgeSocket),
             (r"/server/redirect", RedirectHandler)
         ]
         self.app = tornado.web.Application(app_handlers, **app_args)
@@ -321,8 +327,6 @@ class MoonrakerApp:
         return self.api_cache
 
     def register_remote_handler(self, endpoint: str) -> None:
-        if endpoint in RESERVED_ENDPOINTS:
-            return
         api_def = self._create_api_definition(endpoint)
         if api_def.uri in self.registered_base_handlers:
             # reserved handler or already registered
