@@ -90,6 +90,9 @@ screw_rotation: 0
 # Define distances and speeds for the extrude panel. CSV list 2 to 4 integers
 extrude_distances: 5, 10, 15, 25
 extrude_speeds: 1, 2, 5, 25
+
+# Camera configuration
+camera_url: http://127.0.0.1/webcam/?action=stream
 ```
 
 ## Preheat Options
@@ -130,6 +133,8 @@ A menu item is configured as follows:
 name: Item Name
 icon: home
 # Optional Parameters
+# Icon style, defined as "button.mycolor4" (for example) in the theme css
+style: mycolor4
 # Panel from the panels listed below
 panel: preheat
 # Moonraker method to call when the item is selected

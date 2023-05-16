@@ -46,9 +46,14 @@
  DECL_CONSTANT_STR("RESERVE_PINS_CAN", "PC2,PC3");
  #define GPIO_Rx GPIO('C', 2)
  #define GPIO_Tx GPIO('C', 3)
+#elif CONFIG_STM32_CANBUS_PB12_PB13
+ DECL_CONSTANT_STR("RESERVE_PINS_CAN", "PB12,PB13");
+ #define GPIO_Rx GPIO('B', 12)
+ #define GPIO_Tx GPIO('B', 13)
 #endif
 
-#if !(CONFIG_STM32_CANBUS_PB0_PB1 || CONFIG_STM32_CANBUS_PC2_PC3)
+#if !(CONFIG_STM32_CANBUS_PB0_PB1 || CONFIG_STM32_CANBUS_PC2_PC3 \
+     || CONFIG_STM32_CANBUS_PB12_PB13)
  #define SOC_CAN FDCAN1
  #define MSG_RAM (((struct fdcan_ram_layout*)SRAMCAN_BASE)->fdcan1)
 #else
@@ -101,7 +106,7 @@ struct fdcan_ram_layout {
 
 // Transmit a packet
 int
-canbus_send(struct canbus_msg *msg)
+canhw_send(struct canbus_msg *msg)
 {
     uint32_t txfqs = SOC_CAN->TXFQS;
     if (txfqs & FDCAN_TXFQS_TFQF)
@@ -136,7 +141,7 @@ can_filter(uint32_t index, uint32_t id)
 
 // Setup the receive packet filter
 void
-canbus_set_filter(uint32_t id)
+canhw_set_filter(uint32_t id)
 {
     if (!CONFIG_CANBUS_FILTER)
         return;
@@ -299,7 +304,7 @@ can_init(void)
     SOC_CAN->CCCR &= ~FDCAN_CCCR_INIT;
 
     /*##-2- Configure the CAN Filter #######################################*/
-    canbus_set_filter(0);
+    canhw_set_filter(0);
 
     /*##-3- Configure Interrupts #################################*/
     armcm_enable_irq(CAN_IRQHandler, CAN_IT0_IRQn, 1);

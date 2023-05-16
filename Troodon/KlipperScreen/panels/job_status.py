@@ -122,7 +122,7 @@ class JobStatusPanel(ScreenPanel):
         self.labels['thumbnail'] = self._gtk.Image("file", self._screen.width / 4, self._screen.height / 4)
         self.labels['info_grid'] = Gtk.Grid()
         self.labels['info_grid'].attach(self.labels['thumbnail'], 0, 0, 1, 1)
-        if self._screen.printer.get_tools():
+        if self._printer.get_tools():
             self.current_extruder = self._printer.get_stat("toolhead", "extruder")
             diameter = float(self._printer.get_config_section(self.current_extruder)['filament_diameter'])
             self.fila_section = pi * ((diameter / 2) ** 2)
@@ -159,7 +159,7 @@ class JobStatusPanel(ScreenPanel):
         nlimit = 2 if self._screen.width <= 480 else 3
         n = 0
         self.buttons['extruder'] = {}
-        if self._screen.printer.get_tools():
+        if self._printer.get_tools():
             for i, extruder in enumerate(self._printer.get_tools()):
                 self.labels[extruder] = Gtk.Label("-")
                 self.buttons['extruder'][extruder] = self._gtk.Button(f"extruder-{i}", "", None, self.bts,
@@ -183,7 +183,7 @@ class JobStatusPanel(ScreenPanel):
             self.buttons['heater']['heater_bed'].set_halign(Gtk.Align.START)
             self.labels['temp_grid'].attach(self.buttons['heater']['heater_bed'], n, 0, 1, 1)
             n += 1
-        for dev in self._screen.printer.get_heaters():
+        for dev in self._printer.get_heaters():
             if n >= nlimit:
                 break
             if dev.startswith("heater_generic"):
@@ -201,7 +201,7 @@ class JobStatusPanel(ScreenPanel):
             if titlebar_items is not None:
                 titlebar_items = [str(i.strip()) for i in titlebar_items.split(',')]
                 logging.info(f"Titlebar items: {titlebar_items}")
-                for device in self._screen.printer.get_heaters():
+                for device in self._printer.get_heaters():
                     if device.startswith("temperature_sensor"):
                         name = " ".join(device.split(" ")[1:])
                         for item in titlebar_items:
@@ -227,9 +227,9 @@ class JobStatusPanel(ScreenPanel):
         szfe.set_column_homogeneous(True)
         szfe.attach(self.buttons['speed'], 0, 0, 3, 1)
         szfe.attach(self.buttons['z'], 2, 0, 2, 1)
-        if self._screen.printer.get_tools():
+        if self._printer.get_tools():
             szfe.attach(self.buttons['extrusion'], 0, 1, 3, 1)
-        if self._screen.printer.get_fans():
+        if self._printer.get_fans():
             szfe.attach(self.buttons['fan'], 2, 1, 2, 1)
 
         info = Gtk.Grid()
@@ -340,7 +340,7 @@ class JobStatusPanel(ScreenPanel):
         r = min(w, h) * .42
 
         ctx.set_source_rgb(0.13, 0.13, 0.13)
-        ctx.set_line_width(self._gtk.get_font_size() * .75)
+        ctx.set_line_width(self._gtk.font_size * .75)
         ctx.translate(w / 2, h / 2)
         ctx.arc(0, 0, r, 0, 2 * pi)
         ctx.stroke()
@@ -422,6 +422,9 @@ class JobStatusPanel(ScreenPanel):
 
     def restart(self, widget):
         if self.filename != "none":
+            if self.state == "error":
+                script = {"script": "SDCARD_RESET_FILE"}
+                self._screen._send_action(None, "printer.gcode.script", script)
             self._screen._ws.klippy.print_start(self.filename)
             self.new_print()
 
@@ -556,7 +559,7 @@ class JobStatusPanel(ScreenPanel):
                 )
                 self.buttons['speed'].set_label(self.labels['req_speed'].get_label())
             with contextlib.suppress(KeyError):
-                self.zoffset = data["gcode_move"]["homing_origin"][2]
+                self.zoffset = float(data["gcode_move"]["homing_origin"][2])
                 self.labels['zoffset'].set_label(f"{self.zoffset:.2f} {self.mm}")
         if "motion_report" in data:
             with contextlib.suppress(KeyError):
@@ -583,7 +586,7 @@ class JobStatusPanel(ScreenPanel):
         fan_label = ""
         for fan in self.fans:
             with contextlib.suppress(KeyError):
-                self.fans[fan]['speed'] = f"{self._screen.printer.get_fan_speed(fan) * 100:3.0f}%"
+                self.fans[fan]['speed'] = f"{self._printer.get_fan_speed(fan) * 100:3.0f}%"
                 fan_label += f" {self.fans[fan]['name']}{self.fans[fan]['speed']}"
         if fan_label:
             self.buttons['fan'].set_label(fan_label[:12])
@@ -742,16 +745,16 @@ class JobStatusPanel(ScreenPanel):
             self.enable_button("resume", "cancel")
             self.can_close = False
         else:
-            offset = self._screen.printer.get_stat("gcode_move", "homing_origin")
+            offset = self._printer.get_stat("gcode_move", "homing_origin")
             self.zoffset = float(offset[2]) if offset else 0
             if self.zoffset != 0:
-                endstop = (self._screen.printer.config_section_exists("stepper_z") and
-                           not self._screen.printer.get_config_section("stepper_z")['endstop_pin'].startswith("probe"))
+                endstop = (self._printer.config_section_exists("stepper_z") and
+                           not self._printer.get_config_section("stepper_z")['endstop_pin'].startswith("probe"))
                 if endstop:
                     self.buttons['button_grid'].attach(self.buttons["save_offset_endstop"], 0, 0, 1, 1)
                 else:
                     self.buttons['button_grid'].attach(Gtk.Label(""), 0, 0, 1, 1)
-                if self._screen.printer.get_probe():
+                if self._printer.get_probe():
                     self.buttons['button_grid'].attach(self.buttons["save_offset_probe"], 1, 0, 1, 1)
                 else:
                     self.buttons['button_grid'].attach(Gtk.Label(""), 1, 0, 1, 1)
@@ -764,7 +767,7 @@ class JobStatusPanel(ScreenPanel):
             if self.state != "cancelling":
                 self.buttons['button_grid'].attach(self.buttons['menu'], 3, 0, 1, 1)
                 self.can_close = True
-        self.show_all()
+        self.content.show_all()
 
     def show_file_thumbnail(self):
         if self._files.has_thumbnail(self.filename):
@@ -773,7 +776,7 @@ class JobStatusPanel(ScreenPanel):
                 height = self._screen.height / 4
             else:
                 width = self._screen.width / 3
-                height = self._gtk.get_content_height() * 0.47
+                height = self._gtk.content_height * 0.47
             pixbuf = self.get_file_image(self.filename, width, height)
             if pixbuf is not None:
                 self.labels['thumbnail'].set_from_pixbuf(pixbuf)
@@ -785,7 +788,7 @@ class JobStatusPanel(ScreenPanel):
             "complete": self.labels['file'].get_label(),
             "current": self.labels['file'].get_label(),
             "position": 0,
-            "limit": (self._screen.width * 37 / 480) // (self._gtk.get_font_size() / 11),
+            "limit": (self._screen.width * 37 / 480) // (self._gtk.font_size / 11),
             "length": len(self.labels['file'].get_label())
         }
         if self.animation_timeout is None and (self.filename_label['length'] - self.filename_label['limit']) > 0:
