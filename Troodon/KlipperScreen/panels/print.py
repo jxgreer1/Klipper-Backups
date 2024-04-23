@@ -1,21 +1,15 @@
 # -*- coding: utf-8 -*-
 import logging
 import os
-
 import gi
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GLib, Pango
 from datetime import datetime
-
 from ks_includes.screen_panel import ScreenPanel
 
 
-def create_panel(*args):
-    return PrintPanel(*args)
-
-
-class PrintPanel(ScreenPanel):
+class Panel(ScreenPanel):
     cur_directory = "gcodes"
     dir_panels = {}
     filelist = {'gcodes': {'directories': [], 'files': []}}
@@ -45,12 +39,14 @@ class PrintPanel(ScreenPanel):
         sbox.set_vexpand(False)
         for i, (name, val) in enumerate(self.sort_items.items(), start=1):
             s = self._gtk.Button(None, val, f"color{i % 4}", .5, Gtk.PositionType.RIGHT, 1)
+            s.get_style_context().add_class("buttons_slim")
             if name == self.sort_current[0]:
                 s.set_image(self._gtk.Image(self.sort_icon[self.sort_current[1]], self._gtk.img_scale * self.bts))
             s.connect("clicked", self.change_sort, name)
             self.labels[f'sort_{name}'] = s
             sbox.add(s)
         refresh = self._gtk.Button("refresh", style="color4", scale=self.bts)
+        refresh.get_style_context().add_class("buttons_slim")
         refresh.connect('clicked', self._refresh_files)
         sbox.add(refresh)
         sbox.set_hexpand(True)
@@ -151,6 +147,7 @@ class PrintPanel(ScreenPanel):
         self.dir_panels[directory].attach(self.files[filepath], 0, pos, 1, 1)
         if show is True:
             self.dir_panels[directory].show_all()
+        return False
 
     def _create_row(self, fullpath, filename=None):
         name = Gtk.Label()
@@ -230,6 +227,7 @@ class PrintPanel(ScreenPanel):
             self.labels['files'][filepath]['icon'].set_image(Gtk.Image.new_from_pixbuf(pixbuf))
         else:
             self.labels['files'][filepath]['icon'].set_image(self._gtk.Image("file"))
+        return False
 
     def confirm_delete_file(self, widget, filepath):
         logging.debug(f"Sending delete_file {filepath}")
@@ -312,27 +310,27 @@ class PrintPanel(ScreenPanel):
         grid.set_valign(Gtk.Align.CENTER)
         grid.add(label)
 
-        pixbuf = self.get_file_image(filename, self._screen.width * .9, self._screen.height * .6)
+        pixbuf = self.get_file_image(filename, self._screen.width * .9, self._screen.height * .5)
         if pixbuf is not None:
             image = Gtk.Image.new_from_pixbuf(pixbuf)
-            image.set_vexpand(False)
             grid.attach_next_to(image, label, Gtk.PositionType.BOTTOM, 1, 1)
 
-        dialog = self._gtk.Dialog(self._screen, buttons, grid, self.confirm_print_response, filename)
-        dialog.set_title(_("Print"))
+        self._gtk.Dialog(_("Print") + f' {filename}', buttons, grid, self.confirm_print_response, filename)
 
     def confirm_print_response(self, dialog, response_id, filename):
         self._gtk.remove_dialog(dialog)
-        if response_id == Gtk.ResponseType.CANCEL:
-            return
-        logging.info(f"Starting print: {filename}")
-        self._screen._ws.klippy.print_start(filename)
+        if response_id == Gtk.ResponseType.OK:
+            logging.info(f"Starting print: {filename}")
+            self._screen._ws.klippy.print_start(filename)
 
     def delete_file(self, filename):
         directory = os.path.join("gcodes", os.path.dirname(filename)) if os.path.dirname(filename) else "gcodes"
         if directory not in self.filelist or os.path.basename(filename).startswith("."):
             return
-        self.filelist[directory]["files"].pop(self.filelist[directory]["files"].index(os.path.basename(filename)))
+        try:
+            self.filelist[directory]["files"].pop(self.filelist[directory]["files"].index(os.path.basename(filename)))
+        except Exception as e:
+            logging.exception(e)
         dir_parts = directory.split(os.sep)
         i = len(dir_parts)
         while i > 1:
@@ -352,7 +350,10 @@ class PrintPanel(ScreenPanel):
             self.dir_panels[parent_dir].show_all()
             i -= 1
 
-        self.dir_panels[directory].remove(self.files[filename])
+        try:
+            self.dir_panels[directory].remove(self.files[filename])
+        except Exception as e:
+            logging.exception(e)
         self.dir_panels[directory].show_all()
         self.files.pop(filename)
 
@@ -382,6 +383,7 @@ class PrintPanel(ScreenPanel):
         flist = sorted(self._screen.files.get_file_list(), key=lambda item: '/' in item)
         for file in flist:
             GLib.idle_add(self.add_file, file)
+        return False
 
     def update_file(self, filename):
         if filename not in self.labels['files']:
@@ -405,9 +407,11 @@ class PrintPanel(ScreenPanel):
             logging.debug(f"updatefiles: {updatedfiles}")
             for file in updatedfiles:
                 self.update_file(file)
+        return False
 
     def _refresh_files(self, widget=None):
         self._files.refresh_files()
+        return False
 
     def show_rename(self, widget, fullpath):
         self.source = fullpath
@@ -417,34 +421,36 @@ class PrintPanel(ScreenPanel):
             self.content.remove(child)
 
         if "rename_file" not in self.labels:
-            lbl = self._gtk.Label(_("Rename/Move:"))
-            lbl.set_halign(Gtk.Align.START)
-            lbl.set_hexpand(False)
-            self.labels['new_name'] = Gtk.Entry()
-            self.labels['new_name'].set_text(fullpath)
-            self.labels['new_name'].set_hexpand(True)
-            self.labels['new_name'].connect("activate", self.rename)
-            self.labels['new_name'].connect("focus-in-event", self._screen.show_keyboard)
-
-            save = self._gtk.Button("complete", _("Save"), "color3")
-            save.set_hexpand(False)
-            save.connect("clicked", self.rename)
-
-            box = Gtk.Box()
-            box.pack_start(self.labels['new_name'], True, True, 5)
-            box.pack_start(save, False, False, 5)
-
-            self.labels['rename_file'] = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
-            self.labels['rename_file'].set_valign(Gtk.Align.CENTER)
-            self.labels['rename_file'].set_hexpand(True)
-            self.labels['rename_file'].set_vexpand(True)
-            self.labels['rename_file'].pack_start(lbl, True, True, 5)
-            self.labels['rename_file'].pack_start(box, True, True, 5)
-
+            self._create_rename_box(fullpath)
         self.content.add(self.labels['rename_file'])
         self.labels['new_name'].set_text(fullpath[7:])
         self.labels['new_name'].grab_focus_without_selecting()
         self.showing_rename = True
+
+    def _create_rename_box(self, fullpath):
+        lbl = self._gtk.Label(_("Rename/Move:"))
+        lbl.set_halign(Gtk.Align.START)
+        lbl.set_hexpand(False)
+        self.labels['new_name'] = Gtk.Entry()
+        self.labels['new_name'].set_text(fullpath)
+        self.labels['new_name'].set_hexpand(True)
+        self.labels['new_name'].connect("activate", self.rename)
+        self.labels['new_name'].connect("focus-in-event", self._screen.show_keyboard)
+
+        save = self._gtk.Button("complete", _("Save"), "color3")
+        save.set_hexpand(False)
+        save.connect("clicked", self.rename)
+
+        box = Gtk.Box()
+        box.pack_start(self.labels['new_name'], True, True, 5)
+        box.pack_start(save, False, False, 5)
+
+        self.labels['rename_file'] = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+        self.labels['rename_file'].set_valign(Gtk.Align.CENTER)
+        self.labels['rename_file'].set_hexpand(True)
+        self.labels['rename_file'].set_vexpand(True)
+        self.labels['rename_file'].pack_start(lbl, True, True, 5)
+        self.labels['rename_file'].pack_start(box, True, True, 5)
 
     def hide_rename(self):
         self._screen.remove_keyboard()

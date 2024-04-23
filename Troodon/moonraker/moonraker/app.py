@@ -22,12 +22,11 @@ from tornado.escape import url_unescape, url_escape
 from tornado.routing import Rule, PathMatches, AnyMatches
 from tornado.http1connection import HTTP1Connection
 from tornado.log import access_log
-from utils import ServerError
-from websockets import (
-    WebRequest,
+from .common import WebRequest, APIDefinition, APITransport
+from .utils import ServerError, source_info
+from .websockets import (
     WebsocketManager,
     WebSocket,
-    APITransport,
     BridgeSocket
 )
 from streaming_form_data import StreamingFormDataParser
@@ -48,17 +47,18 @@ from typing import (
 )
 if TYPE_CHECKING:
     from tornado.httpserver import HTTPServer
-    from moonraker import Server
-    from eventloop import EventLoop
-    from confighelper import ConfigHelper
-    from klippy_connection import KlippyConnection as Klippy
-    from components.file_manager.file_manager import FileManager
-    from components.announcements import Announcements
-    from components.machine import Machine
+    from .server import Server
+    from .eventloop import EventLoop
+    from .confighelper import ConfigHelper
+    from .klippy_connection import KlippyConnection as Klippy
+    from .components.file_manager.file_manager import FileManager
+    from .components.announcements import Announcements
+    from .components.machine import Machine
     from io import BufferedReader
-    import components.authorization
+    from .components.authorization import Authorization
+    from .components.template import TemplateFactory, JinjaTemplate
     MessageDelgate = Optional[tornado.httputil.HTTPMessageDelegate]
-    AuthComp = Optional[components.authorization.Authorization]
+    AuthComp = Optional[Authorization]
     APICallback = Callable[[WebRequest], Coroutine]
 
 
@@ -69,7 +69,6 @@ EXCLUDED_ARGS = ["_", "token", "access_token", "connection_id"]
 AUTHORIZED_EXTS = [".png", ".jpg"]
 DEFAULT_KLIPPY_LOG_PATH = "/tmp/klippy.log"
 ALL_TRANSPORTS = ["http", "websocket", "mqtt", "internal"]
-ASSET_PATH = pathlib.Path(__file__).parent.joinpath("assets")
 
 class MutableRouter(tornado.web.ReversibleRuleRouter):
     def __init__(self, application: MoonrakerApp) -> None:
@@ -111,24 +110,6 @@ class MutableRouter(tornado.web.ReversibleRuleRouter):
             except Exception:
                 logging.exception(f"Unable to remove rule: {pattern}")
 
-class APIDefinition:
-    def __init__(self,
-                 endpoint: str,
-                 http_uri: str,
-                 jrpc_methods: List[str],
-                 request_methods: Union[str, List[str]],
-                 transports: List[str],
-                 callback: Optional[APICallback],
-                 need_object_parser: bool):
-        self.endpoint = endpoint
-        self.uri = http_uri
-        self.jrpc_methods = jrpc_methods
-        if not isinstance(request_methods, list):
-            request_methods = [request_methods]
-        self.request_methods = request_methods
-        self.supported_transports = transports
-        self.callback = callback
-        self.need_object_parser = need_object_parser
 
 class InternalTransport(APITransport):
     def __init__(self, server: Server) -> None:
@@ -173,6 +154,7 @@ class MoonrakerApp:
         self.http_server: Optional[HTTPServer] = None
         self.secure_server: Optional[HTTPServer] = None
         self.api_cache: Dict[str, APIDefinition] = {}
+        self.template_cache: Dict[str, JinjaTemplate] = {}
         self.registered_base_handlers: List[str] = []
         self.max_upload_size = config.getint('max_upload_size', 1024)
         self.max_upload_size *= 1024 * 1024
@@ -304,9 +286,6 @@ class MoonrakerApp:
     def get_server(self) -> Server:
         return self.server
 
-    def get_asset_path(self) -> pathlib.Path:
-        return ASSET_PATH
-
     def https_enabled(self) -> bool:
         return self.cert_path.exists() and self.key_path.exists()
 
@@ -319,10 +298,9 @@ class MoonrakerApp:
             await self.secure_server.close_all_connections()
         await self.wsm.close()
 
-    def register_api_transport(self,
-                               name: str,
-                               transport: APITransport
-                               ) -> Dict[str, APIDefinition]:
+    def register_api_transport(
+        self, name: str, transport: APITransport
+    ) -> Dict[str, APIDefinition]:
         self.api_transports[name] = transport
         return self.api_cache
 
@@ -344,13 +322,15 @@ class MoonrakerApp:
         for name, transport in self.api_transports.items():
             transport.register_api_handler(api_def)
 
-    def register_local_handler(self,
-                               uri: str,
-                               request_methods: List[str],
-                               callback: APICallback,
-                               transports: List[str] = ALL_TRANSPORTS,
-                               wrap_result: bool = True
-                               ) -> None:
+    def register_local_handler(
+        self,
+        uri: str,
+        request_methods: List[str],
+        callback: APICallback,
+        transports: List[str] = ALL_TRANSPORTS,
+        wrap_result: bool = True,
+        content_type: Optional[str] = None
+    ) -> None:
         if uri in self.registered_base_handlers:
             return
         api_def = self._create_api_definition(
@@ -364,17 +344,16 @@ class MoonrakerApp:
             params['callback'] = callback
             params['wrap_result'] = wrap_result
             params['is_remote'] = False
+            params['content_type'] = content_type
             self.mutable_router.add_handler(uri, DynamicRequestHandler, params)
         self.registered_base_handlers.append(uri)
         for name, transport in self.api_transports.items():
             if name in transports:
                 transport.register_api_handler(api_def)
 
-    def register_static_file_handler(self,
-                                     pattern: str,
-                                     file_path: str,
-                                     force: bool = False
-                                     ) -> None:
+    def register_static_file_handler(
+        self, pattern: str, file_path: str, force: bool = False
+    ) -> None:
         if pattern[0] != "/":
             pattern = "/server/files/" + pattern
         if os.path.isfile(file_path) or force:
@@ -390,10 +369,9 @@ class MoonrakerApp:
         params = {'path': file_path}
         self.mutable_router.add_handler(pattern, FileRequestHandler, params)
 
-    def register_upload_handler(self,
-                                pattern: str,
-                                location_prefix: Optional[str] = None
-                                ) -> None:
+    def register_upload_handler(
+        self, pattern: str, location_prefix: Optional[str] = None
+    ) -> None:
         params: Dict[str, Any] = {'max_upload_size': self.max_upload_size}
         if location_prefix is not None:
             params['location_prefix'] = location_prefix
@@ -424,12 +402,13 @@ class MoonrakerApp:
             for name, transport in self.api_transports.items():
                 transport.remove_api_handler(api_def)
 
-    def _create_api_definition(self,
-                               endpoint: str,
-                               request_methods: List[str] = [],
-                               callback: Optional[APICallback] = None,
-                               transports: List[str] = ALL_TRANSPORTS
-                               ) -> APIDefinition:
+    def _create_api_definition(
+        self,
+        endpoint: str,
+        request_methods: List[str] = [],
+        callback: Optional[APICallback] = None,
+        transports: List[str] = ALL_TRANSPORTS
+    ) -> APIDefinition:
         is_remote = callback is None
         if endpoint in self.api_cache:
             return self.api_cache[endpoint]
@@ -464,6 +443,20 @@ class MoonrakerApp:
                                 transports, callback, need_object_parser)
         self.api_cache[endpoint] = api_def
         return api_def
+
+    async def load_template(self, asset_name: str) -> JinjaTemplate:
+        if asset_name in self.template_cache:
+            return self.template_cache[asset_name]
+        eventloop = self.server.get_event_loop()
+        asset = await eventloop.run_in_thread(
+            source_info.read_asset, asset_name
+        )
+        if asset is None:
+            raise tornado.web.HTTPError(404, "Asset Not Found")
+        template: TemplateFactory = self.server.lookup_component("template")
+        asset_tmpl = template.create_ui_template(asset)
+        self.template_cache[asset_name] = asset_tmpl
+        return asset_tmpl
 
 class AuthorizedRequestHandler(tornado.web.RequestHandler):
     def initialize(self) -> None:
@@ -572,7 +565,8 @@ class DynamicRequestHandler(AuthorizedRequestHandler):
         methods: List[str] = [],
         need_object_parser: bool = False,
         is_remote: bool = True,
-        wrap_result: bool = True
+        wrap_result: bool = True,
+        content_type: Optional[str] = None
     ) -> None:
         super(DynamicRequestHandler, self).initialize()
         self.callback = callback
@@ -582,6 +576,7 @@ class DynamicRequestHandler(AuthorizedRequestHandler):
             else self._do_local_request
         self._parse_query = self._object_parser if need_object_parser \
             else self._default_parser
+        self.content_type = content_type
 
     # Converts query string values with type hints
     def _convert_type(self, value: str, hint: str) -> Any:
@@ -703,6 +698,8 @@ class DynamicRequestHandler(AuthorizedRequestHandler):
                 e.status_code, reason=str(e)) from e
         if self.wrap_result:
             result = {'result': result}
+        elif self.content_type is not None:
+            self.set_header("Content-Type", self.content_type)
         if result is None:
             self.set_status(204)
         self._log_debug(f"HTTP Response::{req}", result)
@@ -884,6 +881,7 @@ class FileUploadHandler(AuthorizedRequestHandler):
 
     def prepare(self) -> None:
         super(FileUploadHandler, self).prepare()
+        logging.info(f"Upload Request Received from {self.request.remote_ip}")
         fm: FileManager = self.server.lookup_component("file_manager")
         fm.check_write_enabled()
         if self.request.method == "POST":
@@ -935,6 +933,7 @@ class FileUploadHandler(AuthorizedRequestHandler):
             debug_msg += f"\n{name}: {value}"
         debug_msg += f"\nChecksum: {calc_chksum}"
         logging.debug(debug_msg)
+        logging.info(f"Processing Uploaded File: {self._file.multipart_filename}")
         try:
             result = await self.file_manager.finalize_upload(form_args)
         except ServerError as e:
@@ -1084,7 +1083,7 @@ class WelcomeHandler(tornado.web.RequestHandler):
             "service_name": svc_info.get("unit_name", "unknown"),
             "hostname": self.server.get_host_info()["hostname"],
         }
-        self.render("welcome.html", **context)
-
-    def get_template_path(self) -> Optional[str]:
-        return str(ASSET_PATH)
+        app: MoonrakerApp = self.server.lookup_component("application")
+        welcome_template = await app.load_template("welcome.html")
+        ret = await welcome_template.render_async(context)
+        self.finish(ret)

@@ -1,0 +1,2151 @@
+-------------------- Log Start | Fri Sep 15 07:00:14 2023 --------------------
+data_path: /home/pi/printer_data
+is_default_data_path: False
+config_file: /home/pi/klipper_config/moonraker.conf
+startup_warnings: []
+verbose: False
+debug: False
+asyncio_debug: False
+is_backup_config: False
+is_python_package: False
+instance_uuid: b16ee62a77224e56a3881e13476ca1fa
+unix_socket_path: /home/pi/printer_data/comms/moonraker.sock
+software_version: v0.8.0-139-g3d9052d
+git_branch: master
+git_remote: origin
+git_repo_url: https://github.com/arksine/moonraker.git
+modified_files: []
+unofficial_components: []
+log_file: /home/pi/klipper_logs/moonraker.log
+python_version: 3.7.3 (default, Jan 22 2021, 20:04:44)  [GCC 8.3.0]
+
+#################### Moonraker Configuration ####################
+
+[server]
+host = 0.0.0.0
+port = 7125
+temperature_store_size = 600
+gcode_store_size = 1000
+
+[authorization]
+force_logins = True
+cors_domains = 
+	*.local
+	*.lan
+	*://app.fluidd.xyz
+trusted_clients = 
+	10.0.0.0/8
+	127.0.0.1
+	127.0.0.0/8
+	169.254.0.0/16
+	172.16.0.0/12
+	192.168.0.0/16
+	100.113.82.57
+	100.74.78.66
+	FE80::/10
+	::1/128
+
+[octoprint_compat]
+
+[history]
+
+[update_manager]
+enable_auto_refresh = True
+
+[update_manager mainsail]
+type = web
+repo = mainsail-crew/mainsail
+path = ~/mainsail
+
+[timelapse]
+output_path = ~/timelapse/
+frame_path = /tmp/timelapse/
+ffmpeg_binary_path = /usr/bin/ffmpeg
+
+[job_queue]
+load_on_startup = False
+
+[update_manager timelapse]
+type = git_repo
+primary_branch = main
+path = ~/moonraker-timelapse
+origin = https://github.com/mainsail-crew/moonraker-timelapse.git
+managed_services = klipper moonraker
+
+[update_manager KlipperScreen]
+type = git_repo
+path = /home/pi/KlipperScreen
+origin = https://github.com/jordanruthe/KlipperScreen.git
+env = /home/pi/.KlipperScreen-env/bin/python
+requirements = scripts/KlipperScreen-requirements.txt
+install_script = scripts/KlipperScreen-install.sh
+
+[update_manager crowsnest]
+primary_branch = legacy/v3
+type = git_repo
+path = ~/crowsnest
+origin = https://github.com/mainsail-crew/crowsnest.git
+install_script = tools/pkglist.sh
+
+[update_manager beacon]
+type = git_repo
+channel = dev
+path = ~/beacon_klipper
+origin = https://github.com/beacon3d/beacon_klipper.git
+env = ~/klippy-env/bin/python
+requirements = requirements.txt
+install_script = install.sh
+is_system_service = False
+managed_services = klipper
+info_tags = 
+	desc=Beacon Surface Scanner
+
+[update_manager moonraker-obico]
+type = git_repo
+path = ~/moonraker-obico
+origin = https://github.com/TheSpaghettiDetective/moonraker-obico.git
+env = /home/pi/moonraker-env/bin/python
+requirements = requirements.txt
+install_script = install.sh
+managed_services = 
+	moonraker-obico
+
+#################################################################
+All Configuration Files:
+/home/pi/klipper_config/moonraker.conf
+/home/pi/klipper_config/moonraker-obico-update.cfg
+#################################################################
+Unsafe Shutdown Count: 198
+
+System Info:
+
+***python***
+  version: sys.version_info(major=3, minor=7, micro=3, releaselevel='final', serial=0)
+  version_string: 3.7.3 (default, Jan 22 2021, 20:04:44)  [GCC 8.3.0]
+
+***cpu_info***
+  cpu_count: 4
+  bits: 32bit
+  processor: armv7l
+  cpu_desc: ARMv7 Processor rev 3 (v7l)
+  serial_number: 10000000fd037551
+  hardware_desc: BCM2711
+  model: Raspberry Pi 4 Model B Rev 1.4
+  total_memory: 1734408
+  memory_units: kB
+
+***sd_info***
+  manufacturer_id: 03
+  manufacturer: Sandisk
+  oem_id: 5344
+  product_name: SB16G
+  product_revision: 8.0
+  serial_number: aee62172
+  manufacturer_date: 3/2020
+  capacity: 14.8 GiB
+  total_bytes: 15931539456
+
+***distribution***
+  name: Raspbian GNU/Linux 10 (buster)
+  id: raspbian
+  version: 10
+  version_parts: {'major': '10', 'minor': '', 'build_number': ''}
+  like: debian
+  codename: buster
+  release_info: {'name': 'MainsailOS', 'version_id': '0.7.1', 'codename': 'buster', 'id': 'mainsailos'}
+
+***virtualization***
+  virt_type: none
+  virt_identifier: none
+
+***network***
+
+***canbus***
+
+***Allowed Services***
+  klipper_mcu
+  webcamd
+  MoonCord
+  KlipperScreen
+  moonraker-telegram-bot
+  sonar
+  crowsnest
+
+Systemd unit moonraker.service:
+unit_name: moonraker.service
+is_default: True
+manager: systemd
+Properties:
+**Requires=['sysinit.target', 'system.slice', '-.mount', 'network-online.target']
+**After=['klipper.service', '-.mount', 'basic.target', 'system.slice', 'systemd-journald.socket', 'sysinit.target', 'network-online.target']
+**SupplementaryGroups=['moonraker-admin']
+**EnvironmentFiles=/home/pi/printer_data/systemd/moonraker.env
+**ExecStart=/home/pi/moonraker-env/bin/python $MOONRAKER_ARGS
+**WorkingDirectory=/home/pi/moonraker
+**FragmentPath=/etc/systemd/system/moonraker.service
+**Description=API Server for Klipper SV1
+**User=pi
+
+Systemd unit klipper.service:
+unit_name: klipper.service
+is_default: True
+manager: systemd
+Properties:
+**Requires=['system.slice', 'sysinit.target']
+**After=['system.slice', 'systemd-journald.socket', 'network-online.target', 'sysinit.target', 'basic.target']
+**SupplementaryGroups=[]
+**EnvironmentFiles=[]
+**ExecStart=/home/pi/klippy-env/bin/python /home/pi/klipper/klippy/klippy.py ${KLIPPER_CONFIG} -l ${KLIPPER_LOG} -a ${KLIPPER_SOCKET}
+**WorkingDirectory=
+**FragmentPath=/etc/systemd/system/klipper.service
+**Description=Starts Klipper and provides klippy Unix Domain Socket API
+**User=pi
+Git Repo moonraker: No warnings detected
+Git Repo klipper: No warnings detected
+Git Repo timelapse: No warnings detected
+Git Repo KlipperScreen: No warnings detected
+Git Repo beacon: No warnings detected
+Git Repo moonraker-obico: No warnings detected
+Klipper Version: v0.11.0-275-g8ef0f7d7-dirty
+2023-09-15 00:00:14,179 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:00:24,189 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:01:14,261 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:01:34,275 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:01:44,296 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:02:44,339 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:02:54,343 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:03:04,359 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:03:43,161 [websockets.py:write_to_socket()] - Websocket closed while writing: 2822910704
+2023-09-15 00:03:47,926 [websockets.py:on_close()] - Websocket Closed: ID: 2822910704 Close Code: None, Close Reason: None, Pong Time Elapsed: 45.00
+2023-09-15 00:04:04,426 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:04:14,414 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:04:24,427 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:05:24,516 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:05:34,528 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:05:44,542 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:06:44,611 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:06:54,615 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:07:04,628 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:08:04,706 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:08:14,744 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:08:24,724 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:09:24,781 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:09:44,807 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:10:44,879 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:11:04,912 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:12:04,985 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:12:25,012 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:13:25,095 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:13:45,079 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:14:45,171 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:15:05,202 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:16:05,240 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:16:25,307 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:16:35,308 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:17:25,528 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:17:45,389 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:17:55,399 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:18:55,473 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:19:05,482 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:19:15,489 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:20:15,567 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:20:25,578 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:20:35,593 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:21:35,619 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:21:45,660 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:21:55,665 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:22:55,721 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:23:05,712 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:23:15,738 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:24:15,820 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:24:35,829 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:25:35,907 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:25:55,939 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:26:55,999 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:27:16,034 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:28:16,109 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:28:36,117 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:29:36,192 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:29:56,222 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:30:56,301 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:31:16,330 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:32:16,361 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:32:36,415 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:32:45,515 [update_manager.py:_handle_auto_refresh()] - Klippy is printing, auto refresh aborted
+2023-09-15 00:32:46,420 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:33:36,940 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:33:56,506 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:34:06,517 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:35:06,586 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:35:16,587 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:35:26,606 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:36:26,673 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:36:36,679 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:36:46,691 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:37:14,096 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 10.1.2.172
+2023-09-15 00:37:14,099 [app.py:log_request()] - 101 GET /websocket (10.1.2.172) [_TRUSTED_USER_] 9.49ms
+2023-09-15 00:37:14,099 [websockets.py:open()] - Websocket Opened: ID: 2822614448, Proxied: True, User Agent: Dart/3.1 (dart:io), Host Name: troodon.local
+2023-09-15 00:37:14,103 [app.py:log_request()] - 101 GET /websocket (10.1.2.172) [_TRUSTED_USER_] 9.21ms
+2023-09-15 00:37:14,103 [websockets.py:open()] - Websocket Opened: ID: 2822612784, Proxied: True, User Agent: Dart/3.1 (dart:io), Host Name: troodon.local
+2023-09-15 00:37:14,107 [websockets.py:on_close()] - Websocket Closed: ID: 2822614448 Close Code: None, Close Reason: None, Pong Time Elapsed: 0.02
+2023-09-15 00:37:44,264 [websockets.py:write_to_socket()] - Websocket closed while writing: 2822612784
+2023-09-15 00:37:46,788 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:37:49,107 [websockets.py:on_close()] - Websocket Closed: ID: 2822612784 Close Code: None, Close Reason: None, Pong Time Elapsed: 35.01
+2023-09-15 00:37:56,782 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:38:06,798 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:39:06,880 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:39:16,861 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:39:26,898 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:40:26,972 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:40:47,005 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:41:47,068 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:42:07,084 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:42:42,107 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 127.0.0.1
+2023-09-15 00:43:07,160 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:43:27,191 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:44:27,257 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:44:47,269 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:45:07,273 [server.py:add_log_rollover_item()] - CPU Throttled Flags: ['Previously Temperature Limited']
+2023-09-15 00:45:47,343 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:46:07,359 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:47:07,432 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:47:27,453 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:47:37,467 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:47:42,107 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: fe80::ed95:29f2:b2b2:8f23
+2023-09-15 00:48:27,529 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:48:47,547 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:48:57,567 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:49:57,617 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:50:07,641 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:50:17,639 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:51:17,699 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:51:27,703 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:51:37,724 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:52:37,783 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:52:47,812 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:52:57,814 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:53:57,880 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:54:07,898 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:54:17,931 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:55:17,979 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:55:27,995 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:55:38,005 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:56:38,065 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:56:58,091 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:57:58,157 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:58:18,180 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:59:18,229 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 00:59:38,238 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:00:38,336 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:00:58,354 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:01:18,338 [server.py:add_log_rollover_item()] - CPU Throttled Flags: ['Temperature Limit Active', 'Previously Temperature Limited']
+2023-09-15 01:01:58,430 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:02:18,443 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:03:18,524 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:03:38,536 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:03:48,549 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:04:38,604 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:04:58,627 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:05:08,608 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:06:08,681 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:06:18,702 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:06:28,716 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:07:28,773 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:07:38,794 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:07:48,806 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:08:48,875 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:08:58,884 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:09:08,896 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:10:08,964 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:10:18,981 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:10:28,986 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:11:29,055 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:11:39,043 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:11:49,084 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:12:49,125 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:13:09,168 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:14:09,258 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:14:29,276 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:15:29,359 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:15:49,376 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:16:49,448 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:17:09,466 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:18:09,498 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:18:29,549 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:18:39,563 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:19:29,588 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:19:49,616 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:19:59,655 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:20:49,825 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:21:09,742 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:21:19,745 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:22:19,824 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:22:29,829 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:22:39,819 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:23:39,909 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:23:49,916 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:23:59,924 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:24:59,989 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:25:10,012 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:25:20,017 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:26:20,076 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:26:30,108 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:26:40,126 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:27:40,194 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:28:00,189 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:29:00,281 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:29:20,291 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:30:20,368 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:30:40,378 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:31:40,451 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:32:00,475 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:32:45,516 [update_manager.py:_handle_auto_refresh()] - Klippy is printing, auto refresh aborted
+2023-09-15 01:33:00,545 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:33:20,564 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:34:20,622 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:34:40,673 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:35:40,701 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:36:00,714 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:36:10,741 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:37:01,100 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:37:20,820 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:37:30,829 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:37:42,120 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 10.1.2.172
+2023-09-15 01:38:30,895 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:38:40,905 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:38:50,887 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:39:50,956 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:40:00,979 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:40:10,994 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:41:11,075 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:41:21,066 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:41:31,092 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:42:31,182 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:42:41,152 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:42:51,166 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:43:51,256 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:44:11,253 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:45:11,351 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:45:31,369 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:46:31,437 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:46:51,465 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:47:51,537 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:48:11,550 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:49:11,634 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:49:31,652 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:49:41,635 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:50:31,725 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:50:51,747 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:51:01,728 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:51:51,806 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:52:11,847 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:52:21,841 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:53:12,430 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:53:31,935 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:53:41,927 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:54:42,018 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:54:52,029 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:55:02,038 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:56:02,114 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:56:12,124 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:56:22,129 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:57:22,217 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:57:32,213 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:57:42,223 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:58:42,297 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:58:52,276 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 01:59:02,312 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:00:02,395 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:00:22,429 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:01:22,488 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:01:42,513 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:02:42,586 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:03:02,612 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:04:02,686 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:04:22,706 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:05:22,786 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:05:42,807 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:06:42,880 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:07:02,898 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:07:12,907 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:08:02,970 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:08:22,998 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:08:33,009 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:09:33,078 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:09:43,093 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:09:53,101 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:10:53,171 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:11:03,185 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:11:13,204 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:12:13,265 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:12:23,283 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:12:33,289 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:13:33,366 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:13:43,381 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:13:53,389 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:14:53,482 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:15:03,450 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:15:13,488 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:16:13,558 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:16:33,575 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:17:33,658 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:17:53,679 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:18:53,747 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:19:13,757 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:20:13,837 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:20:33,873 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:21:33,923 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:21:53,942 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:22:03,950 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:22:53,986 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:23:14,053 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:23:24,062 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:24:14,281 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:24:34,137 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:24:44,142 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:25:44,215 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:25:54,241 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:26:04,248 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:27:04,303 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:27:14,319 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:27:24,327 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:28:24,394 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:28:34,406 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:28:44,422 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:29:44,487 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:29:54,502 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:30:04,519 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:31:04,585 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:31:24,611 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:32:24,687 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:32:44,710 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:33:44,773 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:34:04,806 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:35:04,883 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:35:24,898 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:36:24,964 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:36:44,985 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:37:45,072 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:38:05,082 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:39:05,164 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:39:25,183 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:39:35,196 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:40:25,557 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:40:45,286 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:40:55,306 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:41:55,369 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:42:05,373 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:42:15,383 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:43:15,463 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:43:25,486 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:43:35,491 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:44:35,552 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:44:45,558 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:44:55,577 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:45:55,646 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:46:05,651 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:46:15,679 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:47:15,734 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:47:35,759 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:48:35,819 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:48:55,853 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:49:55,915 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:50:15,943 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:51:16,006 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:51:36,026 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:52:36,125 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:52:56,156 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:53:56,204 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:54:16,226 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:54:26,241 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:55:16,291 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:55:36,324 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:55:46,337 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:56:46,405 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:56:56,418 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:57:06,427 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:58:06,511 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:58:16,522 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:58:26,525 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:59:26,604 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:59:36,614 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 02:59:46,621 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:00:46,702 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:00:56,712 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:01:06,732 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:02:06,806 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:02:16,777 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:02:26,833 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:03:26,894 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:03:46,913 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:04:46,989 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:05:07,006 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:06:07,071 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:06:27,101 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:07:27,177 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:07:47,186 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:08:47,263 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:09:07,287 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:09:17,297 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:10:07,357 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:10:27,380 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:10:37,397 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:11:27,455 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:11:47,483 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:11:57,499 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:12:57,578 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:13:07,581 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:13:17,589 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:14:17,658 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:14:27,666 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:14:37,672 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:15:37,756 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:15:47,757 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:15:57,769 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:16:57,832 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:17:07,855 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:17:17,857 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:18:17,934 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:18:27,976 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:18:37,957 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:19:38,027 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:19:58,048 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:20:58,110 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:21:18,147 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:22:18,214 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:22:38,243 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:23:38,307 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:23:58,327 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:24:58,403 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:25:18,420 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:25:28,443 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:26:18,500 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:26:38,526 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:26:48,535 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:27:38,872 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:27:58,635 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:28:08,640 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:29:08,696 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:29:18,719 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:29:28,723 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:30:28,787 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:30:38,800 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:30:48,809 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:31:48,886 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:31:58,900 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:32:08,909 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:33:08,995 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:33:19,012 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:33:29,011 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:34:29,074 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:34:49,092 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:35:49,180 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:36:09,202 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:37:09,267 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:37:29,301 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:38:29,365 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:38:49,394 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:39:49,444 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:40:09,469 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:41:09,539 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:41:29,551 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:42:29,625 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:42:49,647 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:42:59,666 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:43:50,200 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:44:09,743 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:44:19,749 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:45:19,821 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:45:29,816 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:45:39,849 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:46:39,920 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:46:49,939 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:46:59,940 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:48:00,010 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:48:10,023 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:48:20,040 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:49:20,122 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:49:30,115 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:49:40,134 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:50:40,196 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:51:00,223 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:52:00,309 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:52:20,325 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:53:20,380 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:53:40,404 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:54:40,474 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:55:00,491 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:56:00,558 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:56:20,579 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:57:20,655 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:57:40,641 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:58:40,736 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:59:00,763 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 03:59:10,770 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:00:10,855 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:00:20,856 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:00:30,872 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:01:30,946 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:01:40,961 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:01:50,971 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:02:51,042 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:03:01,054 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:03:11,074 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:04:11,158 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:04:21,157 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:04:31,169 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:05:31,233 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:05:41,229 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:05:51,260 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:06:51,326 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:07:11,347 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:08:11,411 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:08:31,436 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:09:31,505 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:09:51,538 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:10:51,592 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:11:11,600 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:12:11,694 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:12:31,716 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:13:31,771 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:13:51,790 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:14:01,815 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:14:51,898 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:15:11,896 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:15:21,914 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:16:21,979 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:16:31,992 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:16:42,002 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:17:42,093 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:17:52,099 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:18:02,120 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:19:02,181 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:19:12,196 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:19:22,218 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:20:22,287 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:20:32,313 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:20:42,308 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:21:42,376 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:21:52,401 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:22:02,394 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:23:02,460 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:23:22,490 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:24:22,571 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:24:42,582 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:25:42,651 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:26:02,662 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:27:02,748 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:27:22,774 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:28:22,841 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:28:42,865 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:29:42,946 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:30:02,939 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:30:12,981 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:31:03,202 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:31:23,068 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:31:33,073 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:32:33,146 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:32:43,159 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:32:53,181 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:33:53,248 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:34:03,226 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:34:13,269 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:35:13,344 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:35:23,357 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:35:33,369 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:36:33,422 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:36:43,434 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:36:53,454 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:37:53,521 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:38:13,534 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:39:13,600 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:39:33,624 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:40:33,700 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:40:53,722 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:41:53,796 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:42:13,824 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:43:13,891 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:43:33,911 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:44:33,985 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:44:54,016 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:45:04,031 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:45:54,078 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:46:14,119 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:46:24,126 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:47:24,187 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:47:34,200 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:47:44,220 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:48:44,290 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:48:54,299 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:49:04,321 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:50:04,371 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:50:14,388 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:50:24,394 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:51:24,466 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:51:34,473 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:51:44,487 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:52:44,558 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:52:54,542 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:53:04,581 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:54:04,650 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:54:24,670 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:55:24,737 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:55:44,766 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:56:44,828 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:57:04,858 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:58:04,937 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:58:24,953 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:59:25,025 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:59:45,047 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 04:59:55,056 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:00:45,107 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:01:05,150 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:01:15,146 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:02:05,202 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:02:25,223 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:02:35,238 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:03:35,325 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:03:45,336 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:03:55,346 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:04:55,407 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:05:05,418 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:05:15,432 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:06:15,509 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:06:25,519 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:06:35,533 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:07:35,598 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:07:45,609 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:07:55,606 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:08:55,701 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:09:05,725 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:09:15,723 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:10:15,779 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:10:35,795 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:11:35,873 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:11:55,900 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:12:55,951 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:13:15,966 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:14:16,046 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:14:36,070 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:15:36,135 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:15:56,162 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:16:56,231 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:17:16,255 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:18:16,547 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:18:36,348 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:18:46,355 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:19:46,429 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:19:56,439 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:20:06,460 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:21:06,512 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:21:16,520 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:21:26,534 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:22:26,616 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:22:36,623 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:22:46,644 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:23:46,707 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:23:56,707 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:24:06,720 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:25:06,792 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:25:26,819 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:26:26,881 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:26:46,901 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:27:46,970 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:28:06,996 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:29:07,074 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:29:27,090 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:30:27,178 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:30:47,179 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:31:47,264 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:32:07,284 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:32:17,303 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:33:07,361 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:33:27,382 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:33:37,393 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:34:27,928 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:34:47,476 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:34:57,500 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:35:57,566 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:36:07,582 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:36:17,591 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:37:17,666 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:37:27,679 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:37:37,690 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:38:37,745 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:38:47,765 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:38:57,769 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:39:57,844 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:40:07,858 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:40:17,870 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:41:17,943 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:41:37,964 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:42:38,055 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:42:58,071 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:43:58,141 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:44:18,167 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:45:18,243 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:45:38,274 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:46:38,341 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:46:58,365 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:47:58,430 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:48:18,458 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:48:28,471 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:49:18,517 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:49:38,552 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:49:48,567 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:50:48,624 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:50:58,645 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:51:08,658 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:52:08,731 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:52:18,740 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:52:28,744 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:53:28,810 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:53:38,822 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:53:48,843 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:54:48,902 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:54:58,916 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:55:08,925 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:56:08,994 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:56:19,021 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:56:29,025 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:57:29,099 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:57:49,125 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:58:49,178 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 05:59:09,202 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:00:09,267 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:00:29,289 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:01:29,362 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:01:49,382 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:02:49,457 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:03:09,490 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:03:19,501 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:04:09,552 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:04:29,571 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:04:39,580 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:05:29,723 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:05:49,666 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:05:59,677 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:06:59,744 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:07:09,756 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:07:19,763 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:08:19,863 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:08:29,859 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:08:39,875 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:09:39,948 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:09:49,954 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:09:59,965 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:11:00,050 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:11:10,071 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:11:20,077 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:12:20,141 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:12:40,152 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:13:40,232 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:14:00,256 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:15:00,313 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:15:20,347 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:16:20,399 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:16:40,429 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:17:40,499 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:18:00,519 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:19:00,586 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:19:20,615 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:19:30,639 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:20:20,686 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:20:40,711 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:20:50,733 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:21:41,018 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:22:00,803 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:22:10,820 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:23:10,893 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:23:20,906 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:23:30,918 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:24:30,984 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:24:41,003 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:24:50,999 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:25:51,082 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:26:01,089 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:26:11,108 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:27:11,170 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:27:21,180 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:27:31,192 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:28:31,267 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:28:51,291 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:29:51,359 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:30:11,378 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:31:11,451 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:31:31,490 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:32:31,551 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:32:51,572 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:33:51,658 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:34:11,686 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:35:11,743 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:35:31,767 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:36:31,835 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:36:51,870 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:37:01,882 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:37:52,319 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:38:11,957 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:38:21,962 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:39:22,032 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:39:32,045 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:39:42,054 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:40:42,122 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:40:52,137 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:41:02,148 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:42:02,223 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:42:12,233 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:42:22,246 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:43:22,307 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:43:32,325 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:43:42,335 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:44:42,399 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:45:02,426 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:46:02,501 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:46:22,517 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:47:22,587 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:47:42,613 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:48:42,693 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:49:02,716 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:50:02,761 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:50:22,808 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:51:22,874 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:51:42,898 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:51:52,912 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:52:42,961 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:53:02,985 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:53:13,006 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:54:13,070 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:54:23,092 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:54:33,096 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:55:33,158 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:55:43,171 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:55:53,182 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:56:53,271 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:57:03,275 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:57:13,283 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:58:13,348 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:58:23,360 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:58:33,375 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:59:33,445 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:59:43,426 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 06:59:53,467 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:00:53,517 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:01:13,541 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:02:13,620 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:02:33,637 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:03:33,707 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:03:53,734 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:04:53,803 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:05:13,818 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:06:13,896 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:06:33,915 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:07:33,988 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:07:54,011 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:08:04,018 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:08:54,084 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:09:14,100 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:09:24,105 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:10:24,175 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:10:34,196 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:10:44,199 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:11:44,272 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:11:54,281 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:12:04,295 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:13:04,361 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:13:14,368 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:13:24,391 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:14:24,439 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:14:34,463 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:14:44,472 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:15:44,545 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:15:54,595 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:16:04,574 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:17:04,639 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:17:24,675 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:18:24,697 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:18:44,755 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:19:44,837 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:20:04,857 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:21:04,907 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:21:24,934 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:22:24,983 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:22:45,035 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:22:55,047 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:23:45,092 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:24:05,128 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:24:15,148 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:25:05,296 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:25:25,226 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:25:35,247 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:26:35,319 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:26:45,329 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:26:55,335 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:27:55,407 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:28:05,408 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:28:15,427 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:29:15,496 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:29:25,509 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:29:35,517 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:30:35,593 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:30:45,601 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:30:55,612 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:31:55,681 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:32:15,703 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:33:15,778 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:33:35,813 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:34:35,872 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:34:55,895 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:35:55,976 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:36:15,999 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:37:16,064 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:37:36,088 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:38:36,156 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:38:56,183 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:39:06,192 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:39:56,255 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:40:16,263 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:41:16,570 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:41:36,378 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:41:46,378 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:42:46,454 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:42:56,463 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:43:06,472 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:44:06,535 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:44:16,551 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:44:26,560 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:45:26,637 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:45:36,663 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:45:46,655 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:46:46,733 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:46:56,739 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:47:06,753 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:48:06,824 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:48:26,839 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:49:26,906 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:49:46,939 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:50:46,995 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:51:07,016 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:52:07,092 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:52:27,123 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:53:27,192 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:53:47,200 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:54:47,285 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:55:07,304 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:56:07,390 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:56:27,421 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:56:37,418 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:57:27,956 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:57:47,496 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:57:57,512 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:58:57,580 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:59:07,599 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 07:59:17,609 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:00:17,674 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:00:27,692 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:00:37,703 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:01:37,761 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:01:47,776 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:01:57,786 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:02:57,864 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:03:07,874 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:03:17,873 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:04:17,945 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:04:37,969 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:05:38,051 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:05:58,069 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:06:58,137 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:07:18,169 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:08:18,247 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:08:38,245 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:09:38,324 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:09:58,346 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:10:58,420 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:11:18,446 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:11:28,443 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:12:18,487 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:12:38,525 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:12:48,530 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:13:48,620 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:13:58,629 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:14:08,639 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:14:24,437 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: fe80::ed95:29f2:b2b2:8f23
+2023-09-15 08:14:24,450 [app.py:prepare()] - Upload Request Received from fe80::ed95:29f2:b2b2:8f23
+2023-09-15 08:14:24,813 [app.py:post()] - Processing Uploaded File: Basic_Blade-Troodon 300-PCCF.gcode
+2023-09-15 08:14:25,037 [shell_command.py:pipe_data_received()] - INFO:metadata:Object Processing is disabled
+
+2023-09-15 08:14:25,131 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/gcode_files -f "Basic_Blade-Troodon 300-PCCF.gcode") successfully finished
+2023-09-15 08:14:25,148 [app.py:log_request()] - 201 POST /api/files/local (fe80::ed95:29f2:b2b2:8f23) [_TRUSTED_USER_] 699.28ms
+2023-09-15 08:14:25,214 [job_state.py:_status_update()] - Job Started: Basic_Blade-Troodon 300-PCCF.gcode
+2023-09-15 08:15:08,696 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:15:18,708 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:15:28,725 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:16:28,785 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:16:38,798 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:16:48,806 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:17:48,881 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:17:58,889 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:18:08,915 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:19:08,994 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:19:19,048 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:19:29,019 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:20:29,063 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:20:49,086 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:21:49,179 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:22:09,208 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:23:09,259 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:23:29,305 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:24:29,345 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:24:49,366 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:25:49,457 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:26:09,465 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:27:09,522 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:27:29,557 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:27:39,562 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:28:29,879 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:28:49,660 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:28:59,657 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:29:59,738 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:30:09,717 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:30:19,769 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:31:19,815 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:31:29,818 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:31:39,833 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:32:39,915 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:32:49,919 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:32:59,949 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:34:00,002 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:34:10,034 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:34:20,031 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:35:20,112 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:35:40,137 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:36:40,210 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:37:00,247 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:38:00,302 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:38:20,322 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:39:20,384 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:39:40,413 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:40:40,469 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:41:00,507 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:42:00,557 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:42:20,595 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:43:20,666 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:43:40,694 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:43:50,697 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:44:41,178 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:45:00,783 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:45:10,799 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:46:10,857 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:46:20,872 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:46:30,853 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:47:30,946 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:47:40,945 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:47:50,960 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:48:51,046 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:49:01,058 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:49:11,066 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:50:11,146 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:50:21,125 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:50:31,159 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:51:31,252 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:51:51,273 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:52:51,343 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:53:11,352 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:54:11,422 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:54:31,457 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:55:31,521 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:55:51,542 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:56:51,615 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:57:11,608 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:58:11,699 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:58:31,722 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:58:41,744 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:59:31,761 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 08:59:51,803 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:00:01,841 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:00:52,399 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:01:11,911 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:01:21,926 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:02:21,992 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:02:32,011 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:02:42,006 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:03:42,079 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:03:52,082 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:04:02,102 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:05:02,158 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:05:12,169 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:05:22,182 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:06:22,246 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:06:32,237 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:06:42,272 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:07:42,352 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:08:02,367 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:09:02,430 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:09:22,466 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:10:22,517 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:10:42,525 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:11:42,629 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:12:02,643 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:13:02,717 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:13:22,733 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:14:22,797 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:14:42,804 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:14:52,831 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:15:42,891 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:16:02,929 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:16:12,941 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:17:12,997 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:17:23,020 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:17:33,015 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:17:42,227 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: fe80::ed95:29f2:b2b2:8f23
+2023-09-15 09:18:33,096 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:18:43,102 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:18:53,116 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:19:53,198 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:20:03,191 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:20:13,213 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:21:13,276 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:21:23,289 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:21:33,294 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:22:33,366 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:22:43,374 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:22:53,390 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:23:53,433 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:24:13,455 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:25:13,561 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:25:33,578 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:26:33,671 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:26:53,691 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:27:53,750 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:28:13,762 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:29:13,843 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:29:33,870 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:30:33,925 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:30:53,947 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:31:03,964 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:31:54,041 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:32:14,043 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:32:24,059 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:33:24,133 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:33:34,152 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:33:44,158 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:34:44,218 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:34:54,231 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:35:04,242 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:36:04,318 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:36:14,328 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:36:24,343 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:37:24,402 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:37:34,418 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:37:44,433 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:38:44,489 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:38:54,536 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:39:04,512 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:40:04,578 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:40:24,608 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:41:24,671 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:41:44,693 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:42:44,767 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:43:04,781 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:44:04,859 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:44:24,874 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:45:24,969 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:45:44,945 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:46:45,021 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:47:05,074 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:47:15,083 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:48:05,314 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:48:25,169 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:48:35,140 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:49:35,240 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:49:45,250 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:49:55,261 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:50:55,329 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:51:05,346 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:51:15,355 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:52:15,413 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:52:25,423 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:52:35,440 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:53:35,523 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:53:45,514 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:53:55,541 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:54:55,603 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:55:15,630 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:56:15,697 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:56:35,719 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:57:35,785 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:57:55,809 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:58:55,865 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 09:59:15,884 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:00:15,963 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:00:35,963 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:01:36,053 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:01:56,050 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:02:56,154 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:03:16,191 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:03:26,187 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:04:16,631 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:04:36,273 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:04:46,248 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:05:46,358 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:05:56,362 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:06:06,370 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:07:06,431 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:07:16,444 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:07:26,456 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:08:26,537 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:08:36,556 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:08:46,525 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:09:46,621 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:09:56,640 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:10:06,651 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:11:06,730 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:11:26,754 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:12:26,822 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:12:46,825 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:13:46,918 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:14:06,945 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:15:07,050 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:15:27,041 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:16:27,120 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:16:47,130 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:17:47,233 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:18:07,241 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:18:17,248 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:19:07,317 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:19:27,331 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:19:37,349 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:20:27,927 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:20:47,432 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:20:57,443 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:21:57,507 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:22:07,517 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:22:17,532 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:23:17,621 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:23:27,628 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:23:37,643 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:24:37,708 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:24:41,610 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: fe80::ed95:29f2:b2b2:8f23
+2023-09-15 10:24:41,622 [app.py:prepare()] - Upload Request Received from fe80::ed95:29f2:b2b2:8f23
+2023-09-15 10:24:41,772 [app.py:post()] - Processing Uploaded File: Basic_Blade-Troodon 300-PCCF.gcode
+2023-09-15 10:24:41,982 [shell_command.py:pipe_data_received()] - INFO:metadata:Object Processing is disabled
+
+2023-09-15 10:24:42,073 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/gcode_files -f "Basic_Blade-Troodon 300-PCCF.gcode") successfully finished
+2023-09-15 10:24:42,096 [app.py:log_request()] - 201 POST /api/files/local (fe80::ed95:29f2:b2b2:8f23) [_TRUSTED_USER_] 475.62ms
+2023-09-15 10:24:42,275 [job_state.py:_status_update()] - Job Started: Basic_Blade-Troodon 300-PCCF.gcode
+2023-09-15 10:24:47,712 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:24:57,726 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:25:57,806 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:26:07,807 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:26:17,826 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:27:17,904 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:27:37,918 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:28:37,988 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:28:58,008 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:29:58,109 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:30:18,127 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:31:18,178 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:31:38,197 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:32:38,294 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:32:58,321 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:33:08,327 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:33:58,372 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:34:18,397 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:34:28,407 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:35:18,454 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:35:38,487 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:35:48,496 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:36:48,565 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:36:58,567 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:37:08,584 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:38:08,655 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:38:18,656 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:38:28,669 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:39:28,733 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:39:38,749 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:39:48,762 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:40:48,840 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:40:58,842 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:41:08,870 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:42:08,930 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:42:18,927 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:42:28,946 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:43:29,035 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:43:49,060 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:44:49,134 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:45:09,157 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:46:09,225 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:46:29,253 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:47:29,325 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:47:49,343 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:48:49,408 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:49:09,428 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:50:09,513 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:50:29,538 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:50:39,547 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:51:29,601 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:51:49,633 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:51:59,646 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:52:59,718 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:53:09,723 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:53:19,737 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:54:19,801 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:54:29,824 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:54:39,834 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:55:39,913 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:55:49,916 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:55:59,933 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:56:59,991 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:57:10,007 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:57:20,024 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:58:20,093 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:58:30,099 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:58:40,120 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 10:59:40,184 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 11:00:00,214 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 11:01:00,286 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 11:01:20,316 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 11:02:20,378 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 11:02:40,401 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 11:03:40,477 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 11:04:00,499 [machine.py:_find_public_ip()] - Detected Local IP: 10.1.2.174
+2023-09-15 11:04:07,834 [job_state.py:_status_update()] - Job Started: Basic_Blade-Troodon 300-PCCF.gcode
+-------------------- Log Start | Fri Sep 15 17:56:26 2023 --------------------
+data_path: /home/pi/printer_data
+is_default_data_path: False
+config_file: /home/pi/klipper_config/moonraker.conf
+startup_warnings: []
+verbose: False
+debug: False
+asyncio_debug: False
+is_backup_config: False
+is_python_package: False
+instance_uuid: b16ee62a77224e56a3881e13476ca1fa
+unix_socket_path: /home/pi/printer_data/comms/moonraker.sock
+software_version: v0.8.0-139-g3d9052d
+git_branch: master
+git_remote: origin
+git_repo_url: https://github.com/arksine/moonraker.git
+modified_files: []
+unofficial_components: []
+log_file: /home/pi/klipper_logs/moonraker.log
+python_version: 3.7.3 (default, Jan 22 2021, 20:04:44)  [GCC 8.3.0]
+2023-09-15 10:56:26,141 [confighelper.py:read_file()] - Configuration File '/home/pi/klipper_config/moonraker.conf' parsed, total size: 2550 B
+2023-09-15 10:56:26,142 [server.py:add_log_rollover_item()] - 
+#################### Moonraker Configuration ####################
+
+[server]
+host = 0.0.0.0
+port = 7125
+temperature_store_size = 600
+gcode_store_size = 1000
+
+[authorization]
+force_logins = True
+cors_domains = 
+	*.local
+	*.lan
+	*://app.fluidd.xyz
+trusted_clients = 
+	10.0.0.0/8
+	127.0.0.1
+	127.0.0.0/8
+	169.254.0.0/16
+	172.16.0.0/12
+	192.168.0.0/16
+	100.113.82.57
+	100.74.78.66
+	FE80::/10
+	::1/128
+
+[octoprint_compat]
+
+[history]
+
+[update_manager]
+enable_auto_refresh = True
+
+[update_manager mainsail]
+type = web
+repo = mainsail-crew/mainsail
+path = ~/mainsail
+
+[timelapse]
+output_path = ~/timelapse/
+frame_path = /tmp/timelapse/
+ffmpeg_binary_path = /usr/bin/ffmpeg
+
+[job_queue]
+load_on_startup = False
+
+[update_manager timelapse]
+type = git_repo
+primary_branch = main
+path = ~/moonraker-timelapse
+origin = https://github.com/mainsail-crew/moonraker-timelapse.git
+managed_services = klipper moonraker
+
+[update_manager KlipperScreen]
+type = git_repo
+path = /home/pi/KlipperScreen
+origin = https://github.com/jordanruthe/KlipperScreen.git
+env = /home/pi/.KlipperScreen-env/bin/python
+requirements = scripts/KlipperScreen-requirements.txt
+install_script = scripts/KlipperScreen-install.sh
+
+[update_manager crowsnest]
+primary_branch = legacy/v3
+type = git_repo
+path = ~/crowsnest
+origin = https://github.com/mainsail-crew/crowsnest.git
+install_script = tools/pkglist.sh
+
+[update_manager beacon]
+type = git_repo
+channel = dev
+path = ~/beacon_klipper
+origin = https://github.com/beacon3d/beacon_klipper.git
+env = ~/klippy-env/bin/python
+requirements = requirements.txt
+install_script = install.sh
+is_system_service = False
+managed_services = klipper
+info_tags = 
+	desc=Beacon Surface Scanner
+
+[update_manager moonraker-obico]
+type = git_repo
+path = ~/moonraker-obico
+origin = https://github.com/TheSpaghettiDetective/moonraker-obico.git
+env = /home/pi/moonraker-env/bin/python
+requirements = requirements.txt
+install_script = install.sh
+managed_services = 
+	moonraker-obico
+
+#################################################################
+All Configuration Files:
+/home/pi/klipper_config/moonraker.conf
+/home/pi/klipper_config/moonraker-obico-update.cfg
+#################################################################
+2023-09-15 10:56:26,207 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /server/logs/rollover
+2023-09-15 10:56:26,208 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.logs.rollover
+2023-09-15 10:56:26,208 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /server/info
+2023-09-15 10:56:26,208 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.info
+2023-09-15 10:56:26,209 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /server/config
+2023-09-15 10:56:26,209 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.config
+2023-09-15 10:56:26,209 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /server/restart
+2023-09-15 10:56:26,209 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.restart
+2023-09-15 10:56:26,538 [server.py:load_component()] - Component (dbus_manager) loaded
+2023-09-15 10:56:26,819 [server.py:add_log_rollover_item()] - Unsafe Shutdown Count: 199
+2023-09-15 10:56:27,089 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /server/database/list
+2023-09-15 10:56:27,090 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.database.list
+2023-09-15 10:56:27,090 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET POST DELETE) /server/database/item
+2023-09-15 10:56:27,090 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.database.get_item, server.database.post_item, server.database.delete_item
+2023-09-15 10:56:27,090 [server.py:load_component()] - Component (database) loaded
+2023-09-15 10:56:27,238 [file_manager.py:__init__()] - Using File System Observer: inotify
+2023-09-15 10:56:27,305 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /server/files/list
+2023-09-15 10:56:27,306 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.files.list
+2023-09-15 10:56:27,306 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /server/files/metadata
+2023-09-15 10:56:27,307 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.files.metadata
+2023-09-15 10:56:27,307 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /server/files/metascan
+2023-09-15 10:56:27,307 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.files.metascan
+2023-09-15 10:56:27,307 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /server/files/thumbnails
+2023-09-15 10:56:27,308 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.files.thumbnails
+2023-09-15 10:56:27,308 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /server/files/roots
+2023-09-15 10:56:27,308 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.files.roots
+2023-09-15 10:56:27,308 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET POST DELETE) /server/files/directory
+2023-09-15 10:56:27,309 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.files.get_directory, server.files.post_directory, server.files.delete_directory
+2023-09-15 10:56:27,309 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /server/files/move
+2023-09-15 10:56:27,309 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.files.move
+2023-09-15 10:56:27,309 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /server/files/copy
+2023-09-15 10:56:27,310 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.files.copy
+2023-09-15 10:56:27,310 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /server/files/zip
+2023-09-15 10:56:27,310 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.files.zip
+2023-09-15 10:56:27,310 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.files.delete_file
+2023-09-15 10:56:27,330 [server.py:load_component()] - Component (file_manager) loaded
+2023-09-15 10:56:27,336 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /printer/print/pause
+2023-09-15 10:56:27,337 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.print.pause
+2023-09-15 10:56:27,337 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /printer/print/resume
+2023-09-15 10:56:27,338 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.print.resume
+2023-09-15 10:56:27,338 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /printer/print/cancel
+2023-09-15 10:56:27,338 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.print.cancel
+2023-09-15 10:56:27,338 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /printer/print/start
+2023-09-15 10:56:27,338 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.print.start
+2023-09-15 10:56:27,339 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /printer/restart
+2023-09-15 10:56:27,339 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.restart
+2023-09-15 10:56:27,339 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /printer/firmware_restart
+2023-09-15 10:56:27,339 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.firmware_restart
+2023-09-15 10:56:27,339 [server.py:load_component()] - Component (klippy_apis) loaded
+2023-09-15 10:56:28,052 [server.py:load_component()] - Component (secrets) loaded
+2023-09-15 10:56:28,076 [server.py:load_component()] - Component (template) loaded
+2023-09-15 10:56:28,219 [server.py:add_log_rollover_item()] - 
+System Info:
+
+***python***
+  version: sys.version_info(major=3, minor=7, micro=3, releaselevel='final', serial=0)
+  version_string: 3.7.3 (default, Jan 22 2021, 20:04:44)  [GCC 8.3.0]
+
+***cpu_info***
+  cpu_count: 4
+  bits: 32bit
+  processor: armv7l
+  cpu_desc: ARMv7 Processor rev 3 (v7l)
+  serial_number: 10000000fd037551
+  hardware_desc: BCM2711
+  model: Raspberry Pi 4 Model B Rev 1.4
+  total_memory: 1734408
+  memory_units: kB
+
+***sd_info***
+  manufacturer_id: 03
+  manufacturer: Sandisk
+  oem_id: 5344
+  product_name: SB16G
+  product_revision: 8.0
+  serial_number: aee62172
+  manufacturer_date: 3/2020
+  capacity: 14.8 GiB
+  total_bytes: 15931539456
+
+***distribution***
+  name: Raspbian GNU/Linux 10 (buster)
+  id: raspbian
+  version: 10
+  version_parts: {'major': '10', 'minor': '', 'build_number': ''}
+  like: debian
+  codename: buster
+  release_info: {'name': 'MainsailOS', 'version_id': '0.7.1', 'codename': 'buster', 'id': 'mainsailos'}
+
+***virtualization***
+  virt_type: none
+  virt_identifier: none
+
+***network***
+
+***canbus***
+
+***Allowed Services***
+  klipper_mcu
+  webcamd
+  MoonCord
+  KlipperScreen
+  moonraker-telegram-bot
+  sonar
+  crowsnest
+2023-09-15 10:56:28,227 [server.py:load_component()] - Component (shell_command) loaded
+2023-09-15 10:56:28,227 [machine.py:__init__()] - Using System Provider: systemd_dbus
+2023-09-15 10:56:28,228 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /machine/reboot
+2023-09-15 10:56:28,229 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: machine.reboot
+2023-09-15 10:56:28,229 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /machine/shutdown
+2023-09-15 10:56:28,229 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: machine.shutdown
+2023-09-15 10:56:28,229 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /machine/services/restart
+2023-09-15 10:56:28,229 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: machine.services.restart
+2023-09-15 10:56:28,230 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /machine/services/stop
+2023-09-15 10:56:28,230 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: machine.services.stop
+2023-09-15 10:56:28,230 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /machine/services/start
+2023-09-15 10:56:28,231 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: machine.services.start
+2023-09-15 10:56:28,231 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /machine/system_info
+2023-09-15 10:56:28,231 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: machine.system_info
+2023-09-15 10:56:28,231 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /machine/sudo/info
+2023-09-15 10:56:28,231 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: machine.sudo.info
+2023-09-15 10:56:28,232 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /machine/sudo/password
+2023-09-15 10:56:28,232 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: machine.sudo.password
+2023-09-15 10:56:28,234 [server.py:load_component()] - Component (machine) loaded
+2023-09-15 10:56:28,242 [server.py:add_warning()] - [server]: Option 'temperature_store_size' has been moved to section [data_store].  Please correct your configuration, see https://moonraker.readthedocs.io/en/latest/configuration/#option-moved-deprecations for detailed documentation.
+2023-09-15 10:56:28,243 [server.py:add_warning()] - [server]: Option 'gcode_store_size' has been moved to section [data_store].  Please correct your configuration, see https://moonraker.readthedocs.io/en/latest/configuration/#option-moved-deprecations for detailed documentation.
+2023-09-15 10:56:28,243 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /server/temperature_store
+2023-09-15 10:56:28,243 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.temperature_store
+2023-09-15 10:56:28,243 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /server/gcode_store
+2023-09-15 10:56:28,244 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.gcode_store
+2023-09-15 10:56:28,244 [server.py:load_component()] - Component (data_store) loaded
+2023-09-15 10:56:28,258 [proc_stats.py:__init__()] - Detected 'vcgencmd', throttle checking enabled
+2023-09-15 10:56:28,259 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /machine/proc_stats
+2023-09-15 10:56:28,259 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: machine.proc_stats
+2023-09-15 10:56:28,259 [server.py:load_component()] - Component (proc_stats) loaded
+2023-09-15 10:56:28,266 [server.py:load_component()] - Component (job_state) loaded
+2023-09-15 10:56:28,279 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST DELETE) /server/job_queue/job
+2023-09-15 10:56:28,280 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.job_queue.post_job, server.job_queue.delete_job
+2023-09-15 10:56:28,280 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /server/job_queue/pause
+2023-09-15 10:56:28,280 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.job_queue.pause
+2023-09-15 10:56:28,280 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /server/job_queue/start
+2023-09-15 10:56:28,281 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.job_queue.start
+2023-09-15 10:56:28,281 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /server/job_queue/status
+2023-09-15 10:56:28,281 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.job_queue.status
+2023-09-15 10:56:28,281 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /server/job_queue/jump
+2023-09-15 10:56:28,282 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.job_queue.jump
+2023-09-15 10:56:28,282 [server.py:load_component()] - Component (job_queue) loaded
+2023-09-15 10:56:28,333 [server.py:load_component()] - Component (http_client) loaded
+2023-09-15 10:56:28,355 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /server/announcements/list
+2023-09-15 10:56:28,356 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.announcements.list
+2023-09-15 10:56:28,356 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /server/announcements/dismiss
+2023-09-15 10:56:28,356 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.announcements.dismiss
+2023-09-15 10:56:28,356 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /server/announcements/update
+2023-09-15 10:56:28,357 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.announcements.update
+2023-09-15 10:56:28,357 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST DELETE) /server/announcements/feed
+2023-09-15 10:56:28,357 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.announcements.post_feed, server.announcements.delete_feed
+2023-09-15 10:56:28,358 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /server/announcements/feeds
+2023-09-15 10:56:28,358 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.announcements.feeds
+2023-09-15 10:56:28,358 [server.py:load_component()] - Component (announcements) loaded
+2023-09-15 10:56:28,369 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /server/webcams/list
+2023-09-15 10:56:28,369 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.webcams.list
+2023-09-15 10:56:28,369 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET POST DELETE) /server/webcams/item
+2023-09-15 10:56:28,370 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.webcams.get_item, server.webcams.post_item, server.webcams.delete_item
+2023-09-15 10:56:28,370 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /server/webcams/test
+2023-09-15 10:56:28,370 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.webcams.test
+2023-09-15 10:56:28,370 [server.py:load_component()] - Component (webcam) loaded
+2023-09-15 10:56:28,378 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: connection.send_event
+2023-09-15 10:56:28,379 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /server/extensions/list
+2023-09-15 10:56:28,379 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.extensions.list
+2023-09-15 10:56:28,379 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /server/extensions/request
+2023-09-15 10:56:28,380 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.extensions.request
+2023-09-15 10:56:28,380 [server.py:load_component()] - Component (extensions) loaded
+2023-09-15 10:56:28,380 [server.py:load_component()] - Unable to load component: (timelapse)
+Traceback (most recent call last):
+  File "/home/pi/moonraker/moonraker/server.py", line 269, in load_component
+    module = importlib.import_module(full_name)
+  File "/home/pi/moonraker-env/lib/python3.7/importlib/__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1006, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 983, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 965, in _find_and_load_unlocked
+ModuleNotFoundError: No module named 'moonraker.components.timelapse'
+2023-09-15 10:56:28,391 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /api/version
+2023-09-15 10:56:28,391 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /api/server
+2023-09-15 10:56:28,392 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /api/login
+2023-09-15 10:56:28,392 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /api/currentuser
+2023-09-15 10:56:28,392 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /api/settings
+2023-09-15 10:56:28,393 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /api/job
+2023-09-15 10:56:28,393 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /api/printer
+2023-09-15 10:56:28,393 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /api/printer/command
+2023-09-15 10:56:28,393 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /api/printerprofiles
+2023-09-15 10:56:28,394 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /api/files/moonraker/(?P<relative_path>.+)
+2023-09-15 10:56:28,395 [server.py:load_component()] - Component (octoprint_compat) loaded
+2023-09-15 10:56:28,408 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET DELETE) /server/history/job
+2023-09-15 10:56:28,408 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.history.get_job, server.history.delete_job
+2023-09-15 10:56:28,408 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /server/history/list
+2023-09-15 10:56:28,409 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.history.list
+2023-09-15 10:56:28,409 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /server/history/totals
+2023-09-15 10:56:28,409 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.history.totals
+2023-09-15 10:56:28,409 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /server/history/reset_totals
+2023-09-15 10:56:28,409 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: server.history.reset_totals
+2023-09-15 10:56:28,410 [server.py:load_component()] - Component (history) loaded
+2023-09-15 10:56:28,571 [base_deploy.py:log_info()] - Git Repo moonraker: Detected virtualenv: /home/pi/moonraker-env
+2023-09-15 10:56:28,575 [base_deploy.py:log_info()] - Git Repo klipper: Detected virtualenv: /home/pi/klippy-env
+2023-09-15 10:56:28,580 [base_deploy.py:log_info()] - Git Repo KlipperScreen: Option 'env' is deprecated, use 'virtualenv' instead.
+2023-09-15 10:56:28,581 [base_deploy.py:log_info()] - Git Repo KlipperScreen: Detected virtualenv: /home/pi/.KlipperScreen-env
+2023-09-15 10:56:28,588 [server.py:add_warning()] - [update_manager]: Failed to load extension crowsnest: Invalid path for option `install_script` in section [update_manager crowsnest]: Path `/home/pi/crowsnest/tools/pkglist.sh` does not exist
+2023-09-15 10:56:28,590 [base_deploy.py:log_info()] - Git Repo beacon: Option 'env' is deprecated, use 'virtualenv' instead.
+2023-09-15 10:56:28,591 [base_deploy.py:log_info()] - Git Repo beacon: Detected virtualenv: /home/pi/klippy-env
+2023-09-15 10:56:28,593 [base_deploy.py:log_info()] - Git Repo moonraker-obico: Option 'env' is deprecated, use 'virtualenv' instead.
+2023-09-15 10:56:28,594 [base_deploy.py:log_info()] - Git Repo moonraker-obico: Detected virtualenv: /home/pi/moonraker-env
+2023-09-15 10:56:28,615 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /machine/update/moonraker
+2023-09-15 10:56:28,616 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: machine.update.moonraker
+2023-09-15 10:56:28,616 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /machine/update/klipper
+2023-09-15 10:56:28,616 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: machine.update.klipper
+2023-09-15 10:56:28,616 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /machine/update/system
+2023-09-15 10:56:28,617 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: machine.update.system
+2023-09-15 10:56:28,617 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /machine/update/client
+2023-09-15 10:56:28,617 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: machine.update.client
+2023-09-15 10:56:28,617 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /machine/update/full
+2023-09-15 10:56:28,618 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: machine.update.full
+2023-09-15 10:56:28,618 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /machine/update/status
+2023-09-15 10:56:28,618 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: machine.update.status
+2023-09-15 10:56:28,618 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /machine/update/refresh
+2023-09-15 10:56:28,619 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: machine.update.refresh
+2023-09-15 10:56:28,619 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /machine/update/recover
+2023-09-15 10:56:28,619 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: machine.update.recover
+2023-09-15 10:56:28,619 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /machine/update/rollback
+2023-09-15 10:56:28,620 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: machine.update.rollback
+2023-09-15 10:56:28,620 [server.py:load_component()] - Component (update_manager) loaded
+2023-09-15 10:56:28,776 [authorization.py:__init__()] - Authorization Configuration Loaded
+Trusted Clients:
+127.0.0.1
+100.113.82.57
+100.74.78.66
+10.0.0.0/8
+127.0.0.0/8
+169.254.0.0/16
+172.16.0.0/12
+192.168.0.0/16
+fe80::/10
+::1/128
+CORS Domains:
+.*\.local
+.*\.lan
+.*://app\.fluidd\.xyz
+2023-09-15 10:56:28,776 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /access/login
+2023-09-15 10:56:28,777 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: access.login
+2023-09-15 10:56:28,777 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /access/logout
+2023-09-15 10:56:28,777 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: access.logout
+2023-09-15 10:56:28,777 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /access/refresh_jwt
+2023-09-15 10:56:28,778 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: access.refresh_jwt
+2023-09-15 10:56:28,778 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET POST DELETE) /access/user
+2023-09-15 10:56:28,778 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: access.get_user, access.post_user, access.delete_user
+2023-09-15 10:56:28,778 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /access/users/list
+2023-09-15 10:56:28,779 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: access.users.list
+2023-09-15 10:56:28,779 [app.py:register_local_handler()] - Registering HTTP Endpoint: (POST) /access/user/password
+2023-09-15 10:56:28,779 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: access.user.password
+2023-09-15 10:56:28,779 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET POST) /access/api_key
+2023-09-15 10:56:28,780 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: access.get_api_key, access.post_api_key
+2023-09-15 10:56:28,780 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /access/oneshot_token
+2023-09-15 10:56:28,780 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: access.oneshot_token
+2023-09-15 10:56:28,780 [app.py:register_local_handler()] - Registering HTTP Endpoint: (GET) /access/info
+2023-09-15 10:56:28,781 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: access.info
+2023-09-15 10:56:28,781 [server.py:load_component()] - Component (authorization) loaded
+2023-09-15 10:56:28,781 [server.py:add_warning()] - Unparsed config section [timelapse] detected.  This may be the result of a component that failed to load.  In the future this will result in a startup error.
+2023-09-15 10:56:28,783 [server.py:add_warning()] - Unparsed config option 'primary_branch: legacy/v3' detected in section [update_manager crowsnest].  This may be an option no longer available or could be the result of a module that failed to load.  In the future this will result in a startup error.
+2023-09-15 10:56:28,783 [server.py:add_warning()] - Unparsed config option 'origin: https://github.com/mainsail-crew/crowsnest.git' detected in section [update_manager crowsnest].  This may be an option no longer available or could be the result of a module that failed to load.  In the future this will result in a startup error.
+2023-09-15 10:56:28,786 [server.py:_initialize_component()] - Performing Component Post Init: [dbus_manager]
+2023-09-15 10:56:28,805 [server.py:_initialize_component()] - Performing Component Post Init: [file_manager]
+2023-09-15 10:56:29,150 [server.py:_initialize_component()] - Performing Component Post Init: [machine]
+2023-09-15 10:56:29,150 [machine.py:validation_init()] - Installation version in database up to date
+2023-09-15 10:56:29,735 [machine.py:check_virt_status()] - No Virtualization Detected
+2023-09-15 10:56:29,843 [server.py:add_log_rollover_item()] - 
+Systemd unit moonraker.service:
+unit_name: moonraker.service
+is_default: True
+manager: systemd
+Properties:
+**Requires=['-.mount', 'network-online.target', 'system.slice', 'sysinit.target']
+**After=['basic.target', 'system.slice', 'klipper.service', 'network-online.target', '-.mount', 'sysinit.target', 'systemd-journald.socket']
+**SupplementaryGroups=['moonraker-admin']
+**EnvironmentFiles=/home/pi/printer_data/systemd/moonraker.env
+**ExecStart=/home/pi/moonraker-env/bin/python $MOONRAKER_ARGS
+**WorkingDirectory=/home/pi/moonraker
+**FragmentPath=/etc/systemd/system/moonraker.service
+**Description=API Server for Klipper SV1
+**User=pi
+2023-09-15 10:56:29,843 [server.py:_initialize_component()] - Performing Component Post Init: [proc_stats]
+2023-09-15 10:56:29,844 [server.py:_initialize_component()] - Performing Component Post Init: [announcements]
+2023-09-15 10:56:29,846 [server.py:_initialize_component()] - Performing Component Post Init: [webcam]
+2023-09-15 10:56:29,847 [server.py:_initialize_component()] - Performing Component Post Init: [klippy_connection]
+2023-09-15 10:56:29,848 [server.py:add_log_rollover_item()] - 
+Systemd unit klipper.service:
+unit_name: klipper.service
+is_default: True
+manager: systemd
+Properties:
+**Requires=['system.slice', 'sysinit.target']
+**After=['system.slice', 'systemd-journald.socket', 'network-online.target', 'sysinit.target', 'basic.target']
+**SupplementaryGroups=[]
+**EnvironmentFiles=[]
+**ExecStart=/home/pi/klippy-env/bin/python /home/pi/klipper/klippy/klippy.py ${KLIPPER_CONFIG} -l ${KLIPPER_LOG} -a ${KLIPPER_SOCKET}
+**WorkingDirectory=
+**FragmentPath=/etc/systemd/system/klipper.service
+**Description=Starts Klipper and provides klippy Unix Domain Socket API
+**User=pi
+2023-09-15 10:56:29,848 [server.py:_initialize_component()] - Performing Component Post Init: [update_manager]
+2023-09-15 10:56:29,850 [server.py:_initialize_component()] - Performing Component Post Init: [authorization]
+2023-09-15 10:56:30,672 [base_deploy.py:log_info()] - PackageDeploy: PackageKit Provider Configured
+2023-09-15 10:56:30,674 [base_deploy.py:log_info()] - Git Repo moonraker: Stored pip version: 23.0
+2023-09-15 10:56:30,698 [git_deploy.py:log_repo_info()] - Git Repo moonraker Detected:
+Owner: arksine
+Repository Name: moonraker
+Path: /home/pi/moonraker
+Remote: origin
+Branch: master
+Remote URL: https://github.com/arksine/moonraker.git
+Recovery URL: https://github.com/arksine/moonraker.git
+Current Commit SHA: 3d9052d711464cb5ea81cde99769c8f1fd7d3f8d
+Upstream Commit SHA: 3d9052d711464cb5ea81cde99769c8f1fd7d3f8d
+Current Version: v0.8.0-139-g3d9052d7
+Upstream Version: v0.8.0-139-g3d9052d7
+Rollback Commit: fe120952ee06607d039af8f461028e9f5b817395
+Rollback Branch: master
+Rollback Version: v0.8.0-138-gfe120952
+Is Dirty: False
+Is Detached: False
+Is Shallow: False
+Commits Behind Count: 0
+Diverged: False
+2023-09-15 10:56:30,725 [git_deploy.py:log_repo_info()] - Git Repo klipper Detected:
+Owner: Klipper3d
+Repository Name: klipper
+Path: /home/pi/klipper
+Remote: origin
+Branch: master
+Remote URL: https://github.com/Klipper3d/klipper.git
+Recovery URL: https://github.com/Klipper3d/klipper.git
+Current Commit SHA: 8ef0f7d7e3d3b2ac7bc1e80ed3295ceca6bba4e7
+Upstream Commit SHA: 8ef0f7d7e3d3b2ac7bc1e80ed3295ceca6bba4e7
+Current Version: v0.11.0-275-g8ef0f7d7
+Upstream Version: v0.11.0-275-g8ef0f7d7
+Rollback Commit: 5f990f93d533247d3a675e8c423280f4333ad8ce
+Rollback Branch: master
+Rollback Version: v0.11.0-271-g5f990f93
+Is Dirty: False
+Is Detached: False
+Is Shallow: False
+Commits Behind Count: 0
+Diverged: False
+2023-09-15 10:56:30,741 [web_deploy.py:_log_client_info()] - Web Client mainsail Detected:
+Repo: mainsail-crew/mainsail
+Channel: stable
+Path: /home/pi/mainsail
+Local Version: v2.7.1
+Remote Version: v2.7.1
+Valid: True
+Fallback Client Detected: False
+Pre-release: False
+Download Url: https://github.com/mainsail-crew/mainsail/releases/download/v2.7.1/mainsail.zip
+Download Size: 2114745
+Content Type: application/zip
+Rollback Version: v2.6.2
+Rollback Repo: mainsail-crew/mainsail
+2023-09-15 10:56:30,778 [git_deploy.py:log_repo_info()] - Git Repo timelapse Detected:
+Owner: mainsail-crew
+Repository Name: moonraker-timelapse
+Path: /home/pi/moonraker-timelapse
+Remote: origin
+Branch: main
+Remote URL: https://github.com/mainsail-crew/moonraker-timelapse.git
+Recovery URL: https://github.com/mainsail-crew/moonraker-timelapse.git
+Current Commit SHA: 57bec0dec80e5058eda13cd3586bc2bda0632900
+Upstream Commit SHA: 57bec0dec80e5058eda13cd3586bc2bda0632900
+Current Version: v0.0.1-142-g57bec0de
+Upstream Version: v0.0.1-142-g57bec0de
+Rollback Commit: 57bec0dec80e5058eda13cd3586bc2bda0632900
+Rollback Branch: main
+Rollback Version: v0.0.1-142-g57bec0d
+Is Dirty: False
+Is Detached: False
+Is Shallow: False
+Commits Behind Count: 0
+Diverged: False
+2023-09-15 10:56:30,780 [base_deploy.py:log_info()] - Git Repo KlipperScreen: Stored pip version: 23.0
+2023-09-15 10:56:30,798 [git_deploy.py:log_repo_info()] - Git Repo KlipperScreen Detected:
+Owner: jordanruthe
+Repository Name: KlipperScreen
+Path: /home/pi/KlipperScreen
+Remote: origin
+Branch: master
+Remote URL: https://github.com/jordanruthe/KlipperScreen.git
+Recovery URL: https://github.com/jordanruthe/KlipperScreen.git
+Current Commit SHA: 77ecae70b2a81052e3c1f3dc54dd0097ffd4abfa
+Upstream Commit SHA: 77ecae70b2a81052e3c1f3dc54dd0097ffd4abfa
+Current Version: v0.3.5-52-g77ecae70
+Upstream Version: v0.3.5-52-g77ecae70
+Rollback Commit: 14d3fca31c2157e505f332a94e2a1e3f528a00d4
+Rollback Branch: master
+Rollback Version: v0.3.5-41-g14d3fca3
+Is Dirty: False
+Is Detached: False
+Is Shallow: False
+Commits Behind Count: 0
+Diverged: False
+2023-09-15 10:56:30,821 [git_deploy.py:log_repo_info()] - Git Repo beacon Detected:
+Owner: beacon3d
+Repository Name: beacon_klipper
+Path: /home/pi/beacon_klipper
+Remote: origin
+Branch: master
+Remote URL: https://github.com/beacon3d/beacon_klipper.git
+Recovery URL: https://github.com/beacon3d/beacon_klipper.git
+Current Commit SHA: 345b3c07faa0bb737ea146af9472a1f598bfb6f7
+Upstream Commit SHA: 345b3c07faa0bb737ea146af9472a1f598bfb6f7
+Current Version: v1.0.0-7-g345b3c07
+Upstream Version: v1.0.0-7-g345b3c07
+Rollback Commit: 1088de77ba6eb68e848ea5e613864112e67be61c
+Rollback Branch: master
+Rollback Version: v1.0.0-6-g1088de77
+Is Dirty: False
+Is Detached: False
+Is Shallow: False
+Commits Behind Count: 0
+Diverged: False
+2023-09-15 10:56:30,844 [git_deploy.py:log_repo_info()] - Git Repo moonraker-obico Detected:
+Owner: TheSpaghettiDetective
+Repository Name: moonraker-obico
+Path: /home/pi/moonraker-obico
+Remote: origin
+Branch: master
+Remote URL: https://github.com/TheSpaghettiDetective/moonraker-obico.git
+Recovery URL: https://github.com/TheSpaghettiDetective/moonraker-obico.git
+Current Commit SHA: 42ae428103982908424bb1245609b44b48e52566
+Upstream Commit SHA: 42ae428103982908424bb1245609b44b48e52566
+Current Version: v1.4.12-3-g42ae4281
+Upstream Version: v1.4.12-3-g42ae4281
+Rollback Commit: 736e1d76850b1634350213ae04f50b8dc67965a4
+Rollback Branch: master
+Rollback Version: v1.4.12-0-g736e1d76
+Is Dirty: False
+Is Detached: False
+Is Shallow: False
+Commits Behind Count: 0
+Diverged: False
+2023-09-15 10:56:30,851 [extensions.py:start_unix_server()] - Creating Unix Domain Socket at '/home/pi/printer_data/comms/moonraker.sock'
+2023-09-15 10:56:30,856 [base_deploy.py:log_info()] - PackageKit: Next refresh in: 6 Days, 12 Hours, 35 Minutes, 54 Seconds
+2023-09-15 10:56:30,856 [base_deploy.py:log_info()] - Git Repo moonraker: Next refresh in: 6 Days, 12 Hours, 36 Minutes, 9 Seconds
+2023-09-15 10:56:30,856 [base_deploy.py:log_info()] - Git Repo klipper: Next refresh in: 6 Days, 12 Hours, 36 Minutes, 5 Seconds
+2023-09-15 10:56:30,856 [base_deploy.py:log_info()] - Web Client mainsail: Next refresh in: 5 Days, 13 Hours, 14 Minutes, 1 Second
+2023-09-15 10:56:30,856 [base_deploy.py:log_info()] - Git Repo timelapse: Next refresh in: 5 Days, 13 Hours, 14 Minutes, 2 Seconds
+2023-09-15 10:56:30,856 [base_deploy.py:log_info()] - Git Repo KlipperScreen: Next refresh in: 6 Days, 12 Hours, 35 Minutes, 56 Seconds
+2023-09-15 10:56:30,856 [base_deploy.py:log_info()] - Git Repo beacon: Next refresh in: 5 Days, 13 Hours, 14 Minutes, 4 Seconds
+2023-09-15 10:56:30,856 [base_deploy.py:log_info()] - Git Repo moonraker-obico: Next refresh in: 6 Days, 12 Hours, 35 Minutes, 57 Seconds
+2023-09-15 10:56:30,857 [server.py:start_server()] - Starting Moonraker on (0.0.0.0, 7125), Hostname: troodon
+2023-09-15 10:56:30,861 [app.py:listen()] - SSL Certificate/Key not configured, aborting HTTPS Server startup
+2023-09-15 10:56:31,115 [klippy_connection.py:_do_connect()] - Klippy Connection Established
+2023-09-15 10:56:31,179 [server.py:add_log_rollover_item()] - 
+Systemd unit klipper.service:
+unit_name: klipper.service
+is_default: True
+manager: systemd
+Properties:
+**Requires=['system.slice', 'sysinit.target']
+**After=['system.slice', 'network-online.target', 'systemd-journald.socket', 'sysinit.target', 'basic.target']
+**SupplementaryGroups=[]
+**EnvironmentFiles=[]
+**ExecStart=/home/pi/klippy-env/bin/python /home/pi/klipper/klippy/klippy.py ${KLIPPER_CONFIG} -l ${KLIPPER_LOG} -a ${KLIPPER_SOCKET}
+**WorkingDirectory=
+**FragmentPath=/etc/systemd/system/klipper.service
+**Description=Starts Klipper and provides klippy Unix Domain Socket API
+**User=pi
+2023-09-15 10:56:31,432 [server.py:add_log_rollover_item()] - Klipper Version: v0.11.0-275-g8ef0f7d7-dirty
+2023-09-15 10:56:31,439 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/info
+2023-09-15 10:56:31,439 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.info
+2023-09-15 10:56:31,439 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/emergency_stop
+2023-09-15 10:56:31,440 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.emergency_stop
+2023-09-15 10:56:31,440 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/gcode/help
+2023-09-15 10:56:31,440 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.gcode.help
+2023-09-15 10:56:31,440 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/gcode/script
+2023-09-15 10:56:31,441 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.gcode.script
+2023-09-15 10:56:31,441 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/gcode/restart
+2023-09-15 10:56:31,441 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.gcode.restart
+2023-09-15 10:56:31,441 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/gcode/firmware_restart
+2023-09-15 10:56:31,442 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.gcode.firmware_restart
+2023-09-15 10:56:31,442 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/objects/list
+2023-09-15 10:56:31,442 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.objects.list
+2023-09-15 10:56:31,442 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/objects/query
+2023-09-15 10:56:31,442 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.objects.query
+2023-09-15 10:56:31,445 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/objects/subscribe
+2023-09-15 10:56:31,445 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.objects.subscribe
+2023-09-15 10:56:31,446 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/pause_resume/cancel
+2023-09-15 10:56:31,446 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.pause_resume.cancel
+2023-09-15 10:56:31,446 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/pause_resume/pause
+2023-09-15 10:56:31,447 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.pause_resume.pause
+2023-09-15 10:56:31,447 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/pause_resume/resume
+2023-09-15 10:56:31,447 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.pause_resume.resume
+2023-09-15 10:56:31,447 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/beacon/status
+2023-09-15 10:56:31,448 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.beacon.status
+2023-09-15 10:56:31,448 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/beacon/dump
+2023-09-15 10:56:31,448 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.beacon.dump
+2023-09-15 10:56:31,448 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/motion_report/dump_stepper
+2023-09-15 10:56:31,448 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.motion_report.dump_stepper
+2023-09-15 10:56:31,449 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/query_endstops/status
+2023-09-15 10:56:31,449 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.query_endstops.status
+2023-09-15 10:56:31,915 [announcements.py:_fetch_moonlight()] - Failed to update subscription 'moonraker': [Errno -3] Temporary failure in name resolution
+2023-09-15 10:56:32,613 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 127.0.0.1
+2023-09-15 10:56:32,638 [app.py:log_request()] - 101 GET /websocket?token=GJCTXMPGU5MCBSN3TCKQFWJX2KSCEUQB (127.0.0.1) [_TRUSTED_USER_] 2.55ms
+2023-09-15 10:56:32,638 [websockets.py:open()] - Websocket Opened: ID: 2823187056, Proxied: False, User Agent: , Host Name: 127.0.0.1
+2023-09-15 10:56:33,102 [file_manager.py:get_file_list()] - Updating File List <gcodes>...
+2023-09-15 10:56:33,933 [announcements.py:_fetch_moonlight()] - Failed to update subscription 'klipper': [Errno -3] Temporary failure in name resolution
+2023-09-15 10:56:44,335 [klippy_connection.py:_request_initial_subscriptions()] - Webhooks Subscribed
+2023-09-15 10:56:44,338 [klippy_connection.py:_request_initial_subscriptions()] - GCode Output Subscribed
+2023-09-15 10:56:44,340 [app.py:register_remote_handler()] - Registering HTTP endpoint: (GET POST) /printer/motion_report/dump_trapq
+2023-09-15 10:56:44,340 [websockets.py:register_api_handler()] - Registering Websocket JSON-RPC methods: printer.motion_report.dump_trapq
+2023-09-15 10:56:44,584 [job_state.py:_handle_started()] - Job state initialized: standby
+2023-09-15 10:56:44,845 [klippy_connection.py:_check_ready()] - Klippy ready
+2023-09-15 10:56:45,350 [data_store.py:_init_sensors()] - Configuring available sensors: ['temperature_sensor beacon_coil', 'temperature_sensor CHAMBER', 'heater_bed', 'temperature_sensor raspberry_pi', 'temperature_sensor mcu_temp', 'extruder']
+2023-09-15 11:10:10,823 [machine.py:_find_public_ip()] - Failed to detect local IP address
+2023-09-15 11:10:20,840 [machine.py:_find_public_ip()] - Detected Local IP: 192.168.1.229
+2023-09-15 11:10:20,843 [webcam.py:_set_default_host_ip()] - Default public webcam address set: http://192.168.1.229

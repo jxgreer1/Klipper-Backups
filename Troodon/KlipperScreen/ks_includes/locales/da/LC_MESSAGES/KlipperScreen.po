@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: KlipperScreen\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-30 18:17-0300\n"
+"POT-Creation-Date: 2023-09-12 08:17-0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: SRBJ\n"
 "Language-Team: \n"
@@ -38,21 +38,24 @@ msgstr "Acceleration:"
 msgid "Accept"
 msgstr "OK"
 
-msgid "Actions"
-msgstr "Muligheder"
-
 msgid "Add profile"
+msgstr ""
+
+msgid "All"
 msgstr ""
 
 msgid "Apply"
 msgstr ""
 
 #, python-format
-msgid "Apply %.2f offset to Endstop?"
+msgid "Apply %s%.3f offset to Endstop?"
 msgstr ""
 
 #, python-format
-msgid "Apply %s%.2f offset to Probe?"
+msgid "Apply %s%.3f offset to Probe?"
+msgstr ""
+
+msgid "Archived"
 msgstr ""
 
 msgid "Are you sure do you want to exclude the object?"
@@ -82,6 +85,9 @@ msgstr "Automatisk kalibrering"
 msgid "Auto-close notifications"
 msgstr ""
 
+msgid "Auto-open Extrude On Pause"
+msgstr ""
+
 msgid "Auto-scroll"
 msgstr "Auto-scroll"
 
@@ -100,11 +106,11 @@ msgstr "Kalibrér"
 msgid "Calibrated"
 msgstr "Kalibreret"
 
-msgid "Calibrated, save configuration to make it permanent"
-msgstr "Kalibreret, gem konfiguration for at gøre den permanent"
-
 msgid "Calibrating"
 msgstr "Kalibrerer"
+
+msgid "Camera"
+msgstr ""
 
 msgid "Can't set above the maximum:"
 msgstr "Kan ikke indstilles over maksimum:"
@@ -142,9 +148,6 @@ msgstr "Luk"
 msgid "Complete"
 msgstr "Færdig"
 
-msgid "Configuration"
-msgstr "Konfiguration"
-
 msgid "Confirm Emergency Stop"
 msgstr "Bekræft Nødstop"
 
@@ -158,17 +161,17 @@ msgstr "Forbinder til %s"
 msgid "Console"
 msgstr "Terminal"
 
-msgid "Continue"
-msgstr "Fortsæt"
-
 msgid "Cooldown"
 msgstr "Afkøling"
+
+msgid "DPMS has failed to load and has been disabled"
+msgstr ""
 
 msgid "Date"
 msgstr "Dato"
 
-msgid "Decrease"
-msgstr "Formindsk"
+msgid "Delete Directory?"
+msgstr ""
 
 msgid "Delete File?"
 msgstr ""
@@ -178,9 +181,6 @@ msgstr "Fravælg"
 
 msgid "Disable Motors"
 msgstr "Deaktivér motorer"
-
-msgid "Disable XY"
-msgstr "Deaktivér XY"
 
 msgid "Distance (mm)"
 msgstr "Længde (mm)"
@@ -237,6 +237,9 @@ msgstr "Fil"
 msgid "File:"
 msgstr "Fil:"
 
+msgid "Filter"
+msgstr ""
+
 msgid "Finding ADXL"
 msgstr "At finde ADXL"
 
@@ -279,6 +282,9 @@ msgstr "Skjul sensorer i Temp."
 msgid "Hide temp."
 msgstr ""
 
+msgid "Home"
+msgstr "Home"
+
 msgid "Home All"
 msgstr "Home alle"
 
@@ -294,23 +300,23 @@ msgstr "Home Y"
 msgid "Home Z"
 msgstr "Home Z"
 
-msgid "Homing"
-msgstr "Homing"
-
 msgid "Host"
 msgstr ""
 
 msgid "Hostname"
 msgstr "Værtsnavn"
 
+msgid "ID"
+msgstr ""
+
 msgid "Icon Theme"
 msgstr "Ikon-tema"
 
-msgid "Increase"
-msgstr "Forøg"
-
 msgid "Initializing printer..."
 msgstr "Initialiserer printer..."
+
+msgid "Initiate a PID calibration for:"
+msgstr ""
 
 msgid "Input Shaper"
 msgstr ""
@@ -333,6 +339,9 @@ msgstr "Invertér Y"
 msgid "Invert Z"
 msgstr "Invertér Z"
 
+msgid "It may take more than 5 minutes depending on the heater power."
+msgstr ""
+
 msgid "Klipper Restart"
 msgstr "Klipper Genstart"
 
@@ -354,11 +363,18 @@ msgstr "Klipper vil genstarte"
 msgid "KlipperScreen will reboot"
 msgstr "KlipperScreen vil genstarte"
 
+msgid ""
+"LOAD_FILAMENT/UNLOAD_FILAMENT are hidden and should be used from extrude"
+msgstr ""
+
 msgid "Language"
 msgstr "Sprog"
 
 msgid "Large"
 msgstr "Stor"
+
+msgid "Last Used"
+msgstr ""
 
 msgid "Layer:"
 msgstr ""
@@ -383,6 +399,9 @@ msgstr "Makroer"
 
 msgid "Main Menu"
 msgstr "Hovedmenu"
+
+msgid "Material"
+msgstr ""
 
 msgid "Max"
 msgstr ""
@@ -423,6 +442,9 @@ msgstr "Ændret"
 msgid "Moonraker: connected"
 msgstr "Moonraker: tilsluttet"
 
+msgid "More"
+msgstr ""
+
 msgid "Move"
 msgstr "Flytning"
 
@@ -440,6 +462,9 @@ msgstr ""
 
 msgid "New"
 msgstr "Ny"
+
+msgid "No elegible macros:"
+msgstr ""
 
 msgid ""
 "Not supported for auto-detection, it needs to be configured in klipperscreen."
@@ -542,6 +567,9 @@ msgstr "Reference"
 msgid "Refresh"
 msgstr ""
 
+msgid "Rename/Move:"
+msgstr ""
+
 msgid "Restart"
 msgstr "Genstart"
 
@@ -600,10 +628,6 @@ msgstr "Vælg"
 msgid "Send"
 msgstr "Sende"
 
-#, python-format
-msgid "Sending Power ON signal to: %s"
-msgstr "Sender Power ON-signal til: %s"
-
 msgid "Set Temp"
 msgstr "Indstil Temp"
 
@@ -616,6 +640,9 @@ msgstr "At vise"
 msgid "Show Heater Power"
 msgstr ""
 
+msgid "Show Scrollbars Buttons"
+msgstr ""
+
 msgid "Shutdown"
 msgstr ""
 
@@ -624,9 +651,6 @@ msgstr "Størrelse"
 
 msgid "Slicer"
 msgstr "Slicer"
-
-msgid "Slicer Time correction (%)"
-msgstr "Slicer Tidskorrektion (%)"
 
 msgid "Slicer:"
 msgstr ""
@@ -648,6 +672,9 @@ msgstr "Hastighed:"
 
 msgid "Square Corner Velocity"
 msgstr "Hastighed for 90° hjørne"
+
+msgid "Standby"
+msgstr ""
 
 msgid "Start"
 msgstr "Start"
@@ -740,8 +767,16 @@ msgid_plural "hours"
 msgstr[0] "time"
 msgstr[1] "timer"
 
-msgid "minutes"
-msgstr "minutter"
+msgid "macros that use 'rename_existing' are hidden"
+msgstr ""
+
+msgid "macros with a name starting with '_' are hidden"
+msgstr ""
+
+msgid "minute"
+msgid_plural "minutes"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "mm"
 msgstr "mm"
@@ -754,6 +789,37 @@ msgstr "mm/s²"
 
 msgid "mm³/s"
 msgstr ""
+
+#~ msgid "Continue"
+#~ msgstr "Fortsæt"
+
+#~ msgid "Actions"
+#~ msgstr "Muligheder"
+
+#~ msgid "Configuration"
+#~ msgstr "Konfiguration"
+
+#~ msgid "Homing"
+#~ msgstr "Homing"
+
+#~ msgid "Disable XY"
+#~ msgstr "Deaktivér XY"
+
+#~ msgid "Slicer Time correction (%)"
+#~ msgstr "Slicer Tidskorrektion (%)"
+
+#~ msgid "Calibrated, save configuration to make it permanent"
+#~ msgstr "Kalibreret, gem konfiguration for at gøre den permanent"
+
+#~ msgid "Decrease"
+#~ msgstr "Formindsk"
+
+#~ msgid "Increase"
+#~ msgstr "Forøg"
+
+#, python-format
+#~ msgid "Sending Power ON signal to: %s"
+#~ msgstr "Sender Power ON-signal til: %s"
 
 #~ msgid "Sort:"
 #~ msgstr "Sortere: "
@@ -791,9 +857,6 @@ msgstr ""
 
 #~ msgid "Delete"
 #~ msgstr "Slet"
-
-#~ msgid "Home"
-#~ msgstr "Home"
 
 #~ msgid "Off"
 #~ msgstr "Sluk"

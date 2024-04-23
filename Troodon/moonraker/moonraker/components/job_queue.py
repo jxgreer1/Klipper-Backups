@@ -19,8 +19,8 @@ from typing import (
     Union,
 )
 if TYPE_CHECKING:
-    from confighelper import ConfigHelper
-    from websockets import WebRequest
+    from ..confighelper import ConfigHelper
+    from ..common import WebRequest
     from .klippy_apis import KlippyAPI
     from .file_manager.file_manager import FileManager
 
@@ -89,6 +89,8 @@ class JobQueue:
                                prev_stats: Dict[str, Any],
                                new_stats: Dict[str, Any]
                                ) -> None:
+        if not self.automatic:
+            return
         async with self.lock:
             # Transition to the next job in the queue
             if self.queue_state == "ready" and self.queued_jobs:
@@ -214,9 +216,11 @@ class JobQueue:
                     self._set_queue_state("loading")
                     event_loop = self.server.get_event_loop()
                     self.pop_queue_handle = event_loop.delay_callback(
-                        0.01, self._pop_job)
+                        0.01, self._pop_job, False
+                    )
                 else:
-                    self._set_queue_state("ready")
+                    qs = "ready" if self.automatic else "paused"
+                    self._set_queue_state(qs)
     def _job_map_to_list(self) -> List[Dict[str, Any]]:
         cur_time = time.time()
         return [job.as_dict(cur_time) for
@@ -251,20 +255,15 @@ class JobQueue:
                                   ) -> Dict[str, Any]:
         action = web_request.get_action()
         if action == "POST":
-            files: Union[List[str], str] = web_request.get('filenames')
+            files = web_request.get_list('filenames')
             reset = web_request.get_boolean("reset", False)
-            if isinstance(files, str):
-                files = [f.strip() for f in files.split(',') if f.strip()]
             # Validate that all files exist before queueing
             await self.queue_job(files, reset=reset)
         elif action == "DELETE":
             if web_request.get_boolean("all", False):
                 await self.delete_job([], all=True)
             else:
-                job_ids: Union[List[str], str] = web_request.get('job_ids')
-                if isinstance(job_ids, str):
-                    job_ids = [f.strip() for f in job_ids.split(',')
-                               if f.strip()]
+                job_ids = web_request.get_list('job_ids')
                 await self.delete_job(job_ids)
         else:
             raise self.server.error(f"Invalid action: {action}")

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: KlipperScreen\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-30 18:17-0300\n"
+"POT-Creation-Date: 2023-09-12 08:17-0300\n"
 "PO-Revision-Date: 2022-11-30 18:11-0300\n"
 "Last-Translator: O. Robardet\n"
 "Language-Team: \n"
@@ -43,22 +43,25 @@ msgstr "Accélération:"
 msgid "Accept"
 msgstr "Accepter"
 
-msgid "Actions"
-msgstr "Actions"
-
 msgid "Add profile"
 msgstr "Ajouter un profil"
+
+msgid "All"
+msgstr ""
 
 msgid "Apply"
 msgstr "Appliquer"
 
 #, python-format
-msgid "Apply %.2f offset to Endstop?"
-msgstr "Appliquer un décalage de %.2f au Endstop ?"
+msgid "Apply %s%.3f offset to Endstop?"
+msgstr ""
 
 #, python-format
-msgid "Apply %s%.2f offset to Probe?"
-msgstr "Appliquer un décalage de %s%.2f au palpeur ?"
+msgid "Apply %s%.3f offset to Probe?"
+msgstr ""
+
+msgid "Archived"
+msgstr ""
 
 msgid "Are you sure do you want to exclude the object?"
 msgstr "Êtes-vous sûr de vouloir exclure l’objet ?"
@@ -87,6 +90,9 @@ msgstr "Calibration Automatique"
 msgid "Auto-close notifications"
 msgstr "Fermeture automatique des notifications"
 
+msgid "Auto-open Extrude On Pause"
+msgstr ""
+
 msgid "Auto-scroll"
 msgstr "Défilement automatique"
 
@@ -105,11 +111,11 @@ msgstr "Calibrer"
 msgid "Calibrated"
 msgstr "Calibré"
 
-msgid "Calibrated, save configuration to make it permanent"
-msgstr "Calibré, enregistrez la configuration pour la rendre permanente"
-
 msgid "Calibrating"
 msgstr "Calibrage"
+
+msgid "Camera"
+msgstr ""
 
 msgid "Can't set above the maximum:"
 msgstr "Impossible de définir au-dessus du maximum:"
@@ -147,9 +153,6 @@ msgstr "Fermer"
 msgid "Complete"
 msgstr "Impression terminée"
 
-msgid "Configuration"
-msgstr "Configuration"
-
 msgid "Confirm Emergency Stop"
 msgstr "Confirmer l'arrêt d'urgence"
 
@@ -163,17 +166,17 @@ msgstr "Connexion à %s"
 msgid "Console"
 msgstr "Console"
 
-msgid "Continue"
-msgstr "Continuer"
-
 msgid "Cooldown"
 msgstr "Refroidir"
+
+msgid "DPMS has failed to load and has been disabled"
+msgstr ""
 
 msgid "Date"
 msgstr "Date"
 
-msgid "Decrease"
-msgstr "Diminuer"
+msgid "Delete Directory?"
+msgstr ""
 
 msgid "Delete File?"
 msgstr "Supprimer le fichier ?"
@@ -183,9 +186,6 @@ msgstr "Désélectionner"
 
 msgid "Disable Motors"
 msgstr "Désactiver les moteurs"
-
-msgid "Disable XY"
-msgstr "Désactiver XY"
 
 msgid "Distance (mm)"
 msgstr "Distance (mm)"
@@ -242,6 +242,9 @@ msgstr "Fichier"
 msgid "File:"
 msgstr "Fichier:"
 
+msgid "Filter"
+msgstr ""
+
 msgid "Finding ADXL"
 msgstr "Recherche de l’ADXL"
 
@@ -284,6 +287,9 @@ msgstr "Masquer les capteurs dans Températures"
 msgid "Hide temp."
 msgstr "Masquer temp."
 
+msgid "Home"
+msgstr "Accueil"
+
 msgid "Home All"
 msgstr "Origine XYZ"
 
@@ -299,23 +305,23 @@ msgstr "Origine Y"
 msgid "Home Z"
 msgstr "Origine Z"
 
-msgid "Homing"
-msgstr "Origine"
-
 msgid "Host"
 msgstr "Hôte"
 
 msgid "Hostname"
 msgstr "Nom d’hôte"
 
+msgid "ID"
+msgstr ""
+
 msgid "Icon Theme"
 msgstr "Thème"
 
-msgid "Increase"
-msgstr "Augmenter"
-
 msgid "Initializing printer..."
 msgstr "Démarrage de l'imprimante..."
+
+msgid "Initiate a PID calibration for:"
+msgstr ""
 
 msgid "Input Shaper"
 msgstr "Input Shaper"
@@ -338,6 +344,9 @@ msgstr "Inverser l'axe Y"
 msgid "Invert Z"
 msgstr "Inverser l'axe Z"
 
+msgid "It may take more than 5 minutes depending on the heater power."
+msgstr ""
+
 msgid "Klipper Restart"
 msgstr "Redémarrer Klipper"
 
@@ -359,11 +368,18 @@ msgstr "Klipper va redémarrer"
 msgid "KlipperScreen will reboot"
 msgstr "KlipperScreen va redémarrer"
 
+msgid ""
+"LOAD_FILAMENT/UNLOAD_FILAMENT are hidden and should be used from extrude"
+msgstr ""
+
 msgid "Language"
 msgstr "Langue"
 
 msgid "Large"
 msgstr "Grande"
+
+msgid "Last Used"
+msgstr ""
 
 msgid "Layer:"
 msgstr "Couche:"
@@ -388,6 +404,9 @@ msgstr "Macros"
 
 msgid "Main Menu"
 msgstr "Menu principal"
+
+msgid "Material"
+msgstr ""
 
 msgid "Max"
 msgstr "Max"
@@ -428,6 +447,9 @@ msgstr "Modifié"
 msgid "Moonraker: connected"
 msgstr "Moonraker: connecté"
 
+msgid "More"
+msgstr ""
+
 msgid "Move"
 msgstr "Mouvement"
 
@@ -445,6 +467,9 @@ msgstr "Jamais"
 
 msgid "New"
 msgstr "Nouveau"
+
+msgid "No elegible macros:"
+msgstr ""
 
 msgid ""
 "Not supported for auto-detection, it needs to be configured in klipperscreen."
@@ -549,6 +574,9 @@ msgstr "Référence"
 msgid "Refresh"
 msgstr "Rafraîchir"
 
+msgid "Rename/Move:"
+msgstr ""
+
 msgid "Restart"
 msgstr "Redémarrer"
 
@@ -607,10 +635,6 @@ msgstr "Sélectionner"
 msgid "Send"
 msgstr "Envoyer"
 
-#, python-format
-msgid "Sending Power ON signal to: %s"
-msgstr "Envoi du signal de mise sous tension à: %s"
-
 msgid "Set Temp"
 msgstr "Régler la température"
 
@@ -623,6 +647,9 @@ msgstr "Afficher"
 msgid "Show Heater Power"
 msgstr "Afficher la puissance de chauffe"
 
+msgid "Show Scrollbars Buttons"
+msgstr ""
+
 msgid "Shutdown"
 msgstr "Arrêter"
 
@@ -631,9 +658,6 @@ msgstr "Taille"
 
 msgid "Slicer"
 msgstr "Slicer"
-
-msgid "Slicer Time correction (%)"
-msgstr "Correction de la durée du slicer (%)"
 
 msgid "Slicer:"
 msgstr "Slicer:"
@@ -655,6 +679,9 @@ msgstr "Vitesse:"
 
 msgid "Square Corner Velocity"
 msgstr "Vélocité des angles droits"
+
+msgid "Standby"
+msgstr ""
 
 msgid "Start"
 msgstr "Démarrer"
@@ -747,8 +774,16 @@ msgid_plural "hours"
 msgstr[0] "heure"
 msgstr[1] "heures"
 
-msgid "minutes"
-msgstr "minutes"
+msgid "macros that use 'rename_existing' are hidden"
+msgstr ""
+
+msgid "macros with a name starting with '_' are hidden"
+msgstr ""
+
+msgid "minute"
+msgid_plural "minutes"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "mm"
 msgstr "mm"
@@ -761,6 +796,37 @@ msgstr "mm/s²"
 
 msgid "mm³/s"
 msgstr "mm³/s"
+
+#~ msgid "Continue"
+#~ msgstr "Continuer"
+
+#~ msgid "Actions"
+#~ msgstr "Actions"
+
+#~ msgid "Configuration"
+#~ msgstr "Configuration"
+
+#~ msgid "Homing"
+#~ msgstr "Origine"
+
+#~ msgid "Disable XY"
+#~ msgstr "Désactiver XY"
+
+#~ msgid "Slicer Time correction (%)"
+#~ msgstr "Correction de la durée du slicer (%)"
+
+#~ msgid "Calibrated, save configuration to make it permanent"
+#~ msgstr "Calibré, enregistrez la configuration pour la rendre permanente"
+
+#~ msgid "Decrease"
+#~ msgstr "Diminuer"
+
+#~ msgid "Increase"
+#~ msgstr "Augmenter"
+
+#, python-format
+#~ msgid "Sending Power ON signal to: %s"
+#~ msgstr "Envoi du signal de mise sous tension à: %s"
 
 #~ msgid "Sort:"
 #~ msgstr "Trier:"
@@ -798,9 +864,6 @@ msgstr "mm³/s"
 
 #~ msgid "Delete"
 #~ msgstr "Effacer"
-
-#~ msgid "Home"
-#~ msgstr "Accueil"
 
 #~ msgid "Off"
 #~ msgstr "Éteindre"

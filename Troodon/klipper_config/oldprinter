@@ -1,0 +1,469 @@
+#[include functions.cfg]
+#[include Adaptive_Mesh.cfg]
+#[include Adaptive_Purge.cfg]
+[include fluidd.cfg]
+#[include timelapse.cfg]
+# Pins for reference:
+# Driver Step Pins - 0:PC26, 1:PC25, 2:PC24, 3:PC19, 4:PC16, 5:PC30, 6:PC18
+# Driver Dir pins - 0:PB3, 1:PB29, 2:PB28, 3:PD20, 4:PD21, 5:PB0, 6:PA27
+# Driver Enable - !PC28
+# Uart addresses - 0:0 1:1 2:2 3:3 4:!0 5:!1 6:!2 | "!" is for inverted select pin
+# Thermistor Pins - T0:PC0, T1:PC1, T2:PC2
+# Vssa Sense:PB4 | Vref Sense:PB5
+# Current Sense resistor for drivers - .076ohm
+# SPI lines:{PD11, PC7} -> Shared SerCom#7, SPIMosi:PC12, SPIMiso:PC15, SPISCLK:PC13
+# Vin Monitor:PC3, uses 11:1 voltage divider
+# LED's - Diag:PA31, Act:PA30
+# 12864 LCD - LCDCSPIN:PC6, ENCA:PC11, ENCB:PD1, ENCSW:PB9, LCD A0:PA2, LCDBeep:PA9, LCD Neopixel Out:PB12 (shared with IO3.out)
+# Neopixel Out - PA8
+# Serial0 - TX:PB25, RX:PB24 (USB)
+# Serial1 - TX:PB31, RX:PB30
+# SBC SPISS pin:PA6, SBCTfrReady:PA3, SerComPins:{PA4, PA5, PA6, PA7}
+# CAN Pins - TX:PB14 RX:PB15
+# Heaters, Fan outputs - {Out0:PB17 Out1:PC10 Out2:PB13 Out3:PB11 Out4:PA11, Out5:PB2, Out6:PB1} | Out6 is shared with VFD_Out
+# GPIO_out - {IO1:PB31 IO2:PD9 IO3:PB12 IO4:PD10} IO4 is shared with PSON
+# GPIO_in - {IO1:PB30 IO2:PD8 IO3:PB7 IO4:PC5 IO5:PC4 IO6:PC31}
+# Driver Diag - {D0:PA10, D1:PB8, D2:PA22, D3:PA23, D4:PC21, D5:PB10, D6:PA27}
+# Mux Pin - PD0
+# EXP headers only support 12864 LCD's
+
+[force_move]
+enable_force_move: True
+
+[mcu head0]
+canbus_uuid:20195bac64c4
+
+[temperature_sensor CANBOARD]
+sensor_type: temperature_mcu
+sensor_mcu: head0
+
+
+
+[idle_timeout]
+timeout: 100000
+#[mcu rpi]
+#serial: /tmp/klipper_host_mcu
+
+[mcu]
+serial:usb-Klipper_stm32f446xx_3B0045000C51313133353932-if00
+
+[beacon]
+serial: /dev/serial/by-id/usb-Beacon_Beacon_RevD_69E22AE9515137474C202020FF0C0C26-if00
+x_offset: -20 # update with offset from nozzle on your machine
+y_offset: 0 # update with offset from nozzle on your machine
+mesh_main_direction: x
+mesh_runs: 2
+
+
+[adc_scaled vref_scaled]
+vref_pin: PB5
+vssa_pin: PB4
+
+#Raspberry Pi Temperature Sensor
+[temperature_sensor pi_cpu]
+sensor_type: temperature_host
+gcode_id: P
+
+
+[printer]
+kinematics: cartesian 
+max_velocity: 600
+max_accel: 15000
+max_accel_to_decel:10000
+square_corner_velocity:10
+max_z_velocity: 50
+max_z_accel: 180
+[virtual_sdcard]
+path: /home/pi/gcode_files
+
+
+[stepper_x]
+step_pin: PC18
+dir_pin: !PA27
+enable_pin: !PC28
+endstop_pin: ^!head0:PB12
+rotation_distance: 40
+microsteps: 1
+full_steps_per_rotation:4000  #set to 400 for 0.9 degree stepper
+position_min: 0
+position_endstop: 300
+position_max: 300
+homing_speed: 300   #Max 100
+homing_retract_dist: 7
+homing_positive_dir: true
+
+
+[stepper_y]
+step_pin: PC30
+dir_pin: PB0
+enable_pin: !PC28
+endstop_pin: ^PC4
+rotation_distance: 40
+microsteps: 1
+full_steps_per_rotation:4000  #set to 400 for 0.9 degree stepper
+position_min: 0
+position_endstop: 300
+position_max: 300
+homing_speed: 300  #Max 100
+homing_retract_dist: 7
+homing_positive_dir: true
+
+
+
+[stepper_z]
+#D3
+step_pin: PC19
+dir_pin: PD20
+enable_pin: !PC28
+#step_distance: .00125
+#full_steps_per_rotation: 400
+rotation_distance :8
+microsteps: 32
+endstop_pin: probe:z_virtual_endstop # use beacon as virtual endstop
+homing_retract_dist: 0 # beacon needs this to be set to 0
+position_max: 390
+position_min: -15
+homing_speed: 20
+
+[tmc2209 stepper_z]
+uart_pin: PA1
+tx_pin: PA0
+uart_address: 3
+select_pins: PD0
+run_current: 1.1
+sense_resistor: 0.056
+driver_TBL: 2
+driver_HEND: 3
+driver_HSTRT: 4
+driver_TOFF: 4
+
+
+
+
+
+[stepper_z1]
+#d4
+step_pin: PC16
+dir_pin: !PD21
+enable_pin: !PC28
+#step_distance: .00125
+#full_steps_per_rotation: 400
+rotation_distance :8
+microsteps: 32
+
+[tmc2209 stepper_z1]
+uart_pin: PA1
+tx_pin: PA0
+uart_address: 0
+select_pins: !PD0
+run_current: 1.1
+sense_resistor: 0.056
+driver_TBL: 2
+driver_HEND: 3
+driver_HSTRT: 4
+driver_TOFF: 4
+
+
+
+
+[stepper_z2]
+#d5
+step_pin: PC24
+dir_pin: !PB28
+enable_pin: !PC28
+#step_distance: .00125
+#full_steps_per_rotation: 400
+rotation_distance :8
+microsteps: 32
+[tmc2209 stepper_z2]
+uart_pin: PA1
+tx_pin: PA0
+uart_address: 2
+select_pins: !PD0
+run_current: 1.1
+sense_resistor: 0.056
+driver_TBL: 2
+driver_HEND: 3
+driver_HSTRT: 4
+driver_TOFF: 4
+
+
+[stepper_z3]
+step_pin: PC26
+dir_pin: !PB3
+enable_pin: !PC28
+#step_distance: .00125
+#full_steps_per_rotation: 400
+rotation_distance :8
+microsteps: 32
+
+[tmc2209 stepper_z3]
+uart_pin: PA1
+tx_pin: PA0
+select_pins: PD0
+uart_address: 0
+run_current: 1.1
+sense_resistor: 0.056
+driver_TBL: 2
+#driver_RNDTF: 1
+#driver_HDEC: 1
+#driver_CHM: 0
+driver_HEND: 3
+driver_HSTRT: 4
+driver_TOFF: 4
+
+
+
+
+[extruder]
+#d6
+step_pin: head0:PB3 #PE2 
+dir_pin: head0:PB4 #LGX lite
+enable_pin: !head0:PB5 #!PD4
+heater_pin: head0:PA6
+#step_distance: .00145985
+microsteps: 16
+full_steps_per_rotation: 200    
+rotation_distance: 22.67895 #for 5mm Shaft Driven Bondtech gearsets
+#gear_ratio: 50:10 #for standard 10t motor
+gear_ratio: 50:8 #for sherpa mini 8t motor
+#gear_ratio: 50:8 #for sherpa mini 8t motor
+nozzle_diameter: 0.500
+filament_diameter: 1.750
+sensor_type: ATC Semitec 104GT-2
+sensor_pin: head0:PA0 # "THERMISTOR"
+pullup_resistor: 2200
+min_extrude_temp: 170
+max_extrude_cross_section: 5
+#control : pid
+#pid_kp : 16.373
+#pid_ki : 0.654
+#pid_kd : 102.534
+min_temp: -100
+max_temp: 325
+
+[tmc2209 extruder]
+uart_pin: head0:PA9 #PE1
+interpolate: True
+run_current: .3
+sense_resistor: 0.110
+driver_TBL: 2
+driver_HEND: 3
+driver_HSTRT: 5
+driver_TOFF: 6
+
+
+[heater_bed]
+heater_pin: PB17
+sensor_type: EPCOS 100K B57560G104F
+sensor_pin: vref_scaled:PC2 #vref_scaled:PC0
+pullup_resistor: 2200
+min_temp: -100
+max_temp: 130
+max_power: 0.8
+#control : pid
+#pid_kp : 60.625
+#pid_ki : 1.727
+#pid_kd : 531.987
+# Fan0
+
+
+[fan]-------------------------------------------------------------------------
+
+[fan]
+##  Print Cooling Fan - FAN0
+pin: PC10
+kick_start_time: 0.5
+##  Depending on your fan, you may need to increase this value
+##  if your fan will not start. Can change cycle_time (increase)
+##  if your fan is not able to slow down effectively
+off_below: 0.10
+
+
+[heater_fan hotend]
+pin: head0:PA7
+heater: extruder
+heater_temp: 45
+fan_speed: 1
+
+[controller_fan drivers]
+pin:PA11
+heater: extruder,heater_bed
+fan_speed: 1
+
+[fan_generic chamber]
+pin: PB11
+#hardware_pwm: True
+
+
+
+
+
+[safe_z_home]
+home_xy_position: 150,150
+speed: 350
+z_hop: 3
+z_hop_speed: 15
+
+[quad_gantry_level]
+gantry_corners:
+   -68,-16
+   368,355
+#   Min & Max gantry corners - measure from nozzle at MIN (0,0) and MAX (250,250) to respective belt positions
+points:
+   50,50
+   50,250
+   250,250
+   250,50
+#   Probe points
+speed: 350
+horizontal_move_z:10
+retries: 8
+retry_tolerance: 0.015
+max_adjust: 16
+
+[bed_mesh]
+speed: 300
+horizontal_move_z: 0
+mesh_min: 25,25
+mesh_max: 275, 275
+probe_count: 55,55
+algorithm: bicubic
+
+
+
+
+
+[output_pin led]
+pin: PB13 
+shutdown_value: 0
+value: 1
+
+
+[filament_switch_sensor fsensor]
+pause_on_runout: True
+runout_gcode:
+ M118 Filament Runout Detected
+ M600
+insert_gcode:
+ M118 Filament Load Detected
+ LOAD_FILAMENT
+event_delay: 3.0
+pause_delay: 0.5
+switch_pin: PB30
+
+[gcode_macro LOAD_FILAMENT]
+gcode:
+    M117 Loading Filament...
+    G92 E0.0
+    G91
+    G1 E40 F400
+    G1 E30 F400
+    G1 E60 F200
+    G90
+    G92 E0.0
+    M400
+    M117 Load Complete
+    UPDATE_DELAYED_GCODE ID=clear_display DURATION=5
+
+[gcode_macro TEST_SPEED]
+gcode:
+	# Speed
+	{% set speed  = params.SPEED|default(printer.configfile.settings.printer.max_velocity)|int %}
+	# Iterations
+	{% set iterations = params.ITERATIONS|default(5)|int %}
+	# Acceleration
+	{% set accel  = params.ACCEL|default(printer.configfile.settings.printer.max_accel)|int %}
+	# Bounding box (in case the machine min/maxes are not perfect)
+	{% set bound = params.BOUND|default(20)|int %}
+	
+	# Set speed test bounds (machine minimum/maximum positions, inset by the bounding box)
+	{% set x_min = printer.toolhead.axis_minimum.x + bound %}
+	{% set x_max = printer.toolhead.axis_maximum.x - bound %}
+	{% set y_min = printer.toolhead.axis_minimum.y + bound %}
+	{% set y_max = printer.toolhead.axis_maximum.y - bound %}
+
+	# Save current gcode state (absolute/relative, etc)
+	SAVE_GCODE_STATE NAME=TEST_SPEED
+	
+	# Absolute positioning
+	G90
+	
+	# Set new limits
+	SET_VELOCITY_LIMIT VELOCITY={speed} ACCEL={accel} ACCEL_TO_DECEL={accel / 2}
+
+	# Home and get position for comparison later:
+		G28
+		# QGL if not already QGLd (only if QGL section exists in config)
+		{% if printer.configfile.settings.quad_gantry_level %}
+			{% if printer.quad_gantry_level.applied == False %}
+				QUAD_GANTRY_LEVEL
+				G28 Z
+			{% endif %}
+		{% endif %}	
+		G0 X{printer.toolhead.axis_maximum.x} Y{printer.toolhead.axis_maximum.y} F{30 * 60}
+		G4 P1000 
+		GET_POSITION
+
+	# Go to starting position
+	G0 X{x_min} Y{y_min} Z{bound + 10} F{speed * 60}
+
+	{% for i in range(iterations) %}
+		# Diagonals
+		G0 X{x_min} Y{y_min} F{speed * 60}
+		G0 X{x_max} Y{y_max} F{speed * 60}
+		G0 X{x_min} Y{y_min} F{speed * 60}
+		G0 X{x_max} Y{y_min} F{speed * 60}
+		G0 X{x_min} Y{y_max} F{speed * 60}
+		G0 X{x_max} Y{y_min} F{speed * 60}
+		
+		# Box
+		G0 X{x_min} Y{y_min} F{speed * 60}
+		G0 X{x_min} Y{y_max} F{speed * 60}
+		G0 X{x_max} Y{y_max} F{speed * 60}
+		G0 X{x_max} Y{y_min} F{speed * 60}
+	{% endfor %}
+
+	# Restore max speed/accel/accel_to_decel to their configured values
+	SET_VELOCITY_LIMIT VELOCITY={printer.configfile.settings.printer.max_velocity} ACCEL={printer.configfile.settings.printer.max_accel} ACCEL_TO_DECEL={printer.configfile.settings.printer.max_accel_to_decel} 
+
+	# Re-home XY and get position again for comparison:
+		G28 X Y
+		# Go to XY home positions (in case your homing override leaves it elsewhere)
+		G0 X{printer.toolhead.axis_maximum.x} Y{printer.toolhead.axis_maximum.y} F{30 * 60}
+		G4 P1000 
+		GET_POSITION
+
+	# Restore previous gcode state (absolute/relative, etc)
+	RESTORE_GCODE_STATE NAME=TEST_SPEED
+
+
+
+
+[input_shaper]
+#shaper_freq_x: 69.4
+#shaper_type_x: mzv
+#shaper_freq_y: 80.8
+#shaper_type_y: mzv
+
+#*# <---------------------- SAVE_CONFIG ---------------------->
+#*# DO NOT EDIT THIS BLOCK OR BELOW. The contents are auto-generated.
+#*#
+#*# [extruder]
+#*# control = pid
+#*# pid_kp = 24.502
+#*# pid_ki = 1.027
+#*# pid_kd = 146.095
+#*#
+#*#
+#*# [heater_bed]
+#*# control = pid
+#*# pid_kp = 20.846
+#*# pid_ki = 1.241
+#*# pid_kd = 87.555
+#*#
+#*# [input_shaper]
+#*# shaper_type_x = ei
+#*# shaper_freq_x = 83.8
+#*# shaper_type_y = mzv
+#*# shaper_freq_y = 75.0

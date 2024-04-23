@@ -4,26 +4,23 @@ import gi
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GLib, Pango
-
 from ks_includes.screen_panel import ScreenPanel
 
 
-def create_panel(*args):
-    return MacroPanel(*args)
-
-
-class MacroPanel(ScreenPanel):
+class Panel(ScreenPanel):
     def __init__(self, screen, title):
         super().__init__(screen, title)
         self.sort_reverse = False
         self.sort_btn = self._gtk.Button("arrow-up", _("Name"), "color1", self.bts, Gtk.PositionType.RIGHT, 1)
         self.sort_btn.connect("clicked", self.change_sort)
         self.sort_btn.set_hexpand(True)
+        self.sort_btn.get_style_context().add_class("buttons_slim")
         self.options = {}
         self.macros = {}
         self.menu = ['macros_menu']
 
         adjust = self._gtk.Button("settings", " " + _("Settings"), "color2", self.bts, Gtk.PositionType.LEFT, 1)
+        adjust.get_style_context().add_class("buttons_slim")
         adjust.connect("clicked", self.load_menu, 'options', _("Settings"))
         adjust.set_hexpand(False)
 
@@ -52,10 +49,18 @@ class MacroPanel(ScreenPanel):
         self.reload_macros()
 
     def add_gcode_macro(self, macro):
-        # Support for hiding macros by name
-        if macro.startswith("_"):
+        section = self._printer.get_macro(macro)
+        if section:
+            if "rename_existing" in section:
+                return
+            if "gcode" in section:
+                gcode = section["gcode"].split("\n")
+            else:
+                logging.error(f"gcode not found in {macro}\n{section}")
+                return
+        else:
+            logging.debug(f"Couldn't load {macro}\n{section}")
             return
-
         name = Gtk.Label()
         name.set_markup(f"<big><b>{macro}</b></big>")
         name.set_hexpand(True)
@@ -83,7 +88,6 @@ class MacroPanel(ScreenPanel):
             "params": {},
         }
         pattern = r'params\.(?P<param>..*)\|default\((?P<default>..*)\).*'
-        gcode = self._printer.get_config_section(f"gcode_macro {macro}")["gcode"].split("\n")
         i = 0
         for line in gcode:
             if line.startswith("{") and "params." in line:
@@ -91,8 +95,7 @@ class MacroPanel(ScreenPanel):
                 if result:
                     result = result.groupdict()
                     default = result["default"] if "default" in result else ""
-                    entry = Gtk.Entry()
-                    entry.set_text(default)
+                    entry = Gtk.Entry(placeholder_text=default)
                     self.macros[macro]["params"].update({result["param"]: entry})
 
         for param in self.macros[macro]["params"]:
@@ -106,15 +109,16 @@ class MacroPanel(ScreenPanel):
         for param in self.macros[macro]["params"]:
             value = self.macros[macro]["params"][param].get_text()
             if value:
-                params += f'{param}={value} '
-        self._screen._ws.klippy.gcode_script(f"{macro} {params}")
+                params += f' {param}={value}'
+        self._screen.show_popup_message(f"{macro} {params}", 1)
+        self._screen._send_action(widget, "printer.gcode.script", {"script": f"{macro}{params}"})
 
     def change_sort(self, widget):
         self.sort_reverse ^= True
         if self.sort_reverse:
-            self.sort_btn.set_image(self._gtk.Image("arrow-down", self.bts))
+            self.sort_btn.set_image(self._gtk.Image("arrow-down", self._gtk.img_scale * self.bts))
         else:
-            self.sort_btn.set_image(self._gtk.Image("arrow-up", self.bts))
+            self.sort_btn.set_image(self._gtk.Image("arrow-up", self._gtk.img_scale * self.bts))
         self.sort_btn.show()
 
         GLib.idle_add(self.reload_macros)
@@ -125,12 +129,10 @@ class MacroPanel(ScreenPanel):
         self.options = {}
         self.labels['options'].remove_column(0)
         self.load_gcode_macros()
+        return False
 
     def load_gcode_macros(self):
         for macro in self._printer.get_gcode_macros():
-            macro = macro[12:].strip()
-            if macro.startswith("_"):  # Support for hiding macros by name
-                continue
             self.options[macro] = {
                 "name": macro,
                 "section": f"displayed_macros {self._screen.connected_printer}",

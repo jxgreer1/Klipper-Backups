@@ -1,0 +1,229 @@
+-------------------- Log Start | Tue Sep 19 04:31:11 2023 --------------------
+data_path: /home/pi/printer_data
+is_default_data_path: False
+config_file: /home/pi/klipper_config/moonraker.conf
+startup_warnings: []
+verbose: False
+debug: False
+asyncio_debug: False
+is_backup_config: False
+is_python_package: False
+instance_uuid: b16ee62a77224e56a3881e13476ca1fa
+unix_socket_path: /home/pi/printer_data/comms/moonraker.sock
+software_version: v0.8.0-139-g3d9052d
+git_branch: master
+git_remote: origin
+git_repo_url: https://github.com/arksine/moonraker.git
+modified_files: []
+unofficial_components: []
+log_file: /home/pi/klipper_logs/moonraker.log
+python_version: 3.7.3 (default, Jan 22 2021, 20:04:44)  [GCC 8.3.0]
+
+#################### Moonraker Configuration ####################
+
+[server]
+host = 0.0.0.0
+port = 7125
+temperature_store_size = 600
+gcode_store_size = 1000
+
+[authorization]
+force_logins = True
+cors_domains = 
+	*.local
+	*.lan
+	*://app.fluidd.xyz
+trusted_clients = 
+	10.0.0.0/8
+	127.0.0.1
+	127.0.0.0/8
+	169.254.0.0/16
+	172.16.0.0/12
+	192.168.0.0/16
+	100.113.82.57
+	100.74.78.66
+	FE80::/10
+	::1/128
+
+[octoprint_compat]
+
+[history]
+
+[update_manager]
+enable_auto_refresh = True
+
+[update_manager mainsail]
+type = web
+repo = mainsail-crew/mainsail
+path = ~/mainsail
+
+[timelapse]
+output_path = ~/timelapse/
+frame_path = /tmp/timelapse/
+ffmpeg_binary_path = /usr/bin/ffmpeg
+
+[job_queue]
+load_on_startup = False
+
+[update_manager timelapse]
+type = git_repo
+primary_branch = main
+path = ~/moonraker-timelapse
+origin = https://github.com/mainsail-crew/moonraker-timelapse.git
+managed_services = klipper moonraker
+
+[update_manager KlipperScreen]
+type = git_repo
+path = /home/pi/KlipperScreen
+origin = https://github.com/jordanruthe/KlipperScreen.git
+env = /home/pi/.KlipperScreen-env/bin/python
+requirements = scripts/KlipperScreen-requirements.txt
+install_script = scripts/KlipperScreen-install.sh
+
+[update_manager crowsnest]
+primary_branch = legacy/v3
+type = git_repo
+path = ~/crowsnest
+origin = https://github.com/mainsail-crew/crowsnest.git
+install_script = tools/pkglist.sh
+
+[update_manager beacon]
+type = git_repo
+channel = dev
+path = ~/beacon_klipper
+origin = https://github.com/beacon3d/beacon_klipper.git
+env = ~/klippy-env/bin/python
+requirements = requirements.txt
+install_script = install.sh
+is_system_service = False
+managed_services = klipper
+info_tags = 
+	desc=Beacon Surface Scanner
+
+[update_manager moonraker-obico]
+type = git_repo
+path = ~/moonraker-obico
+origin = https://github.com/TheSpaghettiDetective/moonraker-obico.git
+env = /home/pi/moonraker-env/bin/python
+requirements = requirements.txt
+install_script = install.sh
+managed_services = 
+	moonraker-obico
+
+#################################################################
+All Configuration Files:
+/home/pi/klipper_config/moonraker.conf
+/home/pi/klipper_config/moonraker-obico-update.cfg
+#################################################################
+Unsafe Shutdown Count: 199
+
+System Info:
+
+***python***
+  version: sys.version_info(major=3, minor=7, micro=3, releaselevel='final', serial=0)
+  version_string: 3.7.3 (default, Jan 22 2021, 20:04:44)  [GCC 8.3.0]
+
+***cpu_info***
+  cpu_count: 4
+  bits: 32bit
+  processor: armv7l
+  cpu_desc: ARMv7 Processor rev 3 (v7l)
+  serial_number: 10000000fd037551
+  hardware_desc: BCM2711
+  model: Raspberry Pi 4 Model B Rev 1.4
+  total_memory: 1734408
+  memory_units: kB
+
+***sd_info***
+  manufacturer_id: 03
+  manufacturer: Sandisk
+  oem_id: 5344
+  product_name: SB16G
+  product_revision: 8.0
+  serial_number: aee62172
+  manufacturer_date: 3/2020
+  capacity: 14.8 GiB
+  total_bytes: 15931539456
+
+***distribution***
+  name: Raspbian GNU/Linux 10 (buster)
+  id: raspbian
+  version: 10
+  version_parts: {'major': '10', 'minor': '', 'build_number': ''}
+  like: debian
+  codename: buster
+  release_info: {'name': 'MainsailOS', 'version_id': '0.7.1', 'codename': 'buster', 'id': 'mainsailos'}
+
+***virtualization***
+  virt_type: none
+  virt_identifier: none
+
+***network***
+
+***canbus***
+
+***Allowed Services***
+  klipper_mcu
+  webcamd
+  MoonCord
+  KlipperScreen
+  moonraker-telegram-bot
+  sonar
+  crowsnest
+
+Systemd unit moonraker.service:
+unit_name: moonraker.service
+is_default: True
+manager: systemd
+Properties:
+**Requires=['-.mount', 'network-online.target', 'system.slice', 'sysinit.target']
+**After=['basic.target', 'system.slice', 'klipper.service', 'network-online.target', '-.mount', 'sysinit.target', 'systemd-journald.socket']
+**SupplementaryGroups=['moonraker-admin']
+**EnvironmentFiles=/home/pi/printer_data/systemd/moonraker.env
+**ExecStart=/home/pi/moonraker-env/bin/python $MOONRAKER_ARGS
+**WorkingDirectory=/home/pi/moonraker
+**FragmentPath=/etc/systemd/system/moonraker.service
+**Description=API Server for Klipper SV1
+**User=pi
+
+Systemd unit klipper.service:
+unit_name: klipper.service
+is_default: True
+manager: systemd
+Properties:
+**Requires=['system.slice', 'sysinit.target']
+**After=['system.slice', 'network-online.target', 'systemd-journald.socket', 'sysinit.target', 'basic.target']
+**SupplementaryGroups=[]
+**EnvironmentFiles=[]
+**ExecStart=/home/pi/klippy-env/bin/python /home/pi/klipper/klippy/klippy.py ${KLIPPER_CONFIG} -l ${KLIPPER_LOG} -a ${KLIPPER_SOCKET}
+**WorkingDirectory=
+**FragmentPath=/etc/systemd/system/klipper.service
+**Description=Starts Klipper and provides klippy Unix Domain Socket API
+**User=pi
+Git Repo moonraker: No warnings detected
+Git Repo klipper: No warnings detected
+Git Repo timelapse: No warnings detected
+Git Repo KlipperScreen: No warnings detected
+Git Repo beacon: No warnings detected
+Git Repo moonraker-obico: No warnings detected
+Klipper Version: v0.11.0-275-g8ef0f7d7-dirty
+2023-09-18 21:31:11,592 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 127.0.0.1
+2023-09-18 21:36:06,914 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 192.168.1.219
+2023-09-18 21:36:06,916 [app.py:log_request()] - 101 GET /websocket (192.168.1.219) [_TRUSTED_USER_] 3.39ms
+2023-09-18 21:36:06,916 [websockets.py:open()] - Websocket Opened: ID: 2822567824, Proxied: True, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.31, Host Name: troodon.localdomain
+2023-09-18 21:36:06,922 [websockets.py:_handle_identify()] - Websocket 2822567824 Client Identified - Name: mainsail, Version: 2.7.1, Type: web
+2023-09-18 21:37:33,091 [machine.py:_find_public_ip()] - Failed to detect local IP address
+2023-09-18 21:37:33,096 [webcam.py:_set_default_host_ip()] - Default public webcam address set: http://127.0.0.1
+2023-09-18 21:37:56,995 [websockets.py:write_to_socket()] - Websocket closed while writing: 2822567824
+2023-09-18 21:38:01,920 [websockets.py:on_close()] - Websocket Closed: ID: 2822567824 Close Code: None, Close Reason: None, Pong Time Elapsed: 45.00
+2023-09-18 21:46:13,641 [announcements.py:_fetch_moonlight()] - Failed to update subscription 'moonraker': [Errno -3] Temporary failure in name resolution
+2023-09-18 21:46:15,684 [announcements.py:_fetch_moonlight()] - Failed to update subscription 'klipper': [Errno -3] Temporary failure in name resolution
+2023-09-18 22:16:13,617 [announcements.py:_fetch_moonlight()] - Failed to update subscription 'moonraker': [Errno -3] Temporary failure in name resolution
+2023-09-18 22:16:15,659 [announcements.py:_fetch_moonlight()] - Failed to update subscription 'klipper': [Errno -3] Temporary failure in name resolution
+2023-09-18 22:36:11,605 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 192.168.1.219
+2023-09-18 22:46:13,620 [announcements.py:_fetch_moonlight()] - Failed to update subscription 'moonraker': [Errno -3] Temporary failure in name resolution
+2023-09-18 22:46:15,640 [announcements.py:_fetch_moonlight()] - Failed to update subscription 'klipper': [Errno -3] Temporary failure in name resolution
+2023-09-18 23:16:13,613 [announcements.py:_fetch_moonlight()] - Failed to update subscription 'moonraker': [Errno -3] Temporary failure in name resolution
+2023-09-18 23:16:15,633 [announcements.py:_fetch_moonlight()] - Failed to update subscription 'klipper': [Errno -3] Temporary failure in name resolution
+2023-09-18 23:46:13,620 [announcements.py:_fetch_moonlight()] - Failed to update subscription 'moonraker': [Errno -3] Temporary failure in name resolution
+2023-09-18 23:46:15,641 [announcements.py:_fetch_moonlight()] - Failed to update subscription 'klipper': [Errno -3] Temporary failure in name resolution

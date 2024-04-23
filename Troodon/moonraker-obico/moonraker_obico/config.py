@@ -3,9 +3,11 @@ from typing import Optional
 import re
 from configparser import ConfigParser
 from urllib.parse import urlparse
+import logging
 
 from .utils import SentryWrapper
 
+_logger = logging.getLogger('obico.config')
 
 @dataclasses.dataclass
 class MoonrakerConfig:
@@ -52,6 +54,14 @@ class ServerConfig:
 
 
 @dataclasses.dataclass
+class TunnelConfig:
+    dest_host: Optional[str]
+    dest_port: Optional[str]
+    dest_is_ssl: Optional[str]
+    url_blacklist: []
+
+
+@dataclasses.dataclass
 class WebcamConfig:
 
     def __init__(self, webcam_config_section):
@@ -64,7 +74,19 @@ class WebcamConfig:
 
     @property
     def disable_video_streaming(self):
-        return self.webcam_config_section.getboolean('disable_video_streaming', False)
+        try:
+            return self.webcam_config_section.getboolean('disable_video_streaming', False)
+        except:
+            _logger.warn(f'Invalid disable_video_streaming value. Using default.')
+            return False
+
+    @property
+    def target_fps(self):
+        try:
+            fps = float( self.webcam_config_section.get('target_fps') or self.moonraker_webcam_config.get('target_fps') )
+        except:
+            fps = 25
+        return min(fps, 25)
 
     @property
     def snapshot_ssl_validation(self):
@@ -76,19 +98,44 @@ class WebcamConfig:
 
     @property
     def flip_h(self):
-        return self.webcam_config_section.getboolean('flip_h') if 'flip_h' in self.webcam_config_section else self.moonraker_webcam_config.get('flip_h')
+        if 'flip_h' in self.webcam_config_section:
+            try:
+                return self.webcam_config_section.getboolean('flip_h')
+            except:
+                _logger.warn(f'Invalid flip_h value. Using default.')
+
+        return self.moonraker_webcam_config.get('flip_h')
 
     @property
     def flip_v(self):
-        return self.webcam_config_section.getboolean('flip_v') if 'flip_v' in self.webcam_config_section else self.moonraker_webcam_config.get('flip_v')
+        if 'flip_v' in self.webcam_config_section:
+            try:
+                return self.webcam_config_section.getboolean('flip_v')
+            except:
+                _logger.warn(f'Invalid flip_v value. Using default.')
+
+        return self.moonraker_webcam_config.get('flip_v')
 
     @property
-    def rotate_90(self):
-        return self.webcam_config_section.getboolean('rotate_90', False)
+    def rotation(self):
+        invalid_value_message = f'Invalid rotation value. Valid values: [0, 90, 180, 270]. Using default.'
+        try:
+            rotation = self.webcam_config_section.getint('rotation', 0)
+            if not rotation in [0, 90, 180, 270]:
+                _logger.warn(invalid_value_message)
+                return 0
+            return rotation
+        except:
+            _logger.warn(invalid_value_message)
+            return 0
 
     @property
     def aspect_ratio_169(self):
-        return self.webcam_config_section.getboolean('aspect_ratio_169', False)
+        try:
+            return self.webcam_config_section.getboolean('aspect_ratio_169', False)
+        except:
+            _logger.warn(f'Invalid aspect_ratio_169 value. Using default.')
+            return False
 
     @classmethod
     def webcam_full_url(cls, url):
@@ -152,6 +199,25 @@ class Config:
             )
         )
 
+        dest_is_ssl = False
+        try:
+            dest_is_ssl = config.getboolean('tunnel', 'dest_is_ssl', fallback=False,)
+        except:
+            _logger.warn(f'Invalid dest_is_ssl value. Using default.')
+
+        self.tunnel = TunnelConfig(
+            dest_host=config.get(
+                'tunnel', 'dest_host',
+                fallback='127.0.0.1',
+            ),
+            dest_port=config.get(
+                'tunnel', 'dest_port',
+                fallback='80',
+            ),
+            dest_is_ssl=dest_is_ssl,
+            url_blacklist=[],
+        )
+
         self.webcam = WebcamConfig(webcam_config_section=config['webcam'])
 
         self.logging = LoggingConfig(
@@ -213,12 +279,3 @@ class Config:
 
     def all_mr_heaters(self):
          return self._heater_mapping.keys()
-
-    def get_sentry(self) -> SentryWrapper:
-        enabled = (
-            self.sentry_opt == 'in' and
-            self.server.canonical_endpoint_prefix().endswith('obico.io')
-        )
-        sentry = SentryWrapper(enabled=enabled)
-        sentry.init_context(auth_token=self.server.auth_token)
-        return sentry

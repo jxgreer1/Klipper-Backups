@@ -44,7 +44,7 @@ Advanced Settings -> Gcode -> Layer Change Gcode -> ``TIMELAPSE_TAKE_FRAME``
 ##   Following basic configuration is default to most images and don't need
 ##   to be changed in most scenarios. Only uncomment and change it if your
 ##   Image differ from standart installations. In most common scenarios 
-##   a User only need [timelapse] in there configuration.
+##   a User only need [timelapse] in their configuration.
 #output_path: ~/timelapse/
 ##   Directory where the generated video will be saved
 #frame_path: /tmp/timelapse/
@@ -112,13 +112,13 @@ Possible configurations are [center, front_left, front_right, back_left, back_ri
 If you like to define a custom parkposition of your printhead.
 
 ##### park_custom_pos_x
-Absolut X coordinates of the custom parkposition (Unit mm)
+Absolute X coordinates of the custom parkposition (Unit mm)
 
 ##### park_custom_pos_y
-Absolut Y coordinates of the custom parkposition (Unit mm)
+Absolute Y coordinates of the custom parkposition (Unit mm)
 
 ##### park_custom_pos_dz
-Relative Y coordinates of the custom parkposition (Unit mm)
+Relative Z coordinates of the custom parkposition (Unit mm)
         
 #### park_travel_speed
 Speed of the printhead movement while parking (Unit mm/s)
@@ -167,7 +167,7 @@ Defines the target length of a video (Unit seconds)
 #### variable_fps_min
 Minimum fps for variable_fps (Unit frames per second).
 
-#### variable_fps_min
+#### variable_fps_max
 Maximum fps for variable_fps (Unit frames per second).
 
 #### constant_rate_factor
@@ -239,6 +239,7 @@ does.
 #duplicatelastframe: 0
 #previewimage: True
 #saveframes: False
+#wget_skip_cert_check: False
 
 ```
 
@@ -247,5 +248,5 @@ You may want to change your Timelapse to a higher resolution, you
 need to change the Webcamstream to a higher resolution since the
 Component will grab the frame of the Streamer.
 To do so, please refer to the documentation of your Image:  
-- MainsailOS: https://docs.mainsail.xyz/quicktips/multicam
+- MainsailOS: https://crowsnest.mainsail.xyz/configuration/cam-section#resolution
 - FluiddPI: https://docs.fluidd.xyz/features/cameras 

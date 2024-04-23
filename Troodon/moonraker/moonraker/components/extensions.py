@@ -8,8 +8,8 @@ import asyncio
 import pathlib
 import logging
 import json
-from websockets import BaseSocketClient
-from utils import get_unix_peer_credentials
+from ..common import BaseRemoteConnection
+from ..utils import get_unix_peer_credentials
 
 # Annotation imports
 from typing import (
@@ -22,17 +22,17 @@ from typing import (
 )
 
 if TYPE_CHECKING:
-    from moonraker import Server
-    from confighelper import ConfigHelper
-    from websockets import WebRequest
-    from klippy_connection import KlippyConnection as Klippy
+    from ..server import Server
+    from ..confighelper import ConfigHelper
+    from ..common import WebRequest
+    from ..klippy_connection import KlippyConnection as Klippy
 
 UNIX_BUFFER_LIMIT = 20 * 1024 * 1024
 
 class ExtensionManager:
     def __init__(self, config: ConfigHelper) -> None:
         self.server = config.get_server()
-        self.agents: Dict[str, BaseSocketClient] = {}
+        self.agents: Dict[str, BaseRemoteConnection] = {}
         self.uds_server: Optional[asyncio.AbstractServer] = None
         self.server.register_endpoint(
             "/connection/send_event", ["POST"], self._handle_agent_event,
@@ -45,7 +45,7 @@ class ExtensionManager:
             "/server/extensions/request", ["POST"], self._handle_call_agent
         )
 
-    def register_agent(self, connection: BaseSocketClient) -> None:
+    def register_agent(self, connection: BaseRemoteConnection) -> None:
         data = connection.client_data
         name = data["name"]
         client_type = data["type"]
@@ -64,7 +64,7 @@ class ExtensionManager:
         }
         connection.send_notification("agent_event", [evt])
 
-    def remove_agent(self, connection: BaseSocketClient) -> None:
+    def remove_agent(self, connection: BaseRemoteConnection) -> None:
         name = connection.client_data["name"]
         if name in self.agents:
             del self.agents[name]
@@ -113,15 +113,18 @@ class ExtensionManager:
         return await conn.call_method(method, args)
 
     async def start_unix_server(self) -> None:
-        data_path = pathlib.Path(self.server.get_app_args()["data_path"])
-        comms_path = data_path.joinpath("comms")
-        if not comms_path.exists():
-            comms_path.mkdir()
-        sock_path = comms_path.joinpath("moonraker.sock")
+        sockfile: str = self.server.get_app_args()["unix_socket_path"]
+        sock_path = pathlib.Path(sockfile).expanduser().resolve()
         logging.info(f"Creating Unix Domain Socket at '{sock_path}'")
-        self.uds_server = await asyncio.start_unix_server(
-            self.on_unix_socket_connected, sock_path, limit=UNIX_BUFFER_LIMIT
-        )
+        try:
+            self.uds_server = await asyncio.start_unix_server(
+                self.on_unix_socket_connected, sock_path, limit=UNIX_BUFFER_LIMIT
+            )
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            logging.exception(f"Failed to create Unix Domain Socket: {sock_path}")
+            self.uds_server = None
 
     def on_unix_socket_connected(
         self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter
@@ -135,7 +138,7 @@ class ExtensionManager:
             await self.uds_server.wait_closed()
             self.uds_server = None
 
-class UnixSocketClient(BaseSocketClient):
+class UnixSocketClient(BaseRemoteConnection):
     def __init__(
         self,
         server: Server,

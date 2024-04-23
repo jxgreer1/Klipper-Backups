@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 2022-09-04 14:53-0300\n"
+"Project-Id-Version: 2023-09-03 20:36\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-30 18:17-0300\n"
-"PO-Revision-Date: 2022-11-30 18:16-0300\n"
+"POT-Creation-Date: 2023-09-12 08:17-0300\n"
+"PO-Revision-Date: 2023-09-03 20:57+0300\n"
 "Last-Translator: Andrii Komarovskyi\n"
 "Language-Team: Andrii Komarovskyi\n"
 "Language: uk\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
-"X-Generator: Poedit 3.2.1\n"
+"X-Generator: Poedit 3.3.2\n"
 
 #, python-format
 msgid "%s will be updated to version"
@@ -44,25 +44,28 @@ msgstr "Прискорення:"
 msgid "Accept"
 msgstr "Прийняти"
 
-msgid "Actions"
-msgstr "Дії"
-
 msgid "Add profile"
 msgstr "Додати профіль"
+
+msgid "All"
+msgstr "Всі"
 
 msgid "Apply"
 msgstr "Застосувати"
 
 #, python-format
-msgid "Apply %.2f offset to Endstop?"
-msgstr "Застосувати зміщення %.2f до кінцевика?"
+msgid "Apply %s%.3f offset to Endstop?"
+msgstr "Застосувати зміщення %s%.3f до кінцевика?"
 
 #, python-format
-msgid "Apply %s%.2f offset to Probe?"
-msgstr "Застосувати зміщення %s%.2f до зонда?"
+msgid "Apply %s%.3f offset to Probe?"
+msgstr "Застосувати зміщення %s%.3f до зонда?"
+
+msgid "Archived"
+msgstr "Архівовано"
 
 msgid "Are you sure do you want to exclude the object?"
-msgstr ""
+msgstr "Ви впевнені, що бажаєте виключити об’єкт?"
 
 msgid "Are you sure you want to run Emergency Stop?"
 msgstr "Ви впевнені, що хочете зробити аварійну зупинку?"
@@ -88,6 +91,9 @@ msgstr "Автоматичне калібрування"
 msgid "Auto-close notifications"
 msgstr "Автоматичне закриття сповіщень"
 
+msgid "Auto-open Extrude On Pause"
+msgstr ""
+
 msgid "Auto-scroll"
 msgstr "Автоматична прокрутка"
 
@@ -106,11 +112,11 @@ msgstr "Калібрування"
 msgid "Calibrated"
 msgstr "Відкалібрований"
 
-msgid "Calibrated, save configuration to make it permanent"
-msgstr "Відкалібровано, збережіть конфігурацію, щоб зробити її постійною"
-
 msgid "Calibrating"
 msgstr "Калібрування"
+
+msgid "Camera"
+msgstr "Камера"
 
 msgid "Can't set above the maximum:"
 msgstr "Не можна встановити вище максимум:"
@@ -148,9 +154,6 @@ msgstr "Закрити"
 msgid "Complete"
 msgstr "Завершено"
 
-msgid "Configuration"
-msgstr "Конфігурація"
-
 msgid "Confirm Emergency Stop"
 msgstr "Підтвердьте АВАРІЙНУ ЗУПИНКУ"
 
@@ -164,17 +167,17 @@ msgstr "Підключення до %s"
 msgid "Console"
 msgstr "Консоль"
 
-msgid "Continue"
-msgstr "Продовжити"
-
 msgid "Cooldown"
 msgstr "Охолодження"
+
+msgid "DPMS has failed to load and has been disabled"
+msgstr "DPMS не вдалося завантажити, і його було вимкнено"
 
 msgid "Date"
 msgstr "Дата"
 
-msgid "Decrease"
-msgstr "Зменшити"
+msgid "Delete Directory?"
+msgstr "Видалити Теку?"
 
 msgid "Delete File?"
 msgstr "Видалити файл?"
@@ -184,9 +187,6 @@ msgstr "Скасувати вибір"
 
 msgid "Disable Motors"
 msgstr "Вимкнути мотори"
-
-msgid "Disable XY"
-msgstr "Вимкнути XY"
 
 msgid "Distance (mm)"
 msgstr "Відстань (мм)"
@@ -208,7 +208,7 @@ msgid "Exclude Object"
 msgstr "Виключити об’єкт"
 
 msgid "Extra Large"
-msgstr ""
+msgstr "Дуже Великий"
 
 msgid "Extrude"
 msgstr ""
@@ -244,6 +244,9 @@ msgstr "Файл"
 
 msgid "File:"
 msgstr "Файл:"
+
+msgid "Filter"
+msgstr "Фільтр"
 
 msgid "Finding ADXL"
 msgstr "Знаходження ADXL"
@@ -289,6 +292,9 @@ msgstr "Сховати датчик t°."
 msgid "Hide temp."
 msgstr "Приховати темп."
 
+msgid "Home"
+msgstr "Домашня сторінка"
+
 msgid "Home All"
 msgstr "Дім Всі"
 
@@ -304,23 +310,23 @@ msgstr "Дім Y"
 msgid "Home Z"
 msgstr "Дім Z"
 
-msgid "Homing"
-msgstr "До дому"
-
 msgid "Host"
 msgstr "Хост"
 
 msgid "Hostname"
 msgstr "Ім'я хоста"
 
+msgid "ID"
+msgstr "ID"
+
 msgid "Icon Theme"
 msgstr "Тема оформлення"
 
-msgid "Increase"
-msgstr "Збільшити"
-
 msgid "Initializing printer..."
 msgstr "Ініціалізація принтера..."
+
+msgid "Initiate a PID calibration for:"
+msgstr "Почати калібрування PID для:"
 
 msgid "Input Shaper"
 msgstr "Input Shaper"
@@ -332,7 +338,7 @@ msgid "Invalid"
 msgstr "Недійсний"
 
 msgid "Invalid password"
-msgstr ""
+msgstr "Недійсний пароль"
 
 msgid "Invert X"
 msgstr "Інвертувати X"
@@ -342,6 +348,9 @@ msgstr "Інвертувати Y"
 
 msgid "Invert Z"
 msgstr "Інвертувати Z"
+
+msgid "It may take more than 5 minutes depending on the heater power."
+msgstr "Залежно від потужності обігрівача це може зайняти більше 5 хвилин."
 
 msgid "Klipper Restart"
 msgstr ""
@@ -366,11 +375,20 @@ msgstr "Klipper перезавантажиться"
 msgid "KlipperScreen will reboot"
 msgstr "KlipperScreen перезавантажиться"
 
+msgid ""
+"LOAD_FILAMENT/UNLOAD_FILAMENT are hidden and should be used from extrude"
+msgstr ""
+"LOAD_FILAMENT/UNLOAD_FILAMENT приховані, і їх слід використовувати з меню "
+"Заміна пластику"
+
 msgid "Language"
 msgstr "Мова"
 
 msgid "Large"
 msgstr "Великий"
+
+msgid "Last Used"
+msgstr "Останнє Використання"
 
 msgid "Layer:"
 msgstr "Шар:"
@@ -396,6 +414,9 @@ msgstr "Макрос"
 msgid "Main Menu"
 msgstr "Головне Меню"
 
+msgid "Material"
+msgstr "Матеріал"
+
 msgid "Max"
 msgstr "Макс"
 
@@ -409,7 +430,7 @@ msgid "Max Velocity"
 msgstr "Макс. швидкість"
 
 msgid "Maximum"
-msgstr ""
+msgstr "Максимум"
 
 msgid "Measure Both"
 msgstr "Виміряти все"
@@ -427,13 +448,16 @@ msgid "Menu"
 msgstr "Меню"
 
 msgid "Mesh calibrate"
-msgstr ""
+msgstr "Калібрування сітки столу"
 
 msgid "Modified"
 msgstr "Змінено"
 
 msgid "Moonraker: connected"
 msgstr "Підключено до Moonraker"
+
+msgid "More"
+msgstr "Більше"
 
 msgid "Move"
 msgstr "Переміщення"
@@ -445,13 +469,16 @@ msgid "Name"
 msgstr "Ім'я"
 
 msgid "Network"
-msgstr "Сітка"
+msgstr "Мережа"
 
 msgid "Never"
-msgstr ""
+msgstr "Ніколи"
 
 msgid "New"
 msgstr "Новий"
+
+msgid "No elegible macros:"
+msgstr "Непридатний макрос:"
 
 msgid ""
 "Not supported for auto-detection, it needs to be configured in klipperscreen."
@@ -486,7 +513,7 @@ msgid "Pause"
 msgstr "Пауза"
 
 msgid "Paused"
-msgstr "ПАУЗА"
+msgstr "Зупинено"
 
 msgid "Perform a full upgrade?"
 msgstr "Виконати повне оновлення?"
@@ -518,13 +545,13 @@ msgid "Print Time"
 msgstr "Час друку"
 
 msgid "Printer"
-msgstr ""
+msgstr "Принтер"
 
 msgid "Printer Connections"
 msgstr "Підключення принтера"
 
 msgid "Printer Select"
-msgstr ""
+msgstr "Вибір Принтера"
 
 msgid "Printing"
 msgstr "Друк"
@@ -536,7 +563,7 @@ msgid "Profile Name:"
 msgstr "Ім'я профілю:"
 
 msgid "Provide KlipperScreen.log when asking for help.\n"
-msgstr ""
+msgstr "Надайте KlipperScreen.log, коли звертаєтесь по допомогу.\n"
 
 msgid "Quad Gantry Level"
 msgstr "Портальне вирівнювання"
@@ -557,7 +584,12 @@ msgid "Reference"
 msgstr "Довідка"
 
 msgid "Refresh"
-msgstr "Оновити"
+msgstr ""
+"Перевірка\n"
+"Оновлень"
+
+msgid "Rename/Move:"
+msgstr "Перейменувати/перемістити:"
 
 msgid "Restart"
 msgstr "Перезапуск"
@@ -580,7 +612,7 @@ msgid "Retraction Speed"
 msgstr "Швидкість втягування"
 
 msgid "Retry"
-msgstr ""
+msgstr "Повторіть спробу"
 
 msgid "Retrying"
 msgstr "Повторна спроба"
@@ -619,10 +651,6 @@ msgstr "Вибрати"
 msgid "Send"
 msgstr "Надіслати"
 
-#, python-format
-msgid "Sending Power ON signal to: %s"
-msgstr "Надсилання сигналу увімкнення живлення на: %s"
-
 msgid "Set Temp"
 msgstr "Встановити t°"
 
@@ -633,19 +661,19 @@ msgid "Show"
 msgstr "Показати"
 
 msgid "Show Heater Power"
-msgstr ""
+msgstr "Показати Потужність Нагрівача"
+
+msgid "Show Scrollbars Buttons"
+msgstr "Показати кнопку смуги прокрутки"
 
 msgid "Shutdown"
-msgstr "вимкнувся"
+msgstr "Вимкнути"
 
 msgid "Size"
 msgstr "Розмір"
 
 msgid "Slicer"
 msgstr "Слайсер"
-
-msgid "Slicer Time correction (%)"
-msgstr "Виправлення часу слайсера (%)"
 
 msgid "Slicer:"
 msgstr "Слайсер:"
@@ -668,6 +696,9 @@ msgstr "Швидкість:"
 msgid "Square Corner Velocity"
 msgstr "Квадратно кутова швидкість"
 
+msgid "Standby"
+msgstr "Очікування"
+
 msgid "Start"
 msgstr "СТАРТ"
 
@@ -687,7 +718,9 @@ msgid "System Restart"
 msgstr "Перезавантаження системи"
 
 msgid "System Shutdown"
-msgstr "Завершення роботи системи"
+msgstr ""
+"Завершення роботи\n"
+"системи"
 
 msgid "Temp (°C)"
 msgstr "Teмп (°C)"
@@ -714,7 +747,7 @@ msgid "Unretract Speed"
 msgstr "Швидкість повернення"
 
 msgid "Up To Date"
-msgstr "Оновити"
+msgstr "Актуально"
 
 msgid "Update"
 msgstr "Оновлення"
@@ -761,8 +794,17 @@ msgstr[0] "година"
 msgstr[1] "годин"
 msgstr[2] "години"
 
-msgid "minutes"
-msgstr "хвилин"
+msgid "macros that use 'rename_existing' are hidden"
+msgstr "макроси, які використовують 'rename_existing', приховані"
+
+msgid "macros with a name starting with '_' are hidden"
+msgstr "макроси з назвою, що починається на '_', приховані"
+
+msgid "minute"
+msgid_plural "minutes"
+msgstr[0] "хвилина"
+msgstr[1] "хвилин"
+msgstr[2] "хвилини"
 
 msgid "mm"
 msgstr "мм"
@@ -775,6 +817,40 @@ msgstr "мм/с²"
 
 msgid "mm³/s"
 msgstr "мм/с³"
+
+#~ msgid "Continue"
+#~ msgstr "Продовжити"
+
+#~ msgid "Fullscreen"
+#~ msgstr "Повноекранний режим"
+
+#~ msgid "Actions"
+#~ msgstr "Дії"
+
+#~ msgid "Configuration"
+#~ msgstr "Конфігурація"
+
+#~ msgid "Homing"
+#~ msgstr "До дому"
+
+#~ msgid "Disable XY"
+#~ msgstr "Вимкнути XY"
+
+#~ msgid "Slicer Time correction (%)"
+#~ msgstr "Виправлення часу слайсера (%)"
+
+#~ msgid "Calibrated, save configuration to make it permanent"
+#~ msgstr "Відкалібровано, збережіть конфігурацію, щоб зробити її постійною"
+
+#~ msgid "Decrease"
+#~ msgstr "Зменшити"
+
+#~ msgid "Increase"
+#~ msgstr "Збільшити"
+
+#, python-format
+#~ msgid "Sending Power ON signal to: %s"
+#~ msgstr "Надсилання сигналу увімкнення живлення на: %s"
 
 #~ msgid "Sort:"
 #~ msgstr "Сортувати:"
@@ -812,9 +888,6 @@ msgstr "мм/с³"
 
 #~ msgid "Delete"
 #~ msgstr "Видалити"
-
-#~ msgid "Home"
-#~ msgstr "Домашня сторінка"
 
 #~ msgid "Off"
 #~ msgstr "Вимк"

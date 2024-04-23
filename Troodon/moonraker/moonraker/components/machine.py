@@ -21,8 +21,8 @@ import distro
 import tempfile
 import getpass
 import configparser
-from confighelper import FileSourceWrapper
-from utils import MOONRAKER_PATH
+from ..confighelper import FileSourceWrapper
+from ..utils import source_info
 
 # Annotation imports
 from typing import (
@@ -39,10 +39,10 @@ from typing import (
 )
 
 if TYPE_CHECKING:
-    from confighelper import ConfigHelper
-    from websockets import WebRequest
-    from app import MoonrakerApp
-    from klippy_connection import KlippyConnection
+    from ..confighelper import ConfigHelper
+    from ..common import WebRequest
+    from ..app import MoonrakerApp
+    from ..klippy_connection import KlippyConnection
     from .shell_command import ShellCommandFactory as SCMDComp
     from .database import MoonrakerDatabase
     from .file_manager.file_manager import FileManager
@@ -64,7 +64,8 @@ DEFAULT_ALLOWED_SERVICES = [
     "moonraker-obico",
     "sonar",
     "crowsnest",
-    "octoeverywhere"
+    "octoeverywhere",
+    "ratos-configurator"
 ]
 CGROUP_PATH = "/proc/1/cgroup"
 SCHED_PATH = "/proc/1/sched"
@@ -303,7 +304,7 @@ class Machine:
         self.server.get_event_loop().create_task(wrapper())
 
     async def _handle_service_request(self, web_request: WebRequest) -> str:
-        name: str = web_request.get('service')
+        name: str = web_request.get_str('service')
         action = web_request.get_endpoint().split('/')[-1]
         if name == self.unit_name:
             if action != "restart":
@@ -389,7 +390,7 @@ class Machine:
     async def _handle_sudo_info(
         self, web_request: WebRequest
     ) -> Dict[str, Any]:
-        check_access = web_request.get("check_access", False)
+        check_access = web_request.get_boolean("check_access", False)
         has_sudo: Optional[bool] = None
         if check_access:
             has_sudo = await self.check_sudo_access()
@@ -1474,14 +1475,12 @@ Type=simple
 User=%s
 SupplementaryGroups=moonraker-admin
 RemainAfterExit=yes
-WorkingDirectory=%s
 EnvironmentFile=%s
 ExecStart=%s $MOONRAKER_ARGS
 Restart=always
 RestartSec=10
 """  # noqa: E122
 
-ENVIRONMENT = "MOONRAKER_ARGS=\"%s/moonraker/moonraker.py %s\""
 TEMPLATE_NAME = "password_request.html"
 
 class ValidationError(Exception):
@@ -1656,34 +1655,34 @@ class InstallValidator:
         tmp_svc = pathlib.Path(
             tempfile.gettempdir()
         ).joinpath(f"{unit}-tmp.svc")
-        src_path = pathlib.Path(MOONRAKER_PATH)
         # Create local environment file
         sysd_data = self.data_path.joinpath("systemd")
         if not sysd_data.exists():
             sysd_data.mkdir()
         env_file = sysd_data.joinpath("moonraker.env")
-        cmd_args = f"-d {self.data_path}"
+        env_vars: Dict[str, str] = {
+            "MOONRAKER_DATA_PATH": str(self.data_path)
+        }
         cfg_file = pathlib.Path(app_args["config_file"])
         fm: FileManager = self.server.lookup_component("file_manager")
         cfg_path = fm.get_directory("config")
         log_path = fm.get_directory("logs")
         if not cfg_path or not cfg_file.parent.samefile(cfg_path):
-            # Configuration file does not exist in config path
-            cmd_args += f" -c {cfg_file}"
+            env_vars["MOONRAKER_CONFIG_PATH"] = str(cfg_file)
         elif cfg_file.name != "moonraker.conf":
             cfg_file = self.data_path.joinpath(f"config/{cfg_file.name}")
-            cmd_args += f" -c {cfg_file}"
+            env_vars["MOONRAKER_CONFIG_PATH"] = str(cfg_file)
         if not app_args["log_file"]:
             #  No log file configured
-            cmd_args += f" -n"
+            env_vars["MOONRAKER_DISABLE_FILE_LOG"] = "y"
         else:
             # Log file does not exist in log path
             log_file = pathlib.Path(app_args["log_file"])
             if not log_path or not log_file.parent.samefile(log_path):
-                cmd_args += f" -l {log_file}"
+                env_vars["MOONRAKER_LOG_PATH"] = str(log_file)
             elif log_file.name != "moonraker.log":
                 cfg_file = self.data_path.joinpath(f"logs/{log_file.name}")
-                cmd_args += f" -l {log_file}"
+                env_vars["MOONRAKER_LOG_PATH"] = str(log_file)
         # backup existing service files
         self._update_backup_path()
         svc_bkp_path = self.backup_path.joinpath("service")
@@ -1694,13 +1693,28 @@ class InstallValidator:
         service_bkp = svc_bkp_path.joinpath(svc_dest.name)
         shutil.copy2(str(svc_dest), str(service_bkp))
         # write temporary service file
+        src_path = source_info.source_path()
+        exec_path = pathlib.Path(sys.executable)
+        py_exec = exec_path.parent.joinpath("python")
+        if exec_path.name == "python" or py_exec.is_file():
+            # Default to loading via the python executable.  This
+            # makes it possible to switch between git repos, pip
+            # releases and git releases without reinstalling the
+            # service.
+            exec_path = py_exec
+            env_vars["MOONRAKER_ARGS"] = "-m moonraker"
+        if not source_info.is_dist_package():
+            # This module isn't in site/dist packages,
+            # add PYTHONPATH env variable
+            env_vars["PYTHONPATH"] = str(src_path)
         tmp_svc.write_text(
             SYSTEMD_UNIT
-            % (SERVICE_VERSION, user, src_path, env_file, sys.executable)
+            % (SERVICE_VERSION, user, env_file, exec_path)
         )
         try:
             # write new environment
-            env_file.write_text(ENVIRONMENT % (src_path, cmd_args))
+            envout = "\n".join(f"{key}=\"{val}\"" for key, val in env_vars.items())
+            env_file.write_text(envout)
             await machine.exec_sudo_command(
                 f"cp -f {tmp_svc} {svc_dest}", tries=5, timeout=60.)
             await machine.exec_sudo_command(

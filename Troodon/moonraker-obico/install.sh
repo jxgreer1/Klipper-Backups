@@ -15,9 +15,7 @@ MOONRAKER_PORT="7125"
 OBICO_SERVICE_NAME="moonraker-obico"
 OBICO_REPO="https://github.com/TheSpaghettiDetective/moonraker-obico.git"
 CURRENT_USER=${USER}
-JSON_PARSE_PY="/tmp/json_parse.py"
 OVERWRITE_CONFIG="n"
-RECREATE_SERVICE="n"
 SKIP_LINKING="n"
 
 usage() {
@@ -26,15 +24,15 @@ usage() {
     echo ""
   fi
   cat <<EOF
-Usage: $0 <[global_options]>   # Let me discover moonraker settings. Recommended if you have only 1 printer
+Usage: $0 <[global_options]>   # Interactive installation to get moonraker-obico set up. Recommended if you have only 1 printer
        $0 <[global_options]> <[moonraker_setting_options]>   # Recommended for multiple-printer setup
 
 Global options:
           -f   Reset moonraker-obico config file, including removing the linked printer
-          -s   Recreate the system service even if one already existed
           -L   Skip the step to link to the Obico server.
           -u   Show uninstallation instructions
           -d   Show debugging info
+          -U   Update moonraker-obico to the latest version
 
 Moonraker setting options (${yellow}if any of them are specified, all need to be specified${default}):
           -n   The "name" that will be appended to the end of the system service name and log file. Useful only in multi-printer setup.
@@ -43,17 +41,6 @@ Moonraker setting options (${yellow}if any of them are specified, all need to be
           -C   Moonraker config file path
           -l   The directory for moonraker-obico log files, which are rotated based on size.
           -S   The URL of the obico server to link the printer to, e.g., https://app.obico.io
-EOF
-}
-
-manual_setting_warning() {
-  cat <<EOF
-${yellow}
-We couldn't automatically detect the settings. Please enter them below to continue.
-
-!!!WARNING: Manually entering the Moonraker settings can be error prone.
-We highly recommend using KIAUH if you have a non-standard Klipper installation, e.g., running multiple Moonraker instances.
-${default}
 EOF
 }
 
@@ -74,63 +61,17 @@ EOF
   fi
 }
 
-discover_sys_settings() {
-  report_status "Detecting the softwares and settings of your Klipper system ..."
-
-  mr_config_file="${HOME}/printer_data/config/moonraker.conf"
-  mr_log_path="${HOME}/printer_data/logs"
-
-  # In case it's moonraker before https://github.com/Arksine/moonraker/pull/491
-  if [ ! -f "${mr_config_file}" -o ! -d "${mr_log_path}" ]; then
-    mr_config_file="${HOME}/klipper_config/moonraker.conf"
-    mr_log_path="${HOME}/klipper_logs"
-  fi
-
-  if [ ! -f "${mr_config_file}" -o ! -d "${mr_log_path}" ]; then
-    return 1
-  fi
-
-  if ! mr_port=$(${OBICO_ENV}/bin/python3 -c "import configparser; c = configparser.ConfigParser(); c.read('${mr_config_file}'); print(c['server']['port'])"); then
-    return 1
-  fi
-
-  if ! mr_database=$(curl -s "http://${MOONRAKER_HOST}:${mr_port}/server/database/list") ; then
-    return 1
-  fi
-
-  toolchain_msg=""
-  if echo $mr_database | grep -qi 'mainsail' ; then
-    toolchain_msg="${toolchain_msg} Mainsail installed"
-  fi
-
-  if echo $mr_database | grep -qi 'fluidd' ; then
-    toolchain_msg="${toolchain_msg} Fluidd installed"
-  fi
-
-  if [ -z "${toolchain_msg}" ]; then
-    toolchain_msg=" Not detected"
-  fi
-
-  echo -e "The following have been detected:\n"
-  echo -e "- Web Server: Moonraker"
-  echo -e "- Web Frontend:${toolchain_msg}"
-  echo -e "- Moonraker host: ${MOONRAKER_HOST}"
-  echo -e "- Moonraker port: ${mr_port}\n"
-  read -p "Is this correct? [Y/n]: " -e -i "Y" correct
-  echo ""
-
-  if [ "${correct^^}" == "Y" ] ; then
-    MOONRAKER_CONFIG_FILE="${mr_config_file}"
-    MOONRAKER_CONF_DIR=$(dirname "${MOONRAKER_CONFIG_FILE}")
-    MOONRAKER_LOG_DIR="${mr_log_path}"
-    MOONRAKER_PORT="${mr_port}"
-    return 0
-  fi
-  return 1
-}
-
 prompt_for_settings() {
-  manual_setting_warning
+  print_header " Moonraker Info"
+
+cat <<EOF
+
+We need info about your Moonraker. If you are not sure, just leave them as defaults.
+
+EOF
+
+  read -p "Moonraker host: " -e -i "${MOONRAKER_HOST}" user_input
+  eval MOONRAKER_HOST="${user_input}"
   read -p "Moonraker port: " -e -i "${MOONRAKER_PORT}" user_input
   eval MOONRAKER_PORT="${user_input}"
   read -p "Moonraker config file: " -e -i "${MOONRAKER_CONFIG_FILE}" user_input
@@ -144,11 +85,9 @@ prompt_for_settings() {
 ensure_deps() {
   report_status "Installing required system packages... You may be prompted to enter password."
 
-  PKGLIST="python3 python3-pip python3-venv ffmpeg"
+  PKGLIST="python3 python3-pip python3-virtualenv ffmpeg"
   sudo apt-get update --allow-releaseinfo-change
   sudo apt-get install --yes ${PKGLIST}
-
-  echo -e ""
   ensure_venv
   debug Running... "${OBICO_ENV}"/bin/pip3 install -q -r "${OBICO_DIR}"/requirements.txt
   "${OBICO_ENV}"/bin/pip3 install -q -r "${OBICO_DIR}"/requirements.txt
@@ -180,10 +119,9 @@ cfg_existed() {
 
 create_config() {
   if [ -z "${OBICO_SERVER}" ]; then
+    print_header " Obico Server URL "
     cat <<EOF
-${cyan}
-================================= Obico Server URL ==============================================
-${default}
+
 Now tell us what Obico Server you want to link your printer to.
 You can use a self-hosted Obico Server or the Obico Cloud. For more information, please visit: https://obico.io.
 For self-hosted server, specify "http://server_ip:port". For instance, http://192.168.0.5:3334.
@@ -191,7 +129,7 @@ For self-hosted server, specify "http://server_ip:port". For instance, http://19
 EOF
     read -p "The Obico Server (Don't change unless you are linking to a self-hosted Obico Server): " -e -i "https://app.obico.io" user_input
     echo ""
-    OBICO_SERVER="${user_input}"
+    OBICO_SERVER="${user_input%/}"
   fi
 
   debug OBICO_SERVER: ${OBICO_SERVER}
@@ -212,34 +150,32 @@ disable_video_streaming = False
 # CAUTION: Don't modify the settings below unless you know what you are doing
 #   In most cases webcam configuration will be automatically retrived from moonraker
 #
+# Lower target_fps if ffmpeg is using too much CPU. Capped at 25 for Pro users (including self-hosted) and 5 for Free users
+# target_fps = 25
+#
 # snapshot_url = http://127.0.0.1:8080/?action=snapshot
 # stream_url = http://127.0.0.1:8080/?action=stream
 # flip_h = False
 # flip_v = False
-# rotate_90 = False
+# rotation = 0
 # aspect_ratio_169 = False
 
 [logging]
 path = ${OBICO_LOG_FILE}
 # level = INFO
+
+[tunnel]
+# CAUTION: Don't modify the settings below unless you know what you are doing
+# dest_host = 127.0.0.1
+# dest_port = 80
+# dest_is_ssl = False
+
 EOF
 }
 
-service_existed() {
-  if [ -f "/etc/systemd/system/${OBICO_SERVICE_NAME}.service" ]; then
-    if [ $RECREATE_SERVICE = "y" ]; then
-      report_status "Stopping ${OBICO_SERVICE_NAME}..."
-      sudo systemctl stop "${OBICO_SERVICE_NAME}"
-      return 1
-    else
-      return 0
-    fi
-  else
-    return 1
-  fi
-}
-
 recreate_service() {
+  sudo systemctl stop "${OBICO_SERVICE_NAME}" 2>/dev/null || true
+
   report_status "Creating moonraker-obico systemctl service... You may need to enter password to run sudo."
   sudo /bin/sh -c "cat > /etc/systemd/system/${OBICO_SERVICE_NAME}.service" <<EOF
 #Systemd service file for moonraker-obico
@@ -261,8 +197,6 @@ EOF
 
   sudo systemctl enable "${OBICO_SERVICE_NAME}"
   sudo systemctl daemon-reload
-  echo ""
-  report_status "${OBICO_SERVICE_NAME} service created and enabled."
   report_status "Launching ${OBICO_SERVICE_NAME} service..."
   sudo systemctl start "${OBICO_SERVICE_NAME}"
 }
@@ -286,30 +220,8 @@ EOF
 	fi
 }
 
-ensure_json_parser() {
-cat <<EOF > ${JSON_PARSE_PY}
-def find(element, json):
-    try:
-        keys = element.split('.')
-        rv = json
-        for key in keys:
-            try:
-                key = int(key)
-            except:
-                pass
-            rv = rv[key]
-        return rv
-    except:
-        return None
-
-if __name__ == '__main__':
-    import sys, json
-    ret = find(sys.argv[1], json.load(sys.stdin))
-    if ret is None:
-        sys.exit(1)
-
-    print(ret)
-EOF
+update() {
+  ensure_deps
 }
 
 # Helper functions
@@ -349,6 +261,7 @@ sudo rm "/etc/systemd/system/${OBICO_SERVICE_NAME}.service"
 sudo systemctl daemon-reload
 sudo systemctl reset-failed
 rm -rf ~/moonraker-obico
+rm -rf ~/moonraker-obico-env
 
 EOF
 
@@ -361,7 +274,7 @@ trap 'unknown_error' ERR
 trap 'unknown_error' INT
 
 # Parse command line arguments
-while getopts "hn:H:p:C:l:S:fLusd" arg; do
+while getopts "hn:H:p:C:l:S:fLusdU" arg; do
     case $arg in
         h) usage && exit 0;;
         H) mr_host=${OPTARG};;
@@ -371,10 +284,11 @@ while getopts "hn:H:p:C:l:S:fLusd" arg; do
         n) SUFFIX="-${OPTARG}";;
         S) OBICO_SERVER="${OPTARG}";;
         f) OVERWRITE_CONFIG="y";;
-        s) RECREATE_SERVICE="y";;
+        s) ;; # Backward compatibility for kiauh
         L) SKIP_LINKING="y";;
         d) DEBUG="y";;
         u) uninstall ;;
+        U) update && exit 0;;
         *) usage && exit 1;;
     esac
 done
@@ -383,7 +297,6 @@ done
 welcome
 ensure_not_octoprint
 ensure_deps
-ensure_json_parser
 
 if "${OBICO_DIR}/scripts/tsd_service_existed.sh" ; then
   exit 0
@@ -402,11 +315,7 @@ if [ -n "${mr_host}" ] || [ -n "${mr_port}" ] || [ -n "${mr_config}" ] || [ -n "
   fi
 
 else
-
-  if ! discover_sys_settings ; then
-    prompt_for_settings
-  fi
-
+  prompt_for_settings
   debug MOONRAKER_CONFIG_FILE: "${MOONRAKER_CONFIG_FILE}"
   debug MOONRAKER_CONF_DIR: "${MOONRAKER_CONF_DIR}"
   debug MOONRAKER_LOG_DIR: "${MOONRAKER_LOG_DIR}"
@@ -428,14 +337,11 @@ OBICO_LOG_FILE="${MOONRAKER_LOG_DIR}/moonraker-obico.log"
 OBICO_SERVICE_NAME="moonraker-obico${SUFFIX}"
 OBICO_LOG_FILE="${MOONRAKER_LOG_DIR}/moonraker-obico${SUFFIX}.log"
 
-if ! service_existed ; then
-  recreate_service
-fi
-
 if ! cfg_existed ; then
   create_config
 fi
 
+recreate_service
 recreate_update_file
 
 if "${OBICO_DIR}/scripts/migrated_from_tsd.sh" "${MOONRAKER_CONF_DIR}" "${OBICO_ENV}"; then

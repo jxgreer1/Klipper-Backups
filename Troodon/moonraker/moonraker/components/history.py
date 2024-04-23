@@ -17,8 +17,8 @@ from typing import (
     List,
 )
 if TYPE_CHECKING:
-    from confighelper import ConfigHelper
-    from websockets import WebRequest
+    from ..confighelper import ConfigHelper
+    from ..common import WebRequest
     from .database import MoonrakerDatabase as DBComp
     from .job_state import JobState
     from .file_manager.file_manager import FileManager
@@ -349,9 +349,11 @@ class History:
                             job: Dict[str, Any],
                             job_id: str
                             ) -> Dict[str, Any]:
+        mtime = job.get("metadata", {}).get("modified", None)
         job['job_id'] = job_id
         job['exists'] = self.file_manager.check_file_exists(
-            "gcodes", job['filename'])
+            "gcodes", job['filename'], mtime
+        )
         return job
 
     def on_exit(self) -> None:

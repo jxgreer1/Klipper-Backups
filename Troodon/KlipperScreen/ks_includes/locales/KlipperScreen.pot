@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-30 18:17-0300\n"
+"POT-Creation-Date: 2023-09-12 08:17-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,21 +43,24 @@ msgstr ""
 msgid "Accept"
 msgstr ""
 
-msgid "Actions"
+msgid "Add profile"
 msgstr ""
 
-msgid "Add profile"
+msgid "All"
 msgstr ""
 
 msgid "Apply"
 msgstr ""
 
 #, python-format
-msgid "Apply %.2f offset to Endstop?"
+msgid "Apply %s%.3f offset to Endstop?"
 msgstr ""
 
 #, python-format
-msgid "Apply %s%.2f offset to Probe?"
+msgid "Apply %s%.3f offset to Probe?"
+msgstr ""
+
+msgid "Archived"
 msgstr ""
 
 msgid "Are you sure do you want to exclude the object?"
@@ -87,6 +90,9 @@ msgstr ""
 msgid "Auto-close notifications"
 msgstr ""
 
+msgid "Auto-open Extrude On Pause"
+msgstr ""
+
 msgid "Auto-scroll"
 msgstr ""
 
@@ -105,10 +111,10 @@ msgstr ""
 msgid "Calibrated"
 msgstr ""
 
-msgid "Calibrated, save configuration to make it permanent"
+msgid "Calibrating"
 msgstr ""
 
-msgid "Calibrating"
+msgid "Camera"
 msgstr ""
 
 msgid "Can't set above the maximum:"
@@ -147,9 +153,6 @@ msgstr ""
 msgid "Complete"
 msgstr ""
 
-msgid "Configuration"
-msgstr ""
-
 msgid "Confirm Emergency Stop"
 msgstr ""
 
@@ -163,16 +166,16 @@ msgstr ""
 msgid "Console"
 msgstr ""
 
-msgid "Continue"
+msgid "Cooldown"
 msgstr ""
 
-msgid "Cooldown"
+msgid "DPMS has failed to load and has been disabled"
 msgstr ""
 
 msgid "Date"
 msgstr ""
 
-msgid "Decrease"
+msgid "Delete Directory?"
 msgstr ""
 
 msgid "Delete File?"
@@ -182,9 +185,6 @@ msgid "Deselect"
 msgstr ""
 
 msgid "Disable Motors"
-msgstr ""
-
-msgid "Disable XY"
 msgstr ""
 
 msgid "Distance (mm)"
@@ -242,6 +242,9 @@ msgstr ""
 msgid "File:"
 msgstr ""
 
+msgid "Filter"
+msgstr ""
+
 msgid "Finding ADXL"
 msgstr ""
 
@@ -284,6 +287,9 @@ msgstr ""
 msgid "Hide temp."
 msgstr ""
 
+msgid "Home"
+msgstr ""
+
 msgid "Home All"
 msgstr ""
 
@@ -299,22 +305,22 @@ msgstr ""
 msgid "Home Z"
 msgstr ""
 
-msgid "Homing"
-msgstr ""
-
 msgid "Host"
 msgstr ""
 
 msgid "Hostname"
 msgstr ""
 
+msgid "ID"
+msgstr ""
+
 msgid "Icon Theme"
 msgstr ""
 
-msgid "Increase"
+msgid "Initializing printer..."
 msgstr ""
 
-msgid "Initializing printer..."
+msgid "Initiate a PID calibration for:"
 msgstr ""
 
 msgid "Input Shaper"
@@ -338,6 +344,9 @@ msgstr ""
 msgid "Invert Z"
 msgstr ""
 
+msgid "It may take more than 5 minutes depending on the heater power."
+msgstr ""
+
 msgid "Klipper Restart"
 msgstr ""
 
@@ -359,10 +368,17 @@ msgstr ""
 msgid "KlipperScreen will reboot"
 msgstr ""
 
+msgid ""
+"LOAD_FILAMENT/UNLOAD_FILAMENT are hidden and should be used from extrude"
+msgstr ""
+
 msgid "Language"
 msgstr ""
 
 msgid "Large"
+msgstr ""
+
+msgid "Last Used"
 msgstr ""
 
 msgid "Layer:"
@@ -387,6 +403,9 @@ msgid "Macros"
 msgstr ""
 
 msgid "Main Menu"
+msgstr ""
+
+msgid "Material"
 msgstr ""
 
 msgid "Max"
@@ -428,6 +447,9 @@ msgstr ""
 msgid "Moonraker: connected"
 msgstr ""
 
+msgid "More"
+msgstr ""
+
 msgid "Move"
 msgstr ""
 
@@ -444,6 +466,9 @@ msgid "Never"
 msgstr ""
 
 msgid "New"
+msgstr ""
+
+msgid "No elegible macros:"
 msgstr ""
 
 msgid ""
@@ -547,6 +572,9 @@ msgstr ""
 msgid "Refresh"
 msgstr ""
 
+msgid "Rename/Move:"
+msgstr ""
+
 msgid "Restart"
 msgstr ""
 
@@ -605,10 +633,6 @@ msgstr ""
 msgid "Send"
 msgstr ""
 
-#, python-format
-msgid "Sending Power ON signal to: %s"
-msgstr ""
-
 msgid "Set Temp"
 msgstr ""
 
@@ -621,6 +645,9 @@ msgstr ""
 msgid "Show Heater Power"
 msgstr ""
 
+msgid "Show Scrollbars Buttons"
+msgstr ""
+
 msgid "Shutdown"
 msgstr ""
 
@@ -628,9 +655,6 @@ msgid "Size"
 msgstr ""
 
 msgid "Slicer"
-msgstr ""
-
-msgid "Slicer Time correction (%)"
 msgstr ""
 
 msgid "Slicer:"
@@ -652,6 +676,9 @@ msgid "Speed:"
 msgstr ""
 
 msgid "Square Corner Velocity"
+msgstr ""
+
+msgid "Standby"
 msgstr ""
 
 msgid "Start"
@@ -745,8 +772,16 @@ msgid_plural "hours"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "minutes"
+msgid "macros that use 'rename_existing' are hidden"
 msgstr ""
+
+msgid "macros with a name starting with '_' are hidden"
+msgstr ""
+
+msgid "minute"
+msgid_plural "minutes"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "mm"
 msgstr ""

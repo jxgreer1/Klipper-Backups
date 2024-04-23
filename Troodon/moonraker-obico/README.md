@@ -23,14 +23,20 @@ This is a Moonraker plugin that enables the Klipper-based 3D printers to connect
     sudo systemctl daemon-reload
     sudo systemctl reset-failed
     rm -rf ~/moonraker-obico
+    rm -rf ~/moonraker-obico-env
 
+
+# Use the container Image
+
+See [run_as_container.md](run_as_container.md)
 
 # Set up a dev environment
 
     cd ~
     git clone https://github.com/TheSpaghettiDetective/moonraker-obico.git
     cd moonraker-obico
-    source ~/moonraker-env/bin/activate
+    virtualenv -p /usr/bin/python3 --system-site-packages ~/moonraker-obico-env
+    source ~/moonraker-obico-env/bin/activate
     pip3 install -r requirements.txt
 
     # fill in essential configuration

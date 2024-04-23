@@ -1,179 +1,110 @@
 
-This page will have common problems and common solutions to those problems.
+# Troubleshooting
 
-# First Steps
+## First Steps
 
 The first step to troubleshooting any problem is getting the cause of the error.
 
 * Find KlipperScreen.log:
 
-!!! important
+!!! warning "Important"
     This log file should be provided if you ask for support.
 
-Depending on your setup the file could be accesible from the web interface alongside other logs
+Depending on your setup the file could be accessible from the web interface alongside other logs
 
 Mainsail | Fluidd
 :-:|:-:
-![m_logs](img/troubleshooting/logs_mainsail.png) | ![f_logs](img/troubleshooting/logs_fluidd.png)
+![mainsail_logs](img/troubleshooting/logs_mainsail.png) | ![fluidd_logs](img/troubleshooting/logs_fluidd.png)
 
 if you can't find it in the web interface, use sftp to grab the log (for example Filezilla, WinSCP)
-Located at `~/printer_data/logs`or in `/tmp/` if the former doesn't exists.
+Located at `~/printer_data/logs`or in `/tmp/` if the former doesn't exist.
 
-If KlipperScreen.log doesn't exist, run `systemctl status KlipperScreen`<br>
-(or `journalctl -xe -u KlipperScreen`)
+## System logs
 
-Check the file `/var/log/Xorg.0.log` where you can find issues with the X server.
-
-## Cannot open virtual Console
-If you see this line in the logs:
+If [KlipperScreen.log](#first-steps) doesn't exist:
 ```sh
-xf86OpenConsole: Cannot open virtual console 2 (Permission denied)
+systemctl status KlipperScreen
+```
+or
+```sh
+journalctl -xe -u KlipperScreen
 ```
 
-* Run `cat /etc/X11/Xwrapper.config`
-
-This should have the line `allowed_users=anybody` in it
-
-* Run `cat /etc/group | grep tty`
-
-If your username is not listed under that line, you need to add it with the following command:
-
+Also the Xorg log where you can find issues with the X server:
 ```sh
-usermod -a -G tty pi
+cat /var/log/Xorg.0.log
 ```
-(if your username is not 'pi' change 'pi' to your username)
-
-Restart KlipperScreen:
-```sh
-sudo service KlipperScreen restart
-```
-
-If it's still failing as a last resort add `needs_root_rights=yes` to `/etc/X11/Xwrapper.config`:
-```sh
-sudo bash -c "echo needs_root_rights=yes>>/etc/X11/Xwrapper.config"
-```
-
-restart KS.
 
 ## Screen shows console instead of KlipperScreen
 
-If you have multiple framebuffers, you may need to fix the X11 configuration,
-list the available framebuffers and check the current one:
-```sh
-ls /dev/fb*
-cat /usr/share/X11/xorg.conf.d/99-fbturbo.conf | grep /dev/fb
-```
+![boot](img/troubleshooting/boot.png)
 
-If you more than one, try changing it:
-```sh
-sudo nano /usr/share/X11/xorg.conf.d/99-fbturbo.conf
-```
 
-for example: change `/dev/fb0` to `/dev/fb1`
 
-Once you have saved that file, restart KlipperScreen.
-```sh
-sudo service KlipperScreen restart
-```
+!!! abstract "If you see this line in the [system logs](#system-logs):"
+    ```sh
+    xf86OpenConsole: Cannot open virtual console 2 (Permission denied)
+    ```
+    [Follow this steps](Troubleshooting/VC_ERROR.md)
 
-If you have multiple hdmi ports try the other one
+!!! abstract "If you see this line in the [system logs](#system-logs):"
+    ```sh
+    xinit[948]: /usr/lib/xorg/Xorg: symbol lookup error: /usr/lib/xorg/modules/drivers/fbturbo_drv.so: undefined symbol: shadowUpdatePackedWeak
+    ```
+    [Follow this steps](Troubleshooting/FBturbo.md)
 
-## Screen is all white or blank or no signal
+!!! abstract "If you see this line in the [system logs](#system-logs):"
+    ```sh
+    KlipperScreen-start.sh: (EE) no screens found(EE)
+    ```
+    This is usually not the main cause of the error. [Start by checking the screen](Troubleshooting/Physical_Install.md)
 
-If the screen never shows the console even during startup, Then it's tipically an improperly installed screen,
-follow the manufacturer instructions on how to physically connect the screen and install the proper drivers.
+    Drivers not installed or misconfigured can cause this too, continue looking the logs for more clues.
 
-## The screen starts flashing colors or stays all blue/white or shows 'No signal' when idle
+!!! abstract "If you see this line in the [system logs](#system-logs):"
+    ```sh
+    modprobe: FATAL: Module g2d_23 not found in directory /lib/modules/6.1.21-v8+
+    ```
+    This error is common on RaspberryOS when using FBturbo and it's not a related issue.
+
+[Maybe it's the wrong framebuffer](Troubleshooting/Framebuffer.md)
+
+If you can't fix it, [try using a desktop distro as described here.](Troubleshooting/Last_resort.md)
+
+If you want to contribute a solution: [Contact](Contact.md)
+
+## Screen is always ***white*** / ***black*** or ***`No signal`***
+
+If the screen never shows the console even during startup, Then it's typically an improperly installed screen.
+
+[Follow this steps](Troubleshooting/Physical_Install.md)
+
+
+## The screen shows colors or 'No signal' when idle
 
 In KliperScreen settings find 'Screen DPMS' and turn it off.
-Your screen doesn't seem to support turning off via software, the best you can do is to turn it all black.
 
-## Touch not working on debian Bullseye
+![dpms](img/troubleshooting/dpms.gif)
 
-Some dsi screens have issues where touch doesn't work with debian bullseye, the current fix
-(at least until upstream is fixed) consist in changing the driver:
+Your screen doesn't seem to support turning off via software.
 
-Run `raspi-config` > go to Advanced > GL Driver > select G2 and reboot.
+KlipperScreen will enable an internal screensaver to make it all black, and hopefully avoid burn-in.
+If you find a way of turning it off and you want to share it: [Contact](Contact.md)
 
-![config](img/troubleshooting/gldriver.png)
+## Touch issues
 
-*Or*:
 
-manually edit `/boot/config.txt` and change:
+[Follow this steps](Troubleshooting/Touch_issues.md)
 
-```sh
-dtoverlay=vc4-kms-v3d
-```
+## Network panel doesn't list WI-FI networks
 
-to:
-```sh
-dtoverlay=vc4-fkms-v3d
-```
-and reboot, that should make the touch work, if your screen is rotated 180 degrees, then you may need to adjust
-[the touch rotation](Hardware.md) as described in the Hardware page.
+[Follow this steps](Troubleshooting/Network.md)
 
 ## OctoPrint
 
 KlipperScreen was never intended to be used with OctoPrint, and there is no support for it.
 
-## WiFi networks not listed (Using wpa_supplicant as backend)
-
-This can be caused because of the user is not allowed to control the interface
-
-* Edit `/etc/wpa_supplicant/wpa_supplicant.conf` and add this line if it's not there:
-
-```
-ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
-```
-
-* Run `cat /etc/group | grep netdev`
-
-If your username is not listed under that line, you need to add it with the following command:
-
-```sh
-usermod -a -G netdev pi
-```
-(if your username is not 'pi' change 'pi' to your username)
-
-Then reboot the machine:
-
-```sh
-systemctl reboot
-```
-
-!!! tip
-    It's possible to just restart KlipperScreen and networking
-
-## WiFi networks not listed (Using NetworkManager as backend)
-
-`[wifi_nm.py:rescan()] [...] NetworkManager.wifi.scan request failed: not authorized`
-
-
-If you see the above permission error in the log you may need to use polkit or disable it:
-
-```sh
-mkdir -p /etc/NetworkManager/conf.d
-sudo nano /etc/NetworkManager/conf.d/any-user.conf
-```
-
-in the editor paste this:
-
-```conf
-[main]
-auth-polkit=false
-```
-
-Then restart the service:
-
-```sh
-systemctl restart NetworkManager.service
-```
-
-!!! tip
-    It's possible to just restart KlipperScreen and NetworkManager
-
-
 ## Other issues
 
 If you found an issue not listed here, or can't make it work, please provide all the log files
-a description of your hw, and a description of the issue when asking for support.
+a description of your hw, and a description of the issue when [asking for support](Contact.md)

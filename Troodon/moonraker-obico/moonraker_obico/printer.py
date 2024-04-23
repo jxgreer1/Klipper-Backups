@@ -1,3 +1,5 @@
+import math
+import platform
 from typing import Optional, Dict, Any
 import threading
 import time
@@ -10,8 +12,12 @@ from .utils import  sanitize_filename
 class PrinterState:
     STATE_OFFLINE = 'Offline'
     STATE_OPERATIONAL = 'Operational'
+    STATE_GCODE_DOWNLOADING = 'G-Code Downloading'
     STATE_PRINTING = 'Printing'
+    STATE_PAUSING = 'Pausing'
     STATE_PAUSED = 'Paused'
+    STATE_RESUMING = 'Resuming'
+    STATE_CANCELLING = 'Cancelling'
 
     EVENT_STARTED = 'PrintStarted'
     EVENT_RESUMED = 'PrintResumed'
@@ -22,12 +28,17 @@ class PrinterState:
 
     ACTIVE_STATES = [STATE_PRINTING, STATE_PAUSED]
 
-    def __init__(self, app_config: Config):
+    def __init__(self, app_config: Config, plugin):
         self._mutex = threading.RLock()
         self.app_config = app_config
         self.status = {}
         self.current_print_ts = None
         self.obico_g_code_file_id = None
+        self.transient_state = None
+        self.thermal_presets = []
+        self.installed_plugins = []
+        self.current_file_metadata = None
+        self.plugin = plugin
 
     def has_active_job(self) -> bool:
         return PrinterState.get_state_from_status(self.status) in PrinterState.ACTIVE_STATES
@@ -57,6 +68,10 @@ class PrinterState:
         with self._mutex:
             self.obico_g_code_file_id = obico_g_code_file_id
 
+    def set_transient_state(self, transient_state):
+        with self._mutex:
+            self.transient_state = transient_state
+
     def get_obico_g_code_file_id(self):
         with self._mutex:
             return self.obico_g_code_file_id
@@ -77,11 +92,11 @@ class PrinterState:
             'paused': PrinterState.STATE_PAUSED,
             'complete': PrinterState.STATE_OPERATIONAL,
             'cancelled': PrinterState.STATE_OPERATIONAL,
-            'error': PrinterState.STATE_OPERATIONAL, # state is "error" when printer quits a print due to an error, but opertional
+            'error': PrinterState.STATE_OPERATIONAL, # state is "error" when printer quits a print due to an error, but operational
         }.get(data.get('print_stats', {}).get('state', 'unknown'), PrinterState.STATE_OFFLINE)
 
     def to_dict(
-        self, print_event: Optional[str] = None, with_config: Optional[bool] = False,
+        self, print_event: Optional[str] = None, with_config: Optional[bool] = False
     ) -> Dict:
         with self._mutex:
             data = {
@@ -98,22 +113,37 @@ class PrinterState:
                     webcam=dict(
                         flipV=config.webcam.flip_v,
                         flipH=config.webcam.flip_h,
-                        rotate90=config.webcam.rotate_90,
+                        rotation=config.webcam.rotation,
                         streamRatio="16:9" if config.webcam.aspect_ratio_169 else "4:3",
                     ),
+                    temperature=dict(dict(profiles=self.thermal_presets)),
                     agent=dict(
                         name="moonraker_obico",
                         version=VERSION,
                     ),
+                    platform_uname=list(platform.uname()),
+                    installed_plugins=self.installed_plugins,
                 )
+                try:
+                    with open('/proc/device-tree/model', 'r') as file:
+                        model = file.read().strip()
+                    data['settings']['platform_uname'].append(model)
+                except:
+                    data['settings']['platform_uname'].append('')
             return data
 
     def to_status(self) -> Dict:
         with self._mutex:
             state = self.get_state_from_status(self.status)
+
+            if self.transient_state is not None:
+                state = self.transient_state
+
             print_stats = self.status.get('print_stats') or dict()
             virtual_sdcard = self.status.get('virtual_sdcard') or dict()
             has_error = self.status.get('print_stats', {}).get('state', '') == 'error'
+            fan = self.status.get('fan') or dict()
+            gcode_move = self.status.get('gcode_move') or dict()
 
             temps = {}
             for heater in self.app_config.all_mr_heaters():
@@ -132,16 +162,20 @@ class PrinterState:
             if state == PrinterState.STATE_OFFLINE:
                 return {}
 
-            completion = self.status.get('virtual_sdcard', {}).get('progress')
-            print_time = print_stats.get('print_duration')
-            estimated_time = print_time / completion if print_time is not None and completion is not None and completion > 0.001 else None
-            print_time_left = estimated_time - print_time if estimated_time is not None and print_time is not None else None
+            completion, print_time, print_time_left = self.get_time_info()
+            current_z, max_z, total_layers, current_layer = self.get_z_info()
+            if current_layer is not None:
+                if current_layer == 1:
+                    self.plugin.nozzlecam.on_first_layer = True
+                elif current_layer > 1 and self.plugin.nozzlecam.on_first_layer == True: # turn nozzlecam off after 1st layer
+                    self.plugin.nozzlecam.notify_server_nozzlecam_complete()
+
             return {
                 '_ts': time.time(),
                 'state': {
                     'text': state,
                     'flags': {
-                        'operational': state not in [PrinterState.STATE_OFFLINE,],
+                        'operational': state not in [PrinterState.STATE_OFFLINE, PrinterState.STATE_GCODE_DOWNLOADING],
                         'paused': state == PrinterState.STATE_PAUSED,
                         'printing': state == PrinterState.STATE_PRINTING,
                         'cancelling': False,
@@ -161,7 +195,6 @@ class PrinterState:
                         'obico_g_code_file_id': self.get_obico_g_code_file_id(),
                     },
                     'estimatedPrintTime': None,
-                    'filament': {'length': None, 'volume': None},
                     'user': None,
                 },
                 'progress': {
@@ -169,7 +202,82 @@ class PrinterState:
                     'filepos': virtual_sdcard.get('file_position', 0),
                     'printTime': print_time,
                     'printTimeLeft': print_time_left,
+                    'filamentUsed': print_stats.get('filament_used')
                 },
                 'temperatures': temps,
-                'file_metadata': {},
+                'file_metadata': {
+                    'analysis': {
+                        'printingArea': {
+                            'maxZ': max_z
+                        }
+                    },
+                    'obico': {
+                        'totalLayerCount': total_layers
+                    }
+                },
+                'currentLayerHeight': current_layer,
+                'currentFeedRate': gcode_move.get('speed_factor'),
+                'currentFlowRate': gcode_move.get('extrude_factor'),
+                'currentFanSpeed': fan.get('speed'),
+                'currentZ': current_z
             }
+
+    def get_z_info(self):
+        '''
+        return: (current_z, max_z, current_layer, total_layers). Any of them can be None
+        '''
+        print_stats = self.status.get('print_stats') or dict()
+        print_info = print_stats.get('info') or dict()
+        file_metadata = self.current_file_metadata
+        is_not_printing = self.is_printing() is False or self.transient_state is not None
+        has_print_duration = print_stats.get('print_duration', 0) > 0
+
+        current_z = None
+        max_z = None
+        total_layers = print_info.get('total_layer')
+        current_layer = print_info.get('current_layer')
+        gcode_position = self.status.get('gcode_move', {}).get('gcode_position', [])
+        current_z = gcode_position[2] if len(gcode_position) > 2 else None
+
+        # Credit: https://github.com/mainsail-crew/mainsail/blob/develop/src/store/printer/getters.ts#L122
+
+        if file_metadata:
+            max_z = file_metadata.get('object_height')
+
+            if total_layers is None:
+                total_layers = file_metadata.get('layer_count')
+
+            first_layer_height = file_metadata.get('first_layer_height')
+            layer_height = file_metadata.get('layer_height')
+            layer_heights_in_metadata = layer_height is not None and first_layer_height is not None
+
+            if total_layers is None and layer_heights_in_metadata:
+                total_layers = math.ceil(((max_z - first_layer_height) / layer_height + 1))
+                total_layers = max(total_layers, 0) # Apparently the previous calculation can result in negative number in some cases...
+
+            if current_layer is None and layer_heights_in_metadata and current_z is not None:
+                current_layer = math.ceil((current_z - first_layer_height) / layer_height + 1)
+                current_layer = min(total_layers, current_layer) # Apparently the previous calculation can result in current_layer > total_layers in some cases...
+                current_layer = max(current_layer, 0) # Apparently the previous calculation can result in negative number in some cases...
+
+        if max_z and current_z > max_z: current_z = 0 # prevent buggy looking flicker on print start
+        if current_layer is None or total_layers is None or is_not_printing or not has_print_duration: # edge case handling - if either are not available we show nothing / show nothing if paused state, transient, etc / show nothing if no print duration (prevents tracking z height during preheat & start bytes)
+            current_layer = None
+            total_layers = None
+
+        return (current_z, max_z, total_layers, current_layer)
+
+    def get_time_info(self):
+        print_stats = self.status.get('print_stats') or dict()
+        completion = self.status.get('virtual_sdcard', {}).get('progress')
+        print_time = print_stats.get('total_duration')
+        actual_print_duration = print_stats.get('print_duration')
+        estimated_time = actual_print_duration / completion if actual_print_duration is not None and completion is not None and completion > 0.001 else None
+        print_time_left = estimated_time - actual_print_duration if estimated_time is not None and actual_print_duration is not None else None
+
+        file_metadata = self.current_file_metadata
+        if file_metadata and file_metadata.get('estimated_time'):
+            slicer_time_left = file_metadata.get('estimated_time') - actual_print_duration if actual_print_duration is not None else 1
+            print_time_left = slicer_time_left if slicer_time_left > 0 else 1
+
+        return (completion, print_time, print_time_left)

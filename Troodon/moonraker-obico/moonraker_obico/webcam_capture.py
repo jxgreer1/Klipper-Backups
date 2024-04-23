@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+import base64
 import io
 import re
 import os
@@ -18,49 +19,66 @@ if os.environ.get('DEBUG'):
 
 _logger = logging.getLogger('obico.webcam_capture')
 
+def webcam_full_url(url):
+    if not url or not url.strip():
+        return ''
+
+    full_url = url.strip()
+    if not urlparse(full_url).scheme:
+        full_url = "http://localhost/" + re.sub(r"^\/", "", full_url)
+
+    return full_url
+
 
 @backoff.on_exception(backoff.expo, Exception, max_tries=3)
 @backoff.on_predicate(backoff.expo, max_tries=3)
 def capture_jpeg(webcam_config, force_stream_url=False):
-    snapshot_url = webcam_config.snapshot_url
+    MAX_JPEG_SIZE = 5000000
 
+    snapshot_url = webcam_full_url(webcam_config.snapshot_url)
     if snapshot_url and not force_stream_url:
         snapshot_validate_ssl = webcam_config.snapshot_ssl_validation
 
-        _logger.debug(f'GET {snapshot_url}')
-        r = requests.get(snapshot_url, stream=True, timeout=5,
-                         verify=snapshot_validate_ssl)
-        if not r.ok:
-            _logger.warn('Error taking from jpeg source: {}'.format(snapshot_url))
-            return
+        r = requests.get(snapshot_url, stream=True, timeout=5, verify=snapshot_validate_ssl)
+        r.raise_for_status()
 
-        return r.content
+        response_content = b''
+        start_time = time.monotonic()
+        for chunk in r.iter_content(chunk_size=1024):
+            response_content += chunk
+            if len(response_content) > MAX_JPEG_SIZE:
+                r.close()
+                raise Exception('Payload returned from the snapshot_url is too large. Did you configure stream_url as snapshot_url?')
+
+        r.close()
+        return response_content
 
     else:
         stream_url = webcam_config.stream_url
         if not stream_url:
-            return
+            raise Exception('Invalid Webcam snapshot URL "{}" or stream URL: "{}"'.format(webcam_config.snapshot_url, webcam_config.stream_url))
 
-        _logger.debug(f'GET {stream_url}')
-        try:
-            with closing(urlopen(stream_url)) as res:
-                chunker = MjpegStreamChunker()
+        with closing(urlopen(stream_url)) as res:
+            chunker = MjpegStreamChunker()
 
-                while True:
-                    data = res.readline()
-                    mjpg = chunker.findMjpegChunk(data)
-                    if mjpg:
-                        res.close()
+            data_bytes = 0
+            while True:
+                data = res.readline()
+                data_bytes += len(data)
+                if data == b'':
+                    raise Exception('End of stream before a valid jpeg is found')
+                if data_bytes > MAX_JPEG_SIZE:
+                    raise Exception('Reached the size cap before a valid jpeg is found.')
 
-                        mjpeg_headers_index = mjpg.find(b'\r\n'*2)
-                        if mjpeg_headers_index > 0:
-                            return mjpg[mjpeg_headers_index+4:]
-                        else:
-                            _logger.warn('wrong mjpeg data format')
-                            return
-        except (URLError, HTTPError):
-            _logger.warn('Error taking from mjpeg source: {}'.format(stream_url))
-            return
+                mjpg = chunker.findMjpegChunk(data)
+                if mjpg:
+                    res.close()
+
+                    mjpeg_headers_index = mjpg.find(b'\r\n'*2)
+                    if mjpeg_headers_index > 0:
+                        return mjpg[mjpeg_headers_index+4:]
+                    else:
+                        raise Exception('Wrong mjpeg data format')
 
 
 class MjpegStreamChunker:
@@ -99,11 +117,15 @@ class JpegPoster:
 
 
     def post_pic_to_server(self, viewing_boost=False):
-        files = {'pic': capture_jpeg(self.config.webcam)}
-        data = {'viewing_boost': 'true'} if viewing_boost else {}
+        try:
+            files = {'pic': capture_jpeg(self.config.webcam)}
 
-        resp = self.server_conn.send_http_request('POST', '/api/v1/octo/pic/', timeout=60, files=files, data=data, raise_exception=True)
-        _logger.debug('Jpeg posted to server - viewing_boost: {0} - {1}'.format(viewing_boost, resp))
+            data = {'viewing_boost': 'true'} if viewing_boost else {}
+            resp = self.server_conn.send_http_request('POST', '/api/v1/octo/pic/', timeout=60, files=files, data=data, raise_exception=True, skip_debug_logging=True)
+            _logger.debug('Jpeg posted to server - viewing_boost: {0} - {1}'.format(viewing_boost, resp))
+        except (URLError, HTTPError, requests.exceptions.RequestException) as e:
+            _logger.warn('Failed to capture jpeg - ' + str(e))
+            return
 
     def pic_post_loop(self):
         while True:
@@ -130,3 +152,13 @@ class JpegPoster:
                 self.post_pic_to_server(viewing_boost=False)
             except:
                 self.sentry.captureException()
+
+    def web_snapshot_request(self, url):
+        class SnapshotConfig:
+            def __init__(self, snapshot_url):
+                self.snapshot_url = snapshot_url
+                self.snapshot_ssl_validation = False
+                
+        snapshot = capture_jpeg(SnapshotConfig(url))
+        base64_image = base64.b64encode(snapshot).decode('utf-8')
+        return {'pic': base64_image}, None

@@ -27,15 +27,14 @@ from typing import (
 )
 
 if TYPE_CHECKING:
-    from confighelper import ConfigHelper
-    from websockets import WebRequest
+    from ..confighelper import ConfigHelper
+    from ..common import WebRequest
     from .machine import Machine
-    from . import klippy_apis
+    from .klippy_apis import KlippyAPI as APIComp
     from .mqtt import MQTTClient
     from .template import JinjaTemplate
-    from .http_client import HttpClient
+    from .http_client import HttpClient, HttpResponse
     from klippy_connection import KlippyConnection
-    APIComp = klippy_apis.KlippyAPI
 
 class PrinterPower:
     def __init__(self, config: ConfigHelper) -> None:
@@ -55,7 +54,8 @@ class PrinterPower:
             "rf": RFDevice,
             "mqtt": MQTTDevice,
             "smartthings": SmartThings,
-            "hue": HueDevice
+            "hue": HueDevice,
+            "http": GenericHTTP,
         }
 
         for section in prefix_sections:
@@ -418,15 +418,19 @@ class PowerDevice:
         return None
 
 class HTTPDevice(PowerDevice):
-    def __init__(self,
-                 config: ConfigHelper,
-                 default_port: int = -1,
-                 default_user: str = "",
-                 default_password: str = "",
-                 default_protocol: str = "http"
-                 ) -> None:
+    def __init__(
+        self,
+        config: ConfigHelper,
+        default_port: int = -1,
+        default_user: str = "",
+        default_password: str = "",
+        default_protocol: str = "http",
+        is_generic: bool = False
+    ) -> None:
         super().__init__(config)
         self.client: HttpClient = self.server.lookup_component("http_client")
+        if is_generic:
+            return
         self.addr: str = config.get("address")
         self.port = config.getint("port", default_port)
         self.user = config.load_template("user", default_user).render()
@@ -443,7 +447,7 @@ class HTTPDevice(PowerDevice):
                 except asyncio.CancelledError:
                     raise
                 except Exception as e:
-                    if type(last_err) != type(e) or last_err.args != e.args:
+                    if type(last_err) is not type(e) or last_err.args != e.args:
                         logging.exception(f"Device Init Error: {self.name}")
                         last_err = e
                     await asyncio.sleep(5.)
@@ -590,13 +594,11 @@ class KlipperDevice(PowerDevice):
                 f"for option 'object_name' in section [{config.get_name()}]")
 
         self.server.register_event_handler(
-            "server:status_update", self._status_update)
-        self.server.register_event_handler(
             "server:klippy_ready", self._handle_ready)
         self.server.register_event_handler(
             "server:klippy_disconnect", self._handle_disconnect)
 
-    def _status_update(self, data: Dict[str, Any]) -> None:
+    def _status_update(self, data: Dict[str, Any], _: float) -> None:
         self._set_state_from_data(data)
 
     def get_device_info(self) -> Dict[str, Any]:
@@ -607,7 +609,7 @@ class KlipperDevice(PowerDevice):
     async def _handle_ready(self) -> None:
         kapis: APIComp = self.server.lookup_component('klippy_apis')
         sub: Dict[str, Optional[List[str]]] = {self.object_name: None}
-        data = await kapis.subscribe_objects(sub, None)
+        data = await kapis.subscribe_objects(sub, self._status_update, None)
         if not self._validate_data(data):
             self.state == "error"
         else:
@@ -805,10 +807,9 @@ class TPLinkSmartPlug(PowerDevice):
             # TPLink device controls multiple devices
             if self.output_id is not None:
                 sysinfo = await self._send_tplink_command("info")
-                dev_id = sysinfo["system"]["get_sysinfo"]["deviceId"]
-                out_cmd["context"] = {
-                    'child_ids': [f"{dev_id}{self.output_id:02}"]
-                }
+                children = sysinfo["system"]["get_sysinfo"]["children"]
+                child_id = children[self.output_id]["id"]
+                out_cmd["context"] = {"child_ids": [f"{child_id}"]}
         elif command == "info":
             out_cmd = {'system': {'get_sysinfo': {}}}
         elif command == "clear_rules":
@@ -884,7 +885,7 @@ class TPLinkSmartPlug(PowerDevice):
                 except asyncio.CancelledError:
                     raise
                 except Exception as e:
-                    if type(last_err) != type(e) or last_err.args != e.args:
+                    if type(last_err) is not type(e) or last_err.args != e.args:
                         logging.exception(f"Device Init Error: {self.name}")
                         last_err = e
                     await asyncio.sleep(5.)
@@ -1399,6 +1400,48 @@ class HueDevice(HTTPDevice):
         resp = cast(Dict[str, Dict[str, Any]], ret.json())
         return "on" if resp["state"][self.on_state] else "off"
 
+class GenericHTTP(HTTPDevice):
+    def __init__(self, config: ConfigHelper,) -> None:
+        super().__init__(config, is_generic=True)
+        self.urls: Dict[str, str] = {
+            "on": config.gettemplate("on_url").render(),
+            "off": config.gettemplate("off_url").render(),
+            "status": config.gettemplate("status_url").render()
+        }
+        self.request_template = config.gettemplate(
+            "request_template", None, is_async=True
+        )
+        self.response_template = config.gettemplate("response_template", is_async=True)
+
+    async def _send_generic_request(self, command: str) -> str:
+        request = self.client.wrap_request(
+            self.urls[command], request_timeout=20., attempts=3, retry_pause_time=1.
+        )
+        context: Dict[str, Any] = {
+            "command": command,
+            "http_request": request,
+            "async_sleep": asyncio.sleep,
+            "log_debug": logging.debug,
+            "urls": dict(self.urls)
+        }
+        if self.request_template is not None:
+            await self.request_template.render_async(context)
+            response = request.last_response()
+            if response is None:
+                raise self.server.error("Failed to receive a response")
+        else:
+            response = await request.send()
+        response.raise_for_status()
+        result = (await self.response_template.render_async(context)).lower()
+        if result not in ["on", "off"]:
+            raise self.server.error(f"Invalid result: {result}")
+        return result
+
+    async def _send_power_request(self, state: str) -> str:
+        return await self._send_generic_request(state)
+
+    async def _send_status_request(self) -> str:
+        return await self._send_generic_request("status")
 
 # The power component has multiple configuration sections
 def load_component(config: ConfigHelper) -> PrinterPower:

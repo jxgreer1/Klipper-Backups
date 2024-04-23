@@ -8,12 +8,8 @@ XSERVER="xinit xinput x11-xserver-utils xserver-xorg-input-evdev xserver-xorg-in
 FBDEV="xserver-xorg-video-fbdev"
 PYTHON="python3-virtualenv virtualenv python3-distutils"
 PYGOBJECT="libgirepository1.0-dev gcc libcairo2-dev pkg-config python3-dev gir1.2-gtk-3.0"
-MISC="librsvg2-common libopenjp2-7 libatlas-base-dev wireless-tools libdbus-glib-1-dev autoconf"
+MISC="librsvg2-common libopenjp2-7 wireless-tools libdbus-glib-1-dev autoconf"
 OPTIONAL="xserver-xorg-legacy fonts-nanum fonts-ipafont libmpv-dev"
-
-# moonraker will check this list when updating
-# if new packages are required for existing installs add them below too.
-PKGLIST="libdbus-glib-1-dev autoconf fonts-ipafont libmpv-dev"
 
 Red='\033[0;31m'
 Green='\033[0;32m'
@@ -168,6 +164,7 @@ add_desktop_file()
     DESKTOP=$(<$SCRIPTPATH/KlipperScreen.desktop)
     mkdir -p $HOME/.local/share/applications/
     echo "$DESKTOP" | tee $HOME/.local/share/applications/KlipperScreen.desktop > /dev/null
+    sudo cp $SCRIPTPATH/../styles/icon.svg /usr/share/icons/hicolor/scalable/apps/KlipperScreen.svg
 }
 
 start_KlipperScreen()

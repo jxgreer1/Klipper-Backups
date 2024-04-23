@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-30 18:17-0300\n"
-"PO-Revision-Date: 2022-12-10 14:52+0300\n"
+"POT-Creation-Date: 2023-09-12 08:17-0300\n"
+"PO-Revision-Date: 2023-07-23 17:27+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr\n"
@@ -43,22 +43,25 @@ msgstr "Hızlanma:"
 msgid "Accept"
 msgstr "Kabul et"
 
-msgid "Actions"
-msgstr "Eylemler"
-
 msgid "Add profile"
 msgstr "Profil ekle"
+
+msgid "All"
+msgstr ""
 
 msgid "Apply"
 msgstr "Uygula"
 
 #, python-format
-msgid "Apply %.2f offset to Endstop?"
-msgstr "Sonlandırıcı için %.2f ofset uygula?"
+msgid "Apply %s%.3f offset to Endstop?"
+msgstr "Endstop'a %s%.3f ofset uygulansın mı?"
 
 #, python-format
-msgid "Apply %s%.2f offset to Probe?"
-msgstr "Prob için %s%.2f ofset uygula?"
+msgid "Apply %s%.3f offset to Probe?"
+msgstr "Prob'a %s%.3f ofset uygulansın mı?"
+
+msgid "Archived"
+msgstr ""
 
 msgid "Are you sure do you want to exclude the object?"
 msgstr "Nesneyi hariç tutmak istediğinizden emin misiniz?"
@@ -87,6 +90,9 @@ msgstr "Otomatik-Kalibrasyon"
 msgid "Auto-close notifications"
 msgstr "Bildirimleri otomatik kapat"
 
+msgid "Auto-open Extrude On Pause"
+msgstr ""
+
 msgid "Auto-scroll"
 msgstr "Otomatik kaydırma"
 
@@ -105,11 +111,11 @@ msgstr "Kalibre et"
 msgid "Calibrated"
 msgstr "Kalibre Edildi"
 
-msgid "Calibrated, save configuration to make it permanent"
-msgstr "Kalibre edildi, kalıcı hale getirmek için yapılandırmayı kaydedin"
-
 msgid "Calibrating"
 msgstr "Kalibre Ediliyor"
+
+msgid "Camera"
+msgstr "Kamera"
 
 msgid "Can't set above the maximum:"
 msgstr "Maksimumun üzerine ayarlanamaz:"
@@ -147,9 +153,6 @@ msgstr "Kapat"
 msgid "Complete"
 msgstr "Tamamlandı"
 
-msgid "Configuration"
-msgstr "Yapılandırma"
-
 msgid "Confirm Emergency Stop"
 msgstr "Acil Durdurmayı Onaylayın"
 
@@ -163,17 +166,17 @@ msgstr "%s'e Bağlanılıyor"
 msgid "Console"
 msgstr "Konsol"
 
-msgid "Continue"
-msgstr "Devam et"
-
 msgid "Cooldown"
 msgstr "Soğutma"
+
+msgid "DPMS has failed to load and has been disabled"
+msgstr ""
 
 msgid "Date"
 msgstr "Tarih"
 
-msgid "Decrease"
-msgstr "Azalt"
+msgid "Delete Directory?"
+msgstr "Dizini Sil?"
 
 msgid "Delete File?"
 msgstr "Dosyayı Sil?"
@@ -183,9 +186,6 @@ msgstr "Seçimi kaldır"
 
 msgid "Disable Motors"
 msgstr "Motorları Devre Dışı Bırak"
-
-msgid "Disable XY"
-msgstr "XY Devre dışı bırak"
 
 msgid "Distance (mm)"
 msgstr "Uzaklık (mm)"
@@ -242,6 +242,9 @@ msgstr "Dosya"
 msgid "File:"
 msgstr "Dosya:"
 
+msgid "Filter"
+msgstr ""
+
 msgid "Finding ADXL"
 msgstr "ADXL Bulunuyor"
 
@@ -284,6 +287,9 @@ msgstr "Sıcaklıktaki sensörleri gizleyin."
 msgid "Hide temp."
 msgstr "Sıcaklığı gizle."
 
+msgid "Home"
+msgstr "Ana Ekran"
+
 msgid "Home All"
 msgstr "Eksenleri Sıfırla"
 
@@ -299,23 +305,23 @@ msgstr "Y Sıfırla"
 msgid "Home Z"
 msgstr "Z  Sıfırla"
 
-msgid "Homing"
-msgstr "Eksen Sıfırlama"
-
 msgid "Host"
 msgstr "Sunucu"
 
 msgid "Hostname"
 msgstr "Ana bilgisayar adı"
 
+msgid "ID"
+msgstr ""
+
 msgid "Icon Theme"
 msgstr "Simge Teması"
 
-msgid "Increase"
-msgstr "Artır"
-
 msgid "Initializing printer..."
 msgstr "Yazıcı başlatılıyor..."
+
+msgid "Initiate a PID calibration for:"
+msgstr "PID kalibrasyonu başlatın:"
 
 msgid "Input Shaper"
 msgstr "İvme Düzenleyicisi"
@@ -338,6 +344,9 @@ msgstr "Y Ters çevir"
 msgid "Invert Z"
 msgstr "Z Ters çevir"
 
+msgid "It may take more than 5 minutes depending on the heater power."
+msgstr "Isıtıcı gücüne bağlı olarak 5 dakikadan fazla sürebilir."
+
 msgid "Klipper Restart"
 msgstr "Klipper Yeniden başlat"
 
@@ -359,11 +368,18 @@ msgstr "Klipper yeniden başlayacak"
 msgid "KlipperScreen will reboot"
 msgstr "KlipperScreen yeniden başlayacak"
 
+msgid ""
+"LOAD_FILAMENT/UNLOAD_FILAMENT are hidden and should be used from extrude"
+msgstr ""
+
 msgid "Language"
 msgstr "Dil"
 
 msgid "Large"
 msgstr "Büyük"
+
+msgid "Last Used"
+msgstr ""
 
 msgid "Layer:"
 msgstr "Katman:"
@@ -388,6 +404,9 @@ msgstr "Makrolar"
 
 msgid "Main Menu"
 msgstr "Ana Menü"
+
+msgid "Material"
+msgstr ""
 
 msgid "Max"
 msgstr "Maks"
@@ -428,6 +447,9 @@ msgstr "Değiştirilmiş"
 msgid "Moonraker: connected"
 msgstr "Moonraker: bağlandı"
 
+msgid "More"
+msgstr "Daha"
+
 msgid "Move"
 msgstr "Hareket"
 
@@ -445,6 +467,9 @@ msgstr "Asla"
 
 msgid "New"
 msgstr "Yeni"
+
+msgid "No elegible macros:"
+msgstr ""
 
 msgid ""
 "Not supported for auto-detection, it needs to be configured in klipperscreen."
@@ -549,6 +574,9 @@ msgstr "Referans"
 msgid "Refresh"
 msgstr "Yenile"
 
+msgid "Rename/Move:"
+msgstr "Yeniden Adlandır/Taşı:"
+
 msgid "Restart"
 msgstr "Yeniden Başlat"
 
@@ -607,10 +635,6 @@ msgstr "Seç"
 msgid "Send"
 msgstr "Gönder"
 
-#, python-format
-msgid "Sending Power ON signal to: %s"
-msgstr "Güç AÇ sinyalı gönderilen: %s"
-
 msgid "Set Temp"
 msgstr "Sıcaklık Ayarla"
 
@@ -623,6 +647,9 @@ msgstr "Göster"
 msgid "Show Heater Power"
 msgstr "Isıtıcı Gücünü Göster"
 
+msgid "Show Scrollbars Buttons"
+msgstr ""
+
 msgid "Shutdown"
 msgstr "Kapat"
 
@@ -631,9 +658,6 @@ msgstr "Boyut"
 
 msgid "Slicer"
 msgstr "Dilimleme"
-
-msgid "Slicer Time correction (%)"
-msgstr "Dilimleme Zamanı doğrulama (%)"
 
 msgid "Slicer:"
 msgstr "Dilimleyici:"
@@ -655,6 +679,9 @@ msgstr "Hız:"
 
 msgid "Square Corner Velocity"
 msgstr "Kare Köşe Hızı"
+
+msgid "Standby"
+msgstr ""
 
 msgid "Start"
 msgstr "Başlat"
@@ -747,8 +774,16 @@ msgid_plural "hours"
 msgstr[0] "saat"
 msgstr[1] "saatler"
 
-msgid "minutes"
-msgstr "dakika"
+msgid "macros that use 'rename_existing' are hidden"
+msgstr ""
+
+msgid "macros with a name starting with '_' are hidden"
+msgstr ""
+
+msgid "minute"
+msgid_plural "minutes"
+msgstr[0] "dakika"
+msgstr[1] "dakikalar"
 
 msgid "mm"
 msgstr "mm"
@@ -761,6 +796,40 @@ msgstr "mm/s²"
 
 msgid "mm³/s"
 msgstr "mm³/s"
+
+#~ msgid "Continue"
+#~ msgstr "Devam et"
+
+#~ msgid "Fullscreen"
+#~ msgstr "Tam Ekran"
+
+#~ msgid "Actions"
+#~ msgstr "Eylemler"
+
+#~ msgid "Configuration"
+#~ msgstr "Yapılandırma"
+
+#~ msgid "Homing"
+#~ msgstr "Eksen Sıfırlama"
+
+#~ msgid "Disable XY"
+#~ msgstr "XY Devre dışı bırak"
+
+#~ msgid "Slicer Time correction (%)"
+#~ msgstr "Dilimleme Zamanı doğrulama (%)"
+
+#~ msgid "Calibrated, save configuration to make it permanent"
+#~ msgstr "Kalibre edildi, kalıcı hale getirmek için yapılandırmayı kaydedin"
+
+#~ msgid "Decrease"
+#~ msgstr "Azalt"
+
+#~ msgid "Increase"
+#~ msgstr "Artır"
+
+#, python-format
+#~ msgid "Sending Power ON signal to: %s"
+#~ msgstr "Güç AÇ sinyalı gönderilen: %s"
 
 #~ msgid "Sort:"
 #~ msgstr "Sırala:"
@@ -798,9 +867,6 @@ msgstr "mm³/s"
 
 #~ msgid "Delete"
 #~ msgstr "Sil"
-
-#~ msgid "Home"
-#~ msgstr "Ana Ekran"
 
 #~ msgid "Off"
 #~ msgstr "Kapa"

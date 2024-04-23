@@ -1,6 +1,0 @@
-Starting Klippy...
-Args: ['/home/pi/klipper/klippy/klippy.py', '/home/pi/klipper_config/printer.cfg', '-l', '/home/pi/klipper_logs/klippy.log', '-a', '/tmp/klippy_uds']
-Git version: 'v0.10.0-571-g97a5b39a'
-CPU: 4 core ARMv7 Processor rev 3 (v7l)
-Python: '3.7.3 (default, Jan 22 2021, 20:04:44) \n[GCC 8.3.0]'
-Building C code module c_helper.so

@@ -13,6 +13,7 @@ from .ws import WebSocketClient, WebSocketConnectionException
 from .config import Config
 from .printer import PrinterState
 from .webcam_capture import capture_jpeg
+from .lib import curlify
 
 
 _logger = logging.getLogger('obico.server_conn')
@@ -48,7 +49,12 @@ class ServerConn:
             self.post_status_update_to_server(with_config=True) # Make sure an update is sent asap so that the server can rely on the availability of essential info such as agent.version
 
         def on_message(ws, msg):
-            self.process_server_msg(json.loads(msg))
+            try:
+                decoded = json.loads(msg)
+            except ValueError:
+                decoded = bson.loads(msg)
+
+            self.process_server_msg(decoded)
 
         server_ws_backoff = ExpoBackoff(300)
         self.send_ws_msg_to_server({}) # Initial null message to trigger server connection
@@ -68,7 +74,6 @@ class ServerConn:
 
                 if as_binary:
                     raw = bson.dumps(data)
-                    _logger.debug("Sending binary ({} bytes) to server".format(len(raw)))
                 else:
                     _logger.debug("Sending to server: \n{}".format(data))
                     raw = json.dumps(data, default=str)
@@ -115,15 +120,13 @@ class ServerConn:
         if attach_snapshot:
             try:
                 files = {'snapshot': capture_jpeg(self)}
-            except:
+            except Exception as e:
+                _logger.warn('Failed to capture jpeg - ' + str(e))
                 pass
         resp = self.send_http_request('POST', '/api/v1/octo/printer_events/', timeout=60, raise_exception=True, files=files, data=event_data)
 
 
-    def send_http_request(
-        self, method, uri, timeout=10, raise_exception=True,
-        **kwargs
-    ):
+    def send_http_request(self, method, uri, timeout=10, raise_exception=True, skip_debug_logging=False, **kwargs):
         endpoint = self.config.server.canonical_endpoint_prefix() + uri
         headers = {
             'Authorization': f'Token {self.config.server.auth_token}'
@@ -133,10 +136,11 @@ class ServerConn:
         _kwargs = dict(allow_redirects=True)
         _kwargs.update(kwargs)
 
-        _logger.debug(f'{method} {endpoint}')
         try:
             resp = requests.request(
                 method, endpoint, timeout=timeout, headers=headers, **_kwargs)
+            if not skip_debug_logging:
+                _logger.debug(curlify.to_curl(resp.request))
         except Exception:
             if raise_exception:
                 raise

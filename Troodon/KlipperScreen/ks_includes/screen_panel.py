@@ -14,7 +14,7 @@ class ScreenPanel:
     _gtk = None
     ks_printer_cfg = None
 
-    def __init__(self, screen, title):
+    def __init__(self, screen, title, **kwargs):
         self.menu = None
         ScreenPanel._screen = screen
         ScreenPanel._config = screen._config
@@ -49,22 +49,27 @@ class ScreenPanel:
     def get_file_image(self, filename, width=None, height=None, small=False):
         if not self._files.has_thumbnail(filename):
             return None
-        width = width if width is not None else self._gtk.img_width
-        height = height if height is not None else self._gtk.img_height
         loc = self._files.get_thumbnail_location(filename, small)
         if loc is None:
             return None
+        width = width if width is not None else self._gtk.img_width
+        height = height if height is not None else self._gtk.img_height
         if loc[0] == "file":
             return self._gtk.PixbufFromFile(loc[1], width, height)
         if loc[0] == "http":
             return self._gtk.PixbufFromHttp(loc[1], width, height)
         return None
 
-    def menu_item_clicked(self, widget, panel, item):
-        self._screen.show_panel(panel, item['panel'], item['name'], 1, False)
+    def menu_item_clicked(self, widget, item):
+        if 'extra' in item:
+            self._screen.show_panel(item['panel'], item['name'], extra=item['extra'])
+            return
+        self._screen.show_panel(item['panel'], item['name'])
 
     def load_menu(self, widget, name, title=None):
+        logging.info(f"loading menu {name}")
         if f"{name}_menu" not in self.labels:
+            logging.error(f"{name} not in labels")
             return
 
         for child in self.content.get_children():
@@ -116,13 +121,13 @@ class ScreenPanel:
 
     @staticmethod
     def format_time(seconds):
-        if seconds is None or seconds <= 0:
+        if seconds is None or seconds < 1:
             return "-"
         days = seconds // 86400
         seconds %= 86400
         hours = seconds // 3600
         seconds %= 3600
-        minutes = seconds // 60
+        minutes = round(seconds / 60)
         seconds %= 60
         return f"{f'{days:2.0f}d ' if days > 0 else ''}" \
                f"{f'{hours:2.0f}h ' if hours > 0 else ''}" \
@@ -153,6 +158,13 @@ class ScreenPanel:
             unit = 1024 ** i
             if size < unit:
                 return f"{(1024 * size / unit):.1f} {suffix}"
+
+    @staticmethod
+    def prettify(name: str):
+        name = name.replace("_", " ")
+        if name.islower():
+            name = name.title()
+        return name
 
     def update_temp(self, dev, temp, target, power, lines=1):
         if temp is None:

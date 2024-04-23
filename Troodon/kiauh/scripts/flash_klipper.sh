@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #=======================================================================#
-# Copyright (C) 2020 - 2022 Dominik Willner <th33xitus@gmail.com>       #
+# Copyright (C) 2020 - 2023 Dominik Willner <th33xitus@gmail.com>       #
 #                                                                       #
 # This file is part of KIAUH - Klipper Installation And Update Helper   #
 # https://github.com/th33xitus/kiauh                                    #
@@ -70,6 +70,7 @@ function select_mcu_connection() {
   echo -e "| How is the controller board connected to the host?    |"
   echo -e "| 1) USB                                                |"
   echo -e "| 2) UART                                               |"
+  echo -e "| 3) USB (DFU mode)                                     |"
   blank_line
   back_help_footer
 
@@ -84,6 +85,10 @@ function select_mcu_connection() {
       2)
         status_msg "Identifying MCU possibly connected via UART ...\n"
         get_uart_id || true # continue even after exit code 1
+        break;;
+      3)
+        status_msg "Identifying MCU connected via USB in DFU mode ...\n"
+        get_dfu_id || true # continue even after exit code 1
         break;;
       B|b)
         advanced_menu
@@ -323,6 +328,16 @@ function get_uart_id() {
   unset mcu_list
   sleep 1
   mcus=$(find /dev -maxdepth 1 -regextype posix-extended -regex "^\/dev\/tty(AMA0|S0)$" 2>/dev/null)
+
+  for mcu in ${mcus}; do
+    mcu_list+=("${mcu}")
+  done
+}
+
+function get_dfu_id() {
+  unset mcu_list
+  sleep 1
+  mcus=$(lsusb | grep "DFU" | cut -d " " -f 6 2>/dev/null)
 
   for mcu in ${mcus}; do
     mcu_list+=("${mcu}")

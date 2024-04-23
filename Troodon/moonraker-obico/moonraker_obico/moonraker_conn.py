@@ -13,6 +13,8 @@ import bson
 import websocket
 from random import randrange
 from collections import deque, OrderedDict
+from functools import reduce
+from operator import concat
 
 from .utils import DEBUG
 from .ws import WebSocketClient, WebSocketConnectionException
@@ -63,7 +65,7 @@ class MoonrakerConn:
 
         return resp.json().get('result')
 
-    def api_post(self, mr_method, multipart_filename=None, multipart_fileobj=None, **post_params):
+    def api_post(self, mr_method, timeout=None, multipart_filename=None, multipart_fileobj=None, **post_params):
         url = f'{self.config.http_address()}/{mr_method.replace(".", "/")}'
         _logger.debug(f'POST {url}')
 
@@ -74,6 +76,7 @@ class MoonrakerConn:
             headers=headers,
             data=post_params,
             files=files,
+            timeout=timeout,
         )
         resp.raise_for_status()
         return resp.json()
@@ -101,6 +104,26 @@ class MoonrakerConn:
         else:
             return []
 
+    def find_all_thermal_presets(self):
+        presets = []
+        data = self.api_get('server/database/item', raise_for_status=False, namespace='mainsail', key='presets') or {}
+        for preset in data.get('value', {}).get('presets', {}).values():
+            try:
+                preset_name = preset['name']
+                extruder_target = float(preset['values']['extruder']['value'])
+                bed_target = float(preset['values']['heater_bed']['value'])
+                presets.append(dict(name=preset_name, heater_bed=bed_target, extruder=extruder_target))
+            except Exception as e:
+                self.sentry.captureException()
+
+        return presets
+
+    def find_all_installed_plugins(self):
+        data = self.api_get('machine/update/status', raise_for_status=False, refresh='false')
+        if not data:
+            return []
+        return list(set(data.get("version_info", {}).keys()) - set(['system', 'moonraker', 'klipper']))
+
     @backoff.on_exception(backoff.expo, Exception, max_value=60)
     def find_most_recent_job(self):
         data = self.api_get('server/history/list', raise_for_status=True, order='desc', limit=1)
@@ -108,40 +131,71 @@ class MoonrakerConn:
 
     def update_webcam_config_from_moonraker(self):
         def webcam_config_in_moonraker():
+            # TODO: Rotation is not handled correctly
+
+            # Check for the webcam API in the newer Moonraker versions
+            result = self.api_get('server.webcams.list', raise_for_status=False)
+            if result and len(result.get('webcams', [])) > 0:  # Apparently some Moonraker versions support this endpoint but mistakenly returns an empty list even when webcams are present
+                _logger.debug(f'Found config in Moonraker webcams API: {result}')
+                webcam_configs = [ dict(
+                            target_fps = cfg.get('target_fps', 25),
+                            snapshot_url = cfg.get('snapshot_url', None),
+                            stream_url = cfg.get('stream_url', None),
+                            flip_h = cfg.get('flip_horizontal', False),
+                            flip_v = cfg.get('flip_vertical', False),
+                            rotation = cfg.get('rotation', 0),
+                         ) for cfg in result.get('webcams', []) if 'mjpeg' in cfg.get('service', '').lower() ]
+
+                if len(webcam_configs) > 0:
+                    return  webcam_configs
+
+                # In case of WebRTC webcam
+                webcam_configs = [ dict(
+                            target_fps = cfg.get('target_fps', 25),
+                            snapshot_url = cfg.get('snapshot_url', None),
+                            stream_url = cfg.get('snapshot_url', '').replace('action=snapshot', 'action=stream'), # TODO: Webrtc stream_url is not compatible with MJPEG stream url. Let's guess it. it is a little hacky.
+                            flip_h = cfg.get('flip_horizontal', False),
+                            flip_v = cfg.get('flip_vertical', False),
+                            rotation = cfg.get('rotation', 0),
+                         ) for cfg in result.get('webcams', []) if 'webrtc' in cfg.get('service', '').lower() ]
+                return  webcam_configs
+
             # Check for the standard namespace for webcams
             result = self.api_get('server.database.item', raise_for_status=False, namespace='webcams')
             if result:
                 _logger.debug(f'Found config in Moonraker webcams namespace: {result}')
-                # TODO: Just pick the last webcam before we have a way to support multiple cameras
-                for cfg in result.get('value', {}).values():
-                    return dict(
-                        snapshot_url = cfg.get('urlSnapshot', None),
-                        stream_url = cfg.get('urlStream', None),
-                        flip_h = cfg.get('flipX', False),
-                        flip_v = cfg.get('flipY', False),
-                    )
+                return [ dict(
+                            target_fps = cfg.get('targetFps', 25),
+                            snapshot_url = cfg.get('urlSnapshot', None),
+                            stream_url = cfg.get('urlStream', None),
+                            flip_h = cfg.get('flipX', False),
+                            flip_v = cfg.get('flipY', False),
+                            rotation = cfg.get('rotation', 0), # TODO Verify the key name for rotation
+                        ) for cfg in result.get('value', {}).values() if 'mjpeg' in cfg.get('service', '').lower() ]
 
             # webcam configs not found in the standard location. Try fluidd's flavor
             result = self.api_get('server.database.item', raise_for_status=False, namespace='fluidd', key='cameras')
             if result:
                 _logger.debug(f'Found config in Moonraker fluidd/cameras namespace: {result}')
-                # TODO: Just pick the last webcam before we have a way to support multiple cameras
-                for cfg in result.get('value', {}).get('cameras', []):
-                    if not cfg.get('enabled', False):
-                        continue
-
-                    return dict(
-                        stream_url = cfg.get('url', None),
-                        flip_h = cfg.get('flipX', False),
-                        flip_v = cfg.get('flipY', False),
-                    )
+                return [ dict(
+                            target_fps = cfg.get('target_fps', 25),  # TODO Verify the key name in fluidd for FPS
+                            stream_url = cfg.get('url', None),
+                            flip_h = cfg.get('flipX', False),
+                            flip_v = cfg.get('flipY', False),
+                            rotation = cfg.get('rotation', 0), # TODO Verify the key name for rotation
+                        ) for cfg in result.get('value', {}).get('cameras', []) if not cfg.get('enabled', False) ]
 
             #TODO: Send notification to user that webcam configs not found when moonraker's announcement api makes to stable
+            return []
 
         mr_webcam_config = webcam_config_in_moonraker()
-        if mr_webcam_config:
-            _logger.debug(f'Retrieved webcam config from Moonraker: {mr_webcam_config}')
-            self.app_config.webcam.moonraker_webcam_config = mr_webcam_config
+        if len(mr_webcam_config) > 0:
+            _logger.debug(f'Retrieved webcam config from Moonraker: {mr_webcam_config[0]}')
+            self.app_config.webcam.moonraker_webcam_config = mr_webcam_config[0]
+
+            # Add all webcam urls to the blacklist so that they won't be tunnelled
+            url_list = [[ cfg.get('snapshot_url', None), cfg.get('stream_url', None) ] for cfg in mr_webcam_config ]
+            self.app_config.tunnel.url_blacklist = [ url for url in reduce(concat, url_list) if url ]
         else:
             #TODO: Send notification to user that webcam configs not found when moonraker's announcement api makes to stable
             pass
@@ -270,13 +324,21 @@ class MoonrakerConn:
             _logger.warning("Moonraker message queue is full, msg dropped")
 
 
-    def request_subscribe(self, objects=None):
-        objects = objects if objects else {
-            'print_stats': ('state', 'message', 'filename'),
+    def request_subscribe(self):
+        subscribe_objects = {
+            'print_stats': ('state', 'message', 'filename', 'info'),
             'webhooks': ('state', 'state_message'),
+            'gcode_move': ('speed_factor', 'extrude_factor'),
             'history': None,
+            'fan': ('speed'),
         }
-        return self.jsonrpc_request('printer.objects.subscribe', params=dict(objects=objects))
+        available_printer_objects = self.api_get('printer.objects.list', raise_for_status=False).get('objects', [])
+        subscribe_objects = {
+            key: value for key, value in subscribe_objects.items() if key in available_printer_objects
+        }
+
+        _logger.debug(f'Subscribing to objects {subscribe_objects}')
+        self.jsonrpc_request('printer.objects.subscribe', params=dict(objects=subscribe_objects))
 
     def request_status_update(self, objects=None):
         def status_update_callback(data):
@@ -296,21 +358,13 @@ class MoonrakerConn:
                 "toolhead": None,
                 "extruder": None,
                 "gcode_move": None,
+                "fan": None,
             }
 
             for heater in (self.app_config.all_mr_heaters()):
                 objects[heater] = None
 
         self.jsonrpc_request('printer.objects.query', params=dict(objects=objects), callback=status_update_callback)
-
-    def request_pause(self):
-        return self.jsonrpc_request('printer.print.pause')
-
-    def request_cancel(self):
-        return self.jsonrpc_request('printer.print.cancel')
-
-    def request_resume(self):
-        return self.jsonrpc_request('printer.print.resume')
 
     def request_jog(self, axes_dict: Dict[str, Number], is_relative: bool, feedrate: int) -> Dict:
         # TODO check axes

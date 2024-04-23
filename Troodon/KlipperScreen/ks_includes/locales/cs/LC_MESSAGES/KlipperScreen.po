@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Czech\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-29 09:28-0600\n"
+"POT-Creation-Date: 2023-09-12 08:17-0300\n"
 "PO-Revision-Date: 2023-01-29 09:27-0600\n"
 "Last-Translator: \n"
 "Language-Team: Jan Stanka (stanky@email.cz)\n"
@@ -43,22 +43,25 @@ msgstr "Zrychlení:"
 msgid "Accept"
 msgstr "Přijmout"
 
-msgid "Actions"
-msgstr "Akce"
-
 msgid "Add profile"
 msgstr "Přidat profil"
+
+msgid "All"
+msgstr ""
 
 msgid "Apply"
 msgstr "Použít"
 
 #, python-format
-msgid "Apply %.2f offset to Endstop?"
-msgstr "Použít %.2f přesah k Endstop?"
+msgid "Apply %s%.3f offset to Endstop?"
+msgstr ""
 
 #, python-format
-msgid "Apply %s%.2f offset to Probe?"
-msgstr "Použít %s%.2f přesah k Sondě?"
+msgid "Apply %s%.3f offset to Probe?"
+msgstr ""
+
+msgid "Archived"
+msgstr ""
 
 msgid "Are you sure do you want to exclude the object?"
 msgstr "Opravdu chceš vyjmout objekt?"
@@ -87,6 +90,9 @@ msgstr "Auto-kalibrace"
 msgid "Auto-close notifications"
 msgstr "Automaticky zavřít upozornění"
 
+msgid "Auto-open Extrude On Pause"
+msgstr ""
+
 msgid "Auto-scroll"
 msgstr "Auto posun"
 
@@ -104,9 +110,6 @@ msgstr "Kalibrace"
 
 msgid "Calibrated"
 msgstr "Zkalibrováno"
-
-msgid "Calibrated, save configuration to make it permanent"
-msgstr "Zkalibrováno, uložit změny jako trvalé"
 
 msgid "Calibrating"
 msgstr "Kalibruji"
@@ -150,9 +153,6 @@ msgstr "Zavřít"
 msgid "Complete"
 msgstr "Hotovo"
 
-msgid "Configuration"
-msgstr "Konfigurace"
-
 msgid "Confirm Emergency Stop"
 msgstr "Potvrzovat Emergency Stop"
 
@@ -166,11 +166,11 @@ msgstr "Připojování k %s"
 msgid "Console"
 msgstr "Konsole"
 
-msgid "Continue"
-msgstr "Pokračuj"
-
 msgid "Cooldown"
 msgstr "Zchladit"
+
+msgid "DPMS has failed to load and has been disabled"
+msgstr ""
 
 msgid "Date"
 msgstr "Datum"
@@ -186,9 +186,6 @@ msgstr "Odznačit"
 
 msgid "Disable Motors"
 msgstr "Uvolnit motory"
-
-msgid "Disable XY"
-msgstr "Uvolnit XY"
 
 msgid "Distance (mm)"
 msgstr "Vzdálenost (mm)"
@@ -245,6 +242,9 @@ msgstr "Soubor"
 msgid "File:"
 msgstr "Soubor:"
 
+msgid "Filter"
+msgstr ""
+
 msgid "Finding ADXL"
 msgstr "Hledání ADXL"
 
@@ -269,9 +269,6 @@ msgstr "Velikost fontu"
 msgid "Full Update"
 msgstr "Úplný update"
 
-msgid "Fullscreen"
-msgstr ""
-
 msgid "Go Back"
 msgstr "Zpět"
 
@@ -290,6 +287,9 @@ msgstr "Skrýt senzory v Temp."
 msgid "Hide temp."
 msgstr "Skrýt teplotu"
 
+msgid "Home"
+msgstr ""
+
 msgid "Home All"
 msgstr "Zaparkovat XYZ"
 
@@ -305,20 +305,23 @@ msgstr "Zaparkovat Y"
 msgid "Home Z"
 msgstr "Zaparkovat Z"
 
-msgid "Homing"
-msgstr "Domů"
-
 msgid "Host"
 msgstr "Host"
 
 msgid "Hostname"
 msgstr "Hostname"
 
+msgid "ID"
+msgstr ""
+
 msgid "Icon Theme"
 msgstr "Sada ikon"
 
 msgid "Initializing printer..."
 msgstr "Startuji tiskárnu ..."
+
+msgid "Initiate a PID calibration for:"
+msgstr ""
 
 msgid "Input Shaper"
 msgstr ""
@@ -341,6 +344,9 @@ msgstr "Otočit Y"
 msgid "Invert Z"
 msgstr "Otočit Z"
 
+msgid "It may take more than 5 minutes depending on the heater power."
+msgstr ""
+
 msgid "Klipper Restart"
 msgstr "Klipper Restart"
 
@@ -362,11 +368,18 @@ msgstr "Klipper se restartuje"
 msgid "KlipperScreen will reboot"
 msgstr "KlipperScreen se restartuje"
 
+msgid ""
+"LOAD_FILAMENT/UNLOAD_FILAMENT are hidden and should be used from extrude"
+msgstr ""
+
 msgid "Language"
 msgstr "Jazyk"
 
 msgid "Large"
 msgstr "Velký"
+
+msgid "Last Used"
+msgstr ""
 
 msgid "Layer:"
 msgstr "Vrstva:"
@@ -391,6 +404,9 @@ msgstr "Makra"
 
 msgid "Main Menu"
 msgstr "Hlavní menu"
+
+msgid "Material"
+msgstr ""
 
 msgid "Max"
 msgstr "Max"
@@ -431,6 +447,9 @@ msgstr "Změněno"
 msgid "Moonraker: connected"
 msgstr "Moonraker: připojen"
 
+msgid "More"
+msgstr ""
+
 msgid "Move"
 msgstr "Posun"
 
@@ -448,6 +467,9 @@ msgstr "Nikdy"
 
 msgid "New"
 msgstr "Nový"
+
+msgid "No elegible macros:"
+msgstr ""
 
 msgid ""
 "Not supported for auto-detection, it needs to be configured in klipperscreen."
@@ -624,6 +646,9 @@ msgstr "Ukaž"
 msgid "Show Heater Power"
 msgstr "Ukaž odběr topení"
 
+msgid "Show Scrollbars Buttons"
+msgstr ""
+
 msgid "Shutdown"
 msgstr "Shutdown"
 
@@ -632,9 +657,6 @@ msgstr "Velikost"
 
 msgid "Slicer"
 msgstr "Slicer"
-
-msgid "Slicer Time correction (%)"
-msgstr "Časová korekce Sliceru  (%)"
 
 msgid "Slicer:"
 msgstr "Slicer:"
@@ -655,6 +677,9 @@ msgid "Speed:"
 msgstr "Rychlost:"
 
 msgid "Square Corner Velocity"
+msgstr ""
+
+msgid "Standby"
 msgstr ""
 
 msgid "Start"
@@ -750,8 +775,17 @@ msgstr[0] "hodina"
 msgstr[1] "hodiny"
 msgstr[2] "hodin"
 
-msgid "minutes"
-msgstr "min"
+msgid "macros that use 'rename_existing' are hidden"
+msgstr ""
+
+msgid "macros with a name starting with '_' are hidden"
+msgstr ""
+
+msgid "minute"
+msgid_plural "minutes"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 msgid "mm"
 msgstr "mm"
@@ -764,6 +798,27 @@ msgstr "mm/s²"
 
 msgid "mm³/s"
 msgstr "mm³/s"
+
+#~ msgid "Continue"
+#~ msgstr "Pokračuj"
+
+#~ msgid "Actions"
+#~ msgstr "Akce"
+
+#~ msgid "Configuration"
+#~ msgstr "Konfigurace"
+
+#~ msgid "Homing"
+#~ msgstr "Domů"
+
+#~ msgid "Disable XY"
+#~ msgstr "Uvolnit XY"
+
+#~ msgid "Slicer Time correction (%)"
+#~ msgstr "Časová korekce Sliceru  (%)"
+
+#~ msgid "Calibrated, save configuration to make it permanent"
+#~ msgstr "Zkalibrováno, uložit změny jako trvalé"
 
 #~ msgid "Decrease"
 #~ msgstr "Snížit"
