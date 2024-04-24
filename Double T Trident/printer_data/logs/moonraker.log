@@ -1,0 +1,670 @@
+-------------------- Log Start | Tue Apr 23 00:17:36 2024 --------------------
+data_path: /home/pi/printer_data
+is_default_data_path: False
+config_file: /home/pi/printer_data/config/moonraker.conf
+startup_warnings: []
+verbose: False
+debug: False
+asyncio_debug: False
+is_backup_config: False
+is_python_package: True
+instance_uuid: 77a8fdfa437a42d28af3c3961e6d54c0
+unix_socket_path: /home/pi/printer_data/comms/moonraker.sock
+software_version: v0.8.0-313-ge87ab4a
+git_branch: master
+git_remote: origin
+git_repo_url: https://github.com/Arksine/moonraker.git
+modified_files: []
+unofficial_components: []
+log_file: /home/pi/printer_data/logs/moonraker.log
+python_version: 3.9.2 (default, Feb 28 2021, 17:03:44)  [GCC 10.2.1 20210110]
+launch_args: /home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/__main__.py -d /home/pi/printer_data
+msgspec_enabled: False
+uvloop_enabled: False
+
+#################### Moonraker Configuration ####################
+
+[server]
+host = 0.0.0.0
+port = 7125
+max_upload_size = 1024
+klippy_uds_address = ~/printer_data/comms/klippy.sock
+
+[file_manager]
+enable_object_processing = True
+
+[authorization]
+cors_domains = 
+	https://my.mainsail.xyz
+	http://my.mainsail.xyz
+	http://*.local
+	http://*.lan
+trusted_clients = 
+	10.0.0.0/8
+	127.0.0.0/8
+	169.254.0.0/16
+	172.16.0.0/12
+	192.168.0.0/16
+	FE80::/10
+	::1/128
+
+[octoprint_compat]
+
+[history]
+
+[announcements]
+subscriptions = 
+	mainsail
+
+[update_manager]
+refresh_interval = 168
+enable_auto_refresh = True
+
+[update_manager mainsail]
+type = web
+channel = stable
+repo = mainsail-crew/mainsail
+path = ~/mainsail
+
+[update_manager mainsail-config]
+type = git_repo
+primary_branch = master
+path = ~/mainsail-config
+origin = https://github.com/mainsail-crew/mainsail-config.git
+managed_services = klipper
+
+[update_manager beacon]
+type = git_repo
+channel = dev
+path = ~/beacon_klipper
+origin = https://github.com/beacon3d/beacon_klipper.git
+env = ~/klippy-env/bin/python
+requirements = requirements.txt
+install_script = install.sh
+is_system_service = False
+managed_services = klipper
+info_tags = 
+	desc=Beacon Surface Scanner
+
+#################################################################
+All Configuration Files:
+/home/pi/printer_data/config/moonraker.conf
+#################################################################
+
+Database Versions: pylmdb = 1.4.1, lmdb = (0, 9, 29)
+Unsafe Shutdown Count: 195
+
+System Info:
+
+***python***
+  version: (3, 9, 2, 'final', 0)
+  version_string: 3.9.2 (default, Feb 28 2021, 17:03:44)  [GCC 10.2.1 20210110]
+
+***cpu_info***
+  cpu_count: 4
+  bits: 64bit
+  processor: aarch64
+  cpu_desc: 
+  serial_number: 10000000f285e6c2
+  hardware_desc: BCM2835
+  model: Raspberry Pi 4 Model B Rev 1.5
+  total_memory: 3705532
+  memory_units: kB
+
+***sd_info***
+  manufacturer_id: 03
+  manufacturer: Sandisk
+  oem_id: 5344
+  product_name: SD64G
+  product_revision: 8.5
+  serial_number: 89585864
+  manufacturer_date: 11/2021
+  capacity: 59.5 GiB
+  total_bytes: 63864569856
+
+***distribution***
+  name: Debian GNU/Linux 11 (bullseye)
+  id: debian
+  version: 11
+  version_parts: {'major': '11', 'minor': '', 'build_number': ''}
+  like: 
+  codename: bullseye
+  release_info: {'name': 'MainsailOS', 'version_id': '1.2.1', 'codename': 'bullseye', 'id': 'mainsailos'}
+
+***virtualization***
+  virt_type: none
+  virt_identifier: none
+
+***network***
+
+***canbus***
+
+***Allowed Services***
+  klipper_mcu
+  webcamd
+  MoonCord
+  KlipperScreen
+  moonraker-telegram-bot
+  moonraker-obico
+  sonar
+  crowsnest
+  octoeverywhere
+  ratos-configurator
+Found libcamera Python module, version: v0.0.5+83-bde9b04f
+
+Systemd unit moonraker.service:
+unit_name: moonraker.service
+is_default: True
+manager: systemd
+Properties:
+**Requires=['system.slice', 'network-online.target', 'sysinit.target']
+**After=['basic.target', 'systemd-journald.socket', 'network-online.target', 'system.slice', 'klipper.service', 'sysinit.target']
+**SupplementaryGroups=['moonraker-admin']
+**EnvironmentFiles=/home/pi/printer_data/systemd/moonraker.env
+**ExecStart=/home/pi/moonraker-env/bin/python $MOONRAKER_ARGS
+**WorkingDirectory=
+**FragmentPath=/etc/systemd/system/moonraker.service
+**Description=API Server for Klipper SV1
+**User=pi
+
+Systemd unit klipper.service:
+unit_name: klipper.service
+is_default: True
+manager: systemd
+Properties:
+**Requires=['sysinit.target', 'system.slice', '-.mount']
+**After=['systemd-journald.socket', 'klipper-mcu.service', 'system.slice', '-.mount', 'sysinit.target', 'basic.target', 'network-online.target']
+**SupplementaryGroups=[]
+**EnvironmentFiles=/home/pi/printer_data/systemd/klipper.env
+**ExecStart=/home/pi/klippy-env/bin/python $KLIPPER_ARGS
+**WorkingDirectory=/home/pi/klipper
+**FragmentPath=/etc/systemd/system/klipper.service
+**Description=Klipper 3D Printer Firmware SV1
+**User=pi
+Git Repo moonraker: Warnings detected:
+  Repo has untracked source files: ['moonraker/components/timelapse.py']
+Git Repo klipper: Warnings detected:
+  Repo has untracked source files: ['klippy/extras/gcode_shell_command.py']
+Git Repo mainsail-config: Warnings detected:
+  Repo is corrupt
+Git Repo beacon: No warnings detected
+Klipper Version: v0.12.0-113-g28f06a10-dirty
+2024-04-23 01:17:36,831 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 192.168.1.236
+2024-04-23 01:17:36,835 [application.py:log_request()] - 101 GET /websocket (192.168.1.236) [_TRUSTED_USER_] 7.30ms
+2024-04-23 01:17:36,836 [websockets.py:open()] - Websocket Opened: ID: 548282937984, Proxied: True, User Agent: Dart/3.3 (dart:io), Host Name: trident.local
+2024-04-23 01:17:36,847 [websockets.py:_handle_identify()] - Websocket 548282937984 Client Identified - Name: Mobileraker-ios, Version: 2.6.14-424, Type: mobile
+2024-04-23 01:21:06,951 [websockets.py:write_to_socket()] - Websocket closed while writing: 548282937984
+2024-04-23 01:21:11,840 [websockets.py:on_close()] - Websocket Closed: ID: 548282937984 Close Code: None, Close Reason: None, Pong Time Elapsed: 44.99
+2024-04-23 01:23:05,551 [application.py:log_request()] - 101 GET /websocket (192.168.1.236) [_TRUSTED_USER_] 4.49ms
+2024-04-23 01:23:05,552 [websockets.py:open()] - Websocket Opened: ID: 548285819776, Proxied: True, User Agent: Dart/3.3 (dart:io), Host Name: trident.local
+2024-04-23 01:23:05,563 [websockets.py:_handle_identify()] - Websocket 548285819776 Client Identified - Name: Mobileraker-ios, Version: 2.6.14-424, Type: mobile
+2024-04-23 01:24:25,726 [websockets.py:write_to_socket()] - Websocket closed while writing: 548285819776
+2024-04-23 01:24:30,558 [websockets.py:on_close()] - Websocket Closed: ID: 548285819776 Close Code: None, Close Reason: None, Pong Time Elapsed: 45.00
+2024-04-23 01:24:33,211 [application.py:log_request()] - 101 GET /websocket (192.168.1.236) [_TRUSTED_USER_] 4.73ms
+2024-04-23 01:24:33,211 [websockets.py:open()] - Websocket Opened: ID: 548285819296, Proxied: True, User Agent: Dart/3.3 (dart:io), Host Name: trident.local
+2024-04-23 01:24:33,223 [websockets.py:_handle_identify()] - Websocket 548285819296 Client Identified - Name: Mobileraker-ios, Version: 2.6.14-424, Type: mobile
+2024-04-23 01:25:43,420 [websockets.py:write_to_socket()] - Websocket closed while writing: 548285819296
+2024-04-23 01:25:48,215 [websockets.py:on_close()] - Websocket Closed: ID: 548285819296 Close Code: None, Close Reason: None, Pong Time Elapsed: 44.98
+2024-04-23 01:26:12,937 [application.py:log_request()] - 101 GET /websocket (192.168.1.236) [_TRUSTED_USER_] 4.67ms
+2024-04-23 01:26:12,938 [websockets.py:open()] - Websocket Opened: ID: 548285816944, Proxied: True, User Agent: Dart/3.3 (dart:io), Host Name: trident.local
+2024-04-23 01:26:12,949 [websockets.py:_handle_identify()] - Websocket 548285816944 Client Identified - Name: Mobileraker-ios, Version: 2.6.14-424, Type: mobile
+2024-04-23 01:26:13,028 [application.py:log_request()] - 101 GET /websocket (192.168.1.236) [_TRUSTED_USER_] 3.11ms
+2024-04-23 01:26:13,029 [websockets.py:open()] - Websocket Opened: ID: 548285818240, Proxied: True, User Agent: Dart/3.3 (dart:io), Host Name: trident.local
+2024-04-23 01:26:13,035 [websockets.py:on_close()] - Websocket Closed: ID: 548285818240 Close Code: 1001, Close Reason: None, Pong Time Elapsed: 0.01
+2024-04-23 01:28:13,063 [websockets.py:write_to_socket()] - Websocket closed while writing: 548285816944
+2024-04-23 01:28:17,941 [websockets.py:on_close()] - Websocket Closed: ID: 548285816944 Close Code: None, Close Reason: None, Pong Time Elapsed: 44.99
+2024-04-23 01:29:37,054 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 192.168.1.70
+2024-04-23 01:29:37,058 [application.py:log_request()] - 101 GET /websocket (192.168.1.70) [_TRUSTED_USER_] 7.01ms
+2024-04-23 01:29:37,059 [websockets.py:open()] - Websocket Opened: ID: 548285819296, Proxied: True, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0, Host Name: trident.local
+2024-04-23 01:29:37,070 [websockets.py:_handle_identify()] - Websocket 548285819296 Client Identified - Name: mainsail, Version: 2.10.0, Type: web
+2024-04-23 01:29:54,148 [klippy_connection.py:_on_connection_closed()] - Klippy Connection Removed
+2024-04-23 01:29:55,407 [klippy_connection.py:_do_connect()] - Klippy Connection Established
+2024-04-23 01:29:57,359 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 127.0.0.1
+2024-04-23 01:29:57,731 [file_manager.py:get_file_list()] - Updating File List <gcodes>...
+2024-04-23 01:29:59,665 [klippy_connection.py:_request_initial_subscriptions()] - Webhooks Subscribed
+2024-04-23 01:29:59,667 [klippy_connection.py:_request_initial_subscriptions()] - GCode Output Subscribed
+2024-04-23 01:29:59,921 [job_state.py:_handle_started()] - Job state initialized: standby
+2024-04-23 01:30:00,177 [klippy_connection.py:_check_ready()] - Klippy ready
+2024-04-23 01:30:00,676 [data_store.py:_init_sensors()] - Configuring available sensors: ['temperature_sensor Spider', 'temperature_sensor raspberry_pi', 'temperature_sensor sht36', 'temperature_sensor chamber', 'heater_bed', 'temperature_sensor beacon_coil', 'extruder']
+2024-04-23 01:35:52,481 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=------------------------5b391b73774c5033
+2024-04-23 01:35:52,642 [application.py:post()] - Processing Uploaded File: SS_ABS_290C_Calibration cube.gcode
+2024-04-23 01:35:52,856 [shell_command.py:pipe_data_received()] - INFO:metadata:Object Processing is enabled
+
+2024-04-23 01:35:52,874 [shell_command.py:pipe_data_received()] - INFO:metadata:File 'SS_ABS_290C_Calibration cube.gcode' currently supports cancellation, processing aborted
+
+2024-04-23 01:35:52,955 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/printer_data/gcodes -f "SS_ABS_290C_Calibration cube.gcode" --check-objects) successfully finished
+2024-04-23 01:35:52,977 [application.py:log_request()] - 201 POST /api/files/local (192.168.1.70) [_TRUSTED_USER_] 497.86ms
+2024-04-23 01:35:52,981 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: server.files.metadata, Code: -32601, Message: Metadata not available for <.thumbs/SS_ABS_290C_Calibration cube-32x32.png>
+2024-04-23 01:35:53,005 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: server.files.metadata, Code: -32601, Message: Metadata not available for <.thumbs/SS_ABS_290C_Calibration cube-400x300.png>
+2024-04-23 01:35:53,093 [job_state.py:_status_update()] - Job Started: SS_ABS_290C_Calibration cube.gcode
+2024-04-23 01:36:59,763 [klippy_connection.py:_process_status_update()] - Klippy has shutdown
+2024-04-23 01:36:59,773 [proc_stats.py:_handle_shutdown()] - 
+Moonraker System Usage Statistics:
+System Time: 1713832590.299500, Usage: 2.72%, Memory: 56792 kB
+System Time: 1713832591.301354, Usage: 5.03%, Memory: 56792 kB
+System Time: 1713832592.301661, Usage: 2.82%, Memory: 56792 kB
+System Time: 1713832593.301981, Usage: 2.72%, Memory: 56792 kB
+System Time: 1713832594.302559, Usage: 2.53%, Memory: 56792 kB
+System Time: 1713832595.303927, Usage: 2.81%, Memory: 56792 kB
+System Time: 1713832596.305495, Usage: 2.64%, Memory: 56792 kB
+System Time: 1713832597.307387, Usage: 2.71%, Memory: 56792 kB
+System Time: 1713832598.310852, Usage: 2.72%, Memory: 56792 kB
+System Time: 1713832599.311668, Usage: 2.75%, Memory: 56792 kB
+System Time: 1713832600.312753, Usage: 2.84%, Memory: 56792 kB
+System Time: 1713832601.315090, Usage: 4.87%, Memory: 56792 kB
+System Time: 1713832602.314900, Usage: 2.94%, Memory: 56792 kB
+System Time: 1713832603.315147, Usage: 2.7%, Memory: 56792 kB
+System Time: 1713832604.315813, Usage: 2.63%, Memory: 56792 kB
+System Time: 1713832605.317265, Usage: 3.18%, Memory: 56792 kB
+System Time: 1713832606.317408, Usage: 2.87%, Memory: 56792 kB
+System Time: 1713832607.317987, Usage: 3.11%, Memory: 56792 kB
+System Time: 1713832608.319517, Usage: 3.01%, Memory: 56792 kB
+System Time: 1713832609.321874, Usage: 2.73%, Memory: 56792 kB
+System Time: 1713832610.323589, Usage: 2.79%, Memory: 56792 kB
+System Time: 1713832611.325627, Usage: 4.97%, Memory: 56792 kB
+System Time: 1713832612.326056, Usage: 2.93%, Memory: 56792 kB
+System Time: 1713832613.328508, Usage: 2.62%, Memory: 56792 kB
+System Time: 1713832614.329295, Usage: 2.67%, Memory: 56792 kB
+System Time: 1713832615.330144, Usage: 3.0%, Memory: 56792 kB
+System Time: 1713832616.329476, Usage: 4.29%, Memory: 56792 kB
+System Time: 1713832617.329458, Usage: 1.51%, Memory: 56792 kB
+System Time: 1713832618.330274, Usage: 1.38%, Memory: 56792 kB
+System Time: 1713832619.331484, Usage: 1.72%, Memory: 56792 kB
+CPU Temperature: 34.076
+2024-04-23 01:36:59,775 [proc_stats.py:_handle_shutdown()] - Throttled Flags: 
+2024-04-23 01:38:04,074 [klippy_connection.py:_on_connection_closed()] - Klippy Connection Removed
+2024-04-23 01:38:05,336 [klippy_connection.py:_do_connect()] - Klippy Connection Established
+2024-04-23 01:38:07,717 [file_manager.py:get_file_list()] - Updating File List <gcodes>...
+2024-04-23 01:38:09,654 [klippy_connection.py:_request_initial_subscriptions()] - Webhooks Subscribed
+2024-04-23 01:38:09,656 [klippy_connection.py:_request_initial_subscriptions()] - GCode Output Subscribed
+2024-04-23 01:38:09,906 [job_state.py:_handle_started()] - Job state initialized: standby
+2024-04-23 01:38:10,167 [klippy_connection.py:_check_ready()] - Klippy ready
+2024-04-23 01:38:10,671 [data_store.py:_init_sensors()] - Configuring available sensors: ['temperature_sensor Spider', 'temperature_sensor raspberry_pi', 'temperature_sensor sht36', 'temperature_sensor chamber', 'heater_bed', 'temperature_sensor beacon_coil', 'extruder']
+2024-04-23 01:39:44,400 [job_state.py:_status_update()] - Job Started: SS_ABS_290C_Calibration cube.gcode
+2024-04-23 01:41:10,326 [update_manager.py:_handle_auto_refresh()] - Klippy is printing, auto refresh aborted
+2024-04-23 01:44:46,453 [klippy_connection.py:_process_status_update()] - Klippy has shutdown
+2024-04-23 01:44:46,472 [proc_stats.py:_handle_shutdown()] - 
+Moonraker System Usage Statistics:
+System Time: 1713833056.880756, Usage: 2.99%, Memory: 56844 kB
+System Time: 1713833057.882673, Usage: 2.93%, Memory: 56844 kB
+System Time: 1713833058.883399, Usage: 2.7%, Memory: 56844 kB
+System Time: 1713833059.885367, Usage: 2.97%, Memory: 56844 kB
+System Time: 1713833060.889052, Usage: 3.1%, Memory: 56844 kB
+System Time: 1713833061.884512, Usage: 4.33%, Memory: 56844 kB
+System Time: 1713833062.885834, Usage: 1.46%, Memory: 56844 kB
+System Time: 1713833063.887701, Usage: 1.54%, Memory: 56844 kB
+System Time: 1713833064.888041, Usage: 1.63%, Memory: 56844 kB
+System Time: 1713833065.889839, Usage: 1.79%, Memory: 56844 kB
+System Time: 1713833066.892689, Usage: 2.51%, Memory: 56844 kB
+System Time: 1713833067.893820, Usage: 3.2%, Memory: 56844 kB
+System Time: 1713833068.895976, Usage: 3.17%, Memory: 56844 kB
+System Time: 1713833069.899128, Usage: 3.01%, Memory: 56844 kB
+System Time: 1713833070.899940, Usage: 3.03%, Memory: 56844 kB
+System Time: 1713833071.906307, Usage: 5.71%, Memory: 56844 kB
+System Time: 1713833072.908946, Usage: 3.29%, Memory: 56844 kB
+System Time: 1713833073.908090, Usage: 2.95%, Memory: 56844 kB
+System Time: 1713833074.911680, Usage: 2.91%, Memory: 56844 kB
+System Time: 1713833075.917150, Usage: 3.33%, Memory: 56844 kB
+System Time: 1713833076.917655, Usage: 3.18%, Memory: 56844 kB
+System Time: 1713833077.921485, Usage: 3.32%, Memory: 56844 kB
+System Time: 1713833078.922857, Usage: 3.16%, Memory: 56844 kB
+System Time: 1713833079.924680, Usage: 2.86%, Memory: 56844 kB
+System Time: 1713833080.931211, Usage: 2.9%, Memory: 56844 kB
+System Time: 1713833081.936783, Usage: 5.6%, Memory: 56844 kB
+System Time: 1713833082.936768, Usage: 3.48%, Memory: 56844 kB
+System Time: 1713833083.937078, Usage: 3.15%, Memory: 56844 kB
+System Time: 1713833084.942126, Usage: 2.96%, Memory: 56844 kB
+System Time: 1713833085.940572, Usage: 3.23%, Memory: 56844 kB
+CPU Temperature: 35.05
+2024-04-23 01:44:46,475 [proc_stats.py:_handle_shutdown()] - Throttled Flags: 
+2024-04-23 01:44:46,617 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: printer.print.cancel, Code: 400, Message: Shutdown due to webhooks request
+Once the underlying issue is corrected, use the
+"FIRMWARE_RESTART" command to reset the firmware, reload the
+config, and restart the host software.
+Printer is shutdown
+
+2024-04-23 01:44:47,825 [klippy_connection.py:_on_connection_closed()] - Klippy Connection Removed
+2024-04-23 01:44:49,083 [klippy_connection.py:_do_connect()] - Klippy Connection Established
+2024-04-23 01:44:51,775 [file_manager.py:get_file_list()] - Updating File List <gcodes>...
+2024-04-23 01:44:53,400 [klippy_connection.py:_request_initial_subscriptions()] - Webhooks Subscribed
+2024-04-23 01:44:53,403 [klippy_connection.py:_request_initial_subscriptions()] - GCode Output Subscribed
+2024-04-23 01:44:53,652 [job_state.py:_handle_started()] - Job state initialized: standby
+2024-04-23 01:44:53,912 [klippy_connection.py:_check_ready()] - Klippy ready
+2024-04-23 01:44:54,411 [data_store.py:_init_sensors()] - Configuring available sensors: ['temperature_sensor Spider', 'temperature_sensor raspberry_pi', 'temperature_sensor sht36', 'temperature_sensor chamber', 'heater_bed', 'temperature_sensor beacon_coil', 'extruder']
+2024-04-23 01:46:40,829 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=------------------------e6096f3e6edd28c7
+2024-04-23 01:46:41,007 [application.py:post()] - Processing Uploaded File: SS_ABS_260C_Calibration cube.gcode
+2024-04-23 01:46:41,240 [shell_command.py:pipe_data_received()] - INFO:metadata:Object Processing is enabled
+
+2024-04-23 01:46:41,258 [shell_command.py:pipe_data_received()] - INFO:metadata:File 'SS_ABS_260C_Calibration cube.gcode' currently supports cancellation, processing aborted
+
+2024-04-23 01:46:41,342 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/printer_data/gcodes -f "SS_ABS_260C_Calibration cube.gcode" --check-objects) successfully finished
+2024-04-23 01:46:41,366 [application.py:log_request()] - 201 POST /api/files/local (192.168.1.70) [_TRUSTED_USER_] 538.96ms
+2024-04-23 01:46:41,369 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: server.files.metadata, Code: -32601, Message: Metadata not available for <.thumbs/SS_ABS_260C_Calibration cube-32x32.png>
+2024-04-23 01:46:41,392 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: server.files.metadata, Code: -32601, Message: Metadata not available for <.thumbs/SS_ABS_260C_Calibration cube-400x300.png>
+2024-04-23 01:46:41,422 [job_state.py:_status_update()] - Job Started: SS_ABS_260C_Calibration cube.gcode
+2024-04-23 02:03:31,708 [application.py:log_request()] - 101 GET /websocket (192.168.1.70) [_TRUSTED_USER_] 4.37ms
+2024-04-23 02:03:31,709 [websockets.py:open()] - Websocket Opened: ID: 548281936240, Proxied: True, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0, Host Name: trident.local
+2024-04-23 02:03:31,724 [websockets.py:_handle_identify()] - Websocket 548281936240 Client Identified - Name: mainsail, Version: 2.10.0, Type: web
+2024-04-23 02:04:30,708 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=------------------------84686ba9a954a825
+2024-04-23 02:04:30,881 [application.py:post()] - Processing Uploaded File: SS_ABS_260C_Calibration cube.gcode
+2024-04-23 02:04:31,118 [shell_command.py:pipe_data_received()] - INFO:metadata:Object Processing is enabled
+
+2024-04-23 02:04:31,137 [shell_command.py:pipe_data_received()] - INFO:metadata:File 'SS_ABS_260C_Calibration cube.gcode' currently supports cancellation, processing aborted
+
+2024-04-23 02:04:31,219 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/printer_data/gcodes -f "SS_ABS_260C_Calibration cube.gcode" --check-objects) successfully finished
+2024-04-23 02:04:31,239 [application.py:log_request()] - 201 POST /api/files/local (192.168.1.70) [_TRUSTED_USER_] 532.67ms
+2024-04-23 02:04:31,245 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: server.files.metadata, Code: -32601, Message: Metadata not available for <.thumbs/SS_ABS_260C_Calibration cube-32x32.png>
+2024-04-23 02:04:31,246 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: server.files.metadata, Code: -32601, Message: Metadata not available for <.thumbs/SS_ABS_260C_Calibration cube-400x300.png>
+2024-04-23 02:04:31,333 [job_state.py:_status_update()] - Job Started: SS_ABS_260C_Calibration cube.gcode
+2024-04-23 02:14:56,036 [websockets.py:on_close()] - Websocket Closed: ID: 548285819296 Close Code: 1001, Close Reason: None, Pong Time Elapsed: 8.97
+2024-04-23 02:31:11,385 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 192.168.1.236
+2024-04-23 02:41:10,326 [update_manager.py:_handle_auto_refresh()] - Klippy is printing, auto refresh aborted
+2024-04-23 02:46:11,391 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 127.0.0.1
+2024-04-23 03:05:38,178 [websockets.py:on_close()] - Websocket Closed: ID: 548281936240 Close Code: 1001, Close Reason: None, Pong Time Elapsed: 6.46
+2024-04-23 03:05:38,507 [application.py:log_request()] - 101 GET /websocket (192.168.1.70) [_TRUSTED_USER_] 5.40ms
+2024-04-23 03:05:38,508 [websockets.py:open()] - Websocket Opened: ID: 548286319488, Proxied: True, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0, Host Name: trident.local
+2024-04-23 03:05:38,517 [websockets.py:_handle_identify()] - Websocket 548286319488 Client Identified - Name: mainsail, Version: 2.10.0, Type: web
+2024-04-23 03:06:02,333 [klippy_connection.py:_process_status_update()] - Klippy has shutdown
+2024-04-23 03:06:02,361 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: printer.print.cancel, Code: 400, Message: Shutdown due to webhooks request
+Once the underlying issue is corrected, use the
+"FIRMWARE_RESTART" command to reset the firmware, reload the
+config, and restart the host software.
+Printer is shutdown
+
+2024-04-23 03:06:02,362 [proc_stats.py:_handle_shutdown()] - 
+Moonraker System Usage Statistics:
+System Time: 1713837933.118582, Usage: 2.54%, Memory: 56856 kB
+System Time: 1713837934.119917, Usage: 2.54%, Memory: 56856 kB
+System Time: 1713837935.120800, Usage: 2.82%, Memory: 56856 kB
+System Time: 1713837936.121652, Usage: 2.39%, Memory: 56856 kB
+System Time: 1713837937.123998, Usage: 2.36%, Memory: 56856 kB
+System Time: 1713837938.127774, Usage: 4.71%, Memory: 56856 kB
+System Time: 1713837939.124504, Usage: 63.31%, Memory: 56856 kB
+System Time: 1713837940.124335, Usage: 27.61%, Memory: 56940 kB
+System Time: 1713837941.125057, Usage: 2.93%, Memory: 56940 kB
+System Time: 1713837942.125680, Usage: 1.39%, Memory: 56940 kB
+System Time: 1713837943.126876, Usage: 1.33%, Memory: 56940 kB
+System Time: 1713837944.130428, Usage: 1.69%, Memory: 56940 kB
+System Time: 1713837945.132400, Usage: 2.61%, Memory: 56940 kB
+System Time: 1713837946.134584, Usage: 2.44%, Memory: 56940 kB
+System Time: 1713837947.136553, Usage: 2.37%, Memory: 56940 kB
+System Time: 1713837948.138461, Usage: 4.58%, Memory: 56940 kB
+System Time: 1713837949.138796, Usage: 2.87%, Memory: 56940 kB
+System Time: 1713837950.142105, Usage: 2.96%, Memory: 56940 kB
+System Time: 1713837951.140321, Usage: 2.34%, Memory: 56940 kB
+System Time: 1713837952.141024, Usage: 2.36%, Memory: 56940 kB
+System Time: 1713837953.142617, Usage: 2.26%, Memory: 56940 kB
+System Time: 1713837954.143533, Usage: 2.37%, Memory: 56940 kB
+System Time: 1713837955.144280, Usage: 2.55%, Memory: 56940 kB
+System Time: 1713837956.145004, Usage: 2.3%, Memory: 56940 kB
+System Time: 1713837957.145566, Usage: 2.38%, Memory: 56940 kB
+System Time: 1713837958.148689, Usage: 4.57%, Memory: 56940 kB
+System Time: 1713837959.148810, Usage: 2.84%, Memory: 56940 kB
+System Time: 1713837960.149769, Usage: 2.48%, Memory: 56940 kB
+System Time: 1713837961.150685, Usage: 2.44%, Memory: 56940 kB
+System Time: 1713837962.151866, Usage: 2.56%, Memory: 56940 kB
+CPU Temperature: 39.433
+2024-04-23 03:06:02,374 [proc_stats.py:_handle_shutdown()] - Throttled Flags: 
+2024-04-23 03:06:27,940 [klippy_connection.py:_on_connection_closed()] - Klippy Connection Removed
+2024-04-23 03:06:29,200 [klippy_connection.py:_do_connect()] - Klippy Connection Established
+2024-04-23 03:06:31,359 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 127.0.0.1
+2024-04-23 03:06:31,719 [file_manager.py:get_file_list()] - Updating File List <gcodes>...
+2024-04-23 03:06:33,397 [klippy_connection.py:_request_initial_subscriptions()] - Webhooks Subscribed
+2024-04-23 03:06:33,400 [klippy_connection.py:_request_initial_subscriptions()] - GCode Output Subscribed
+2024-04-23 03:06:33,651 [job_state.py:_handle_started()] - Job state initialized: standby
+2024-04-23 03:06:33,912 [klippy_connection.py:_check_ready()] - Klippy ready
+2024-04-23 03:06:34,408 [data_store.py:_init_sensors()] - Configuring available sensors: ['temperature_sensor Spider', 'temperature_sensor raspberry_pi', 'temperature_sensor sht36', 'temperature_sensor chamber', 'heater_bed', 'temperature_sensor beacon_coil', 'extruder']
+2024-04-23 03:06:48,366 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=------------------------6a2d9de6eff9cdf6
+2024-04-23 03:06:48,551 [application.py:post()] - Processing Uploaded File: SS_ABS_260C_Calibration cube.gcode
+2024-04-23 03:06:48,772 [shell_command.py:pipe_data_received()] - INFO:metadata:Object Processing is enabled
+
+2024-04-23 03:06:48,791 [shell_command.py:pipe_data_received()] - INFO:metadata:File 'SS_ABS_260C_Calibration cube.gcode' currently supports cancellation, processing aborted
+
+2024-04-23 03:06:48,872 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/printer_data/gcodes -f "SS_ABS_260C_Calibration cube.gcode" --check-objects) successfully finished
+2024-04-23 03:06:48,895 [application.py:log_request()] - 201 POST /api/files/local (192.168.1.70) [_TRUSTED_USER_] 530.90ms
+2024-04-23 03:06:48,895 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: server.files.metadata, Code: -32601, Message: Metadata not available for <.thumbs/SS_ABS_260C_Calibration cube-32x32.png>
+2024-04-23 03:06:48,896 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: server.files.metadata, Code: -32601, Message: Metadata not available for <.thumbs/SS_ABS_260C_Calibration cube-400x300.png>
+2024-04-23 03:06:48,940 [job_state.py:_status_update()] - Job Started: SS_ABS_260C_Calibration cube.gcode
+2024-04-23 04:11:00,837 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=------------------------3dc134b833d891cf
+2024-04-23 04:11:01,002 [application.py:post()] - Processing Uploaded File: SS_ABS_260C_Calibration cube.gcode
+2024-04-23 04:11:01,230 [shell_command.py:pipe_data_received()] - INFO:metadata:Object Processing is enabled
+
+2024-04-23 04:11:01,248 [shell_command.py:pipe_data_received()] - INFO:metadata:File 'SS_ABS_260C_Calibration cube.gcode' currently supports cancellation, processing aborted
+
+2024-04-23 04:11:01,332 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/printer_data/gcodes -f "SS_ABS_260C_Calibration cube.gcode" --check-objects) successfully finished
+2024-04-23 04:11:01,352 [application.py:log_request()] - 201 POST /api/files/local (192.168.1.70) [_TRUSTED_USER_] 517.11ms
+2024-04-23 04:11:01,357 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: server.files.metadata, Code: -32601, Message: Metadata not available for <.thumbs/SS_ABS_260C_Calibration cube-32x32.png>
+2024-04-23 04:11:01,357 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: server.files.metadata, Code: -32601, Message: Metadata not available for <.thumbs/SS_ABS_260C_Calibration cube-400x300.png>
+2024-04-23 04:11:01,555 [job_state.py:_status_update()] - Job Started: SS_ABS_260C_Calibration cube.gcode
+2024-04-23 04:11:11,408 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 127.0.0.1
+2024-04-23 04:12:19,650 [klippy_connection.py:wait()] - Request 'gcode/script' pending: 60.00 seconds
+2024-04-23 04:13:19,653 [klippy_connection.py:wait()] - Request 'gcode/script' pending: 120.01 seconds
+2024-04-23 04:14:19,655 [klippy_connection.py:wait()] - Request 'gcode/script' pending: 180.01 seconds
+2024-04-23 04:15:19,657 [klippy_connection.py:wait()] - Request 'gcode/script' pending: 240.01 seconds
+2024-04-23 04:16:19,660 [klippy_connection.py:wait()] - Request 'gcode/script' pending: 300.01 seconds
+2024-04-23 04:17:19,663 [klippy_connection.py:wait()] - Request 'gcode/script' pending: 360.01 seconds
+2024-04-23 04:18:19,665 [klippy_connection.py:wait()] - Request 'gcode/script' pending: 420.02 seconds
+2024-04-23 04:19:19,667 [klippy_connection.py:wait()] - Request 'gcode/script' pending: 480.02 seconds
+2024-04-23 04:20:19,669 [klippy_connection.py:wait()] - Request 'gcode/script' pending: 540.02 seconds
+2024-04-23 05:11:11,424 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 192.168.1.70
+2024-04-23 05:36:08,624 [websockets.py:write_to_socket()] - Websocket closed while writing: 548286319488
+2024-04-23 05:36:13,513 [websockets.py:on_close()] - Websocket Closed: ID: 548286319488 Close Code: None, Close Reason: None, Pong Time Elapsed: 45.00
+2024-04-23 05:56:43,160 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 192.168.1.70
+2024-04-23 05:56:43,164 [application.py:log_request()] - 101 GET /websocket (192.168.1.70) [_TRUSTED_USER_] 7.12ms
+2024-04-23 05:56:43,165 [websockets.py:open()] - Websocket Opened: ID: 548281886080, Proxied: True, User Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0, Host Name: trident.local
+2024-04-23 05:56:43,172 [websockets.py:_handle_identify()] - Websocket 548281886080 Client Identified - Name: mainsail, Version: 2.10.0, Type: web
+2024-04-23 06:45:11,198 [application.py:log_request()] - 101 GET /websocket (192.168.1.70) [_TRUSTED_USER_] 1.90ms
+2024-04-23 06:45:11,198 [websockets.py:open()] - Websocket Opened: ID: 548281886992, Proxied: True, User Agent: BBL-Slicer/v01.08.04.51 (light) Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36 Edg/107.0.1418.52, Host Name: trident.local
+2024-04-23 06:45:11,213 [websockets.py:_handle_identify()] - Websocket 548281886992 Client Identified - Name: mainsail, Version: 2.10.0, Type: web
+2024-04-23 06:45:22,173 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=------------------------a018ec8f81ee09a9
+2024-04-23 06:45:22,476 [application.py:post()] - Processing Uploaded File: Voron_Design_Cube_v7_ABS_14m46s.gcode
+2024-04-23 06:45:22,697 [shell_command.py:pipe_data_received()] - INFO:metadata:Object Processing is enabled
+
+2024-04-23 06:45:22,711 [shell_command.py:pipe_data_received()] - INFO:metadata:File 'Voron_Design_Cube_v7_ABS_14m46s.gcode' currently supports cancellation, processing aborted
+
+2024-04-23 06:45:22,833 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/printer_data/gcodes -f "Voron_Design_Cube_v7_ABS_14m46s.gcode" --check-objects) successfully finished
+2024-04-23 06:45:22,852 [application.py:log_request()] - 201 POST /api/files/local (192.168.1.70) [_TRUSTED_USER_] 680.04ms
+2024-04-23 06:45:22,861 [job_state.py:_status_update()] - Job Started: Voron_Design_Cube_v7_ABS_14m46s.gcode
+2024-04-23 06:45:22,868 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: server.files.metadata, Code: -32601, Message: Metadata not available for <.thumbs/Voron_Design_Cube_v7_ABS_14m46s-300x300.png>
+2024-04-23 06:45:22,891 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: server.files.metadata, Code: -32601, Message: Metadata not available for <.thumbs/Voron_Design_Cube_v7_ABS_14m46s-32x32.png>
+2024-04-23 06:46:08,728 [klippy_connection.py:_process_status_update()] - Klippy has shutdown
+2024-04-23 06:46:08,738 [proc_stats.py:_handle_shutdown()] - 
+Moonraker System Usage Statistics:
+System Time: 1713851139.624624, Usage: 1.72%, Memory: 58680 kB
+System Time: 1713851140.625795, Usage: 1.64%, Memory: 58680 kB
+System Time: 1713851141.629220, Usage: 2.64%, Memory: 58680 kB
+System Time: 1713851142.631540, Usage: 2.99%, Memory: 58680 kB
+System Time: 1713851143.633315, Usage: 3.39%, Memory: 58680 kB
+System Time: 1713851144.638114, Usage: 5.36%, Memory: 58680 kB
+System Time: 1713851145.637208, Usage: 3.54%, Memory: 58680 kB
+System Time: 1713851146.638739, Usage: 2.91%, Memory: 58680 kB
+System Time: 1713851147.640097, Usage: 2.84%, Memory: 58680 kB
+System Time: 1713851148.642283, Usage: 3.02%, Memory: 58680 kB
+System Time: 1713851149.642728, Usage: 3.17%, Memory: 58680 kB
+System Time: 1713851150.642801, Usage: 2.98%, Memory: 58680 kB
+System Time: 1713851151.644411, Usage: 3.16%, Memory: 58680 kB
+System Time: 1713851152.646105, Usage: 2.96%, Memory: 58680 kB
+System Time: 1713851153.651258, Usage: 3.3%, Memory: 58680 kB
+System Time: 1713851154.650420, Usage: 5.97%, Memory: 58680 kB
+System Time: 1713851155.650785, Usage: 3.52%, Memory: 58680 kB
+System Time: 1713851156.651152, Usage: 3.17%, Memory: 58680 kB
+System Time: 1713851157.651932, Usage: 2.98%, Memory: 58680 kB
+System Time: 1713851158.651798, Usage: 3.06%, Memory: 58680 kB
+System Time: 1713851159.653101, Usage: 3.38%, Memory: 58680 kB
+System Time: 1713851160.653488, Usage: 3.02%, Memory: 58680 kB
+System Time: 1713851161.653944, Usage: 3.39%, Memory: 58680 kB
+System Time: 1713851162.655683, Usage: 2.71%, Memory: 58680 kB
+System Time: 1713851163.657976, Usage: 3.1%, Memory: 58680 kB
+System Time: 1713851164.659469, Usage: 5.5%, Memory: 58680 kB
+System Time: 1713851165.657293, Usage: 5.05%, Memory: 58680 kB
+System Time: 1713851166.657948, Usage: 1.45%, Memory: 58680 kB
+System Time: 1713851167.659079, Usage: 1.91%, Memory: 58680 kB
+System Time: 1713851168.660115, Usage: 1.74%, Memory: 58680 kB
+CPU Temperature: 37.972
+2024-04-23 06:46:08,742 [proc_stats.py:_handle_shutdown()] - Throttled Flags: 
+2024-04-23 06:46:17,630 [klippy_connection.py:_on_connection_closed()] - Klippy Connection Removed
+2024-04-23 06:46:18,891 [klippy_connection.py:_do_connect()] - Klippy Connection Established
+2024-04-23 06:46:21,361 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 127.0.0.1
+2024-04-23 06:46:21,718 [file_manager.py:get_file_list()] - Updating File List <gcodes>...
+2024-04-23 06:46:23,152 [klippy_connection.py:_request_initial_subscriptions()] - Webhooks Subscribed
+2024-04-23 06:46:23,156 [klippy_connection.py:_request_initial_subscriptions()] - GCode Output Subscribed
+2024-04-23 06:46:23,406 [job_state.py:_handle_started()] - Job state initialized: standby
+2024-04-23 06:46:23,662 [klippy_connection.py:_check_ready()] - Klippy ready
+2024-04-23 06:46:24,663 [data_store.py:_init_sensors()] - Configuring available sensors: ['temperature_sensor Spider', 'temperature_sensor raspberry_pi', 'temperature_sensor sht36', 'temperature_sensor chamber', 'heater_bed', 'temperature_sensor beacon_coil', 'extruder']
+2024-04-23 06:46:57,239 [job_state.py:_status_update()] - Job Started: Voron_Design_Cube_v7_ABS_14m46s.gcode
+2024-04-23 06:51:19,324 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=------------------------92e67f964603ba63
+2024-04-23 06:51:19,344 [application.py:post()] - Processing Uploaded File: 
+2024-04-23 06:51:19,354 [application.py:log_request()] - 201 POST /api/files/local (192.168.1.70) [_TRUSTED_USER_] 32.45ms
+2024-04-23 06:51:19,372 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: server.files.metadata, Code: -32601, Message: Metadata not available for <moonraker.upload-609054.mru>
+2024-04-23 06:51:20,357 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: server.files.metadata, Code: -32601, Message: Metadata not available for <.>
+2024-04-23 06:53:31,841 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryvly8HUx3J6CIeShn
+2024-04-23 06:53:31,859 [application.py:post()] - Processing Uploaded File: E_Stepper.cfg
+2024-04-23 06:53:31,870 [application.py:log_request()] - 201 POST /server/files/upload (192.168.1.70) [_TRUSTED_USER_] 31.16ms
+2024-04-23 06:53:33,023 [klippy_connection.py:_on_connection_closed()] - Klippy Connection Removed
+2024-04-23 06:53:34,285 [klippy_connection.py:_do_connect()] - Klippy Connection Established
+2024-04-23 06:53:36,714 [file_manager.py:get_file_list()] - Updating File List <gcodes>...
+2024-04-23 06:53:38,643 [klippy_connection.py:_request_initial_subscriptions()] - Webhooks Subscribed
+2024-04-23 06:53:38,646 [klippy_connection.py:_request_initial_subscriptions()] - GCode Output Subscribed
+2024-04-23 06:53:38,895 [job_state.py:_handle_started()] - Job state initialized: standby
+2024-04-23 06:53:39,170 [klippy_connection.py:_check_ready()] - Klippy ready
+2024-04-23 06:53:40,154 [data_store.py:_init_sensors()] - Configuring available sensors: ['temperature_sensor Spider', 'temperature_sensor raspberry_pi', 'temperature_sensor sht36', 'temperature_sensor chamber', 'heater_bed', 'temperature_sensor beacon_coil', 'extruder']
+2024-04-23 06:53:51,679 [job_state.py:_status_update()] - Job Started: Voron_Design_Cube_v7_ABS_14m46s.gcode
+2024-04-23 07:00:12,932 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundarywAnqVEMxPJiRQm8u
+2024-04-23 07:00:12,956 [application.py:post()] - Processing Uploaded File: printing_macros.cfg
+2024-04-23 07:00:12,969 [application.py:log_request()] - 201 POST /server/files/upload (192.168.1.70) [_TRUSTED_USER_] 39.26ms
+2024-04-23 07:00:14,110 [klippy_connection.py:_on_connection_closed()] - Klippy Connection Removed
+2024-04-23 07:00:15,370 [klippy_connection.py:_do_connect()] - Klippy Connection Established
+2024-04-23 07:00:17,721 [file_manager.py:get_file_list()] - Updating File List <gcodes>...
+2024-04-23 07:00:19,650 [klippy_connection.py:_request_initial_subscriptions()] - Webhooks Subscribed
+2024-04-23 07:00:19,654 [klippy_connection.py:_request_initial_subscriptions()] - GCode Output Subscribed
+2024-04-23 07:00:19,901 [job_state.py:_handle_started()] - Job state initialized: standby
+2024-04-23 07:00:20,172 [klippy_connection.py:_check_ready()] - Klippy ready
+2024-04-23 07:00:21,162 [data_store.py:_init_sensors()] - Configuring available sensors: ['temperature_sensor Spider', 'temperature_sensor raspberry_pi', 'temperature_sensor sht36', 'temperature_sensor chamber', 'heater_bed', 'temperature_sensor beacon_coil', 'extruder']
+2024-04-23 07:00:32,433 [job_state.py:_status_update()] - Job Started: Voron_Design_Cube_v7_ABS_14m46s.gcode
+2024-04-23 07:02:07,727 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryOG4VXS4P6uA6OXnY
+2024-04-23 07:02:07,745 [application.py:post()] - Processing Uploaded File: printing_macros.cfg
+2024-04-23 07:02:07,753 [application.py:log_request()] - 201 POST /server/files/upload (192.168.1.70) [_TRUSTED_USER_] 29.88ms
+2024-04-23 07:02:59,056 [klippy_connection.py:_on_connection_closed()] - Klippy Connection Removed
+2024-04-23 07:03:00,315 [klippy_connection.py:_do_connect()] - Klippy Connection Established
+2024-04-23 07:03:02,707 [file_manager.py:get_file_list()] - Updating File List <gcodes>...
+2024-04-23 07:03:04,647 [klippy_connection.py:_request_initial_subscriptions()] - Webhooks Subscribed
+2024-04-23 07:03:04,652 [klippy_connection.py:_request_initial_subscriptions()] - GCode Output Subscribed
+2024-04-23 07:03:04,895 [job_state.py:_handle_started()] - Job state initialized: standby
+2024-04-23 07:03:05,176 [klippy_connection.py:_check_ready()] - Klippy ready
+2024-04-23 07:03:06,157 [data_store.py:_init_sensors()] - Configuring available sensors: ['temperature_sensor Spider', 'temperature_sensor raspberry_pi', 'temperature_sensor sht36', 'temperature_sensor chamber', 'heater_bed', 'temperature_sensor beacon_coil', 'extruder']
+2024-04-23 07:03:37,738 [job_state.py:_status_update()] - Job Started: Voron_Design_Cube_v7_ABS_14m46s.gcode
+2024-04-23 07:15:03,091 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=------------------------38be2e89aa7943c1
+2024-04-23 07:15:03,297 [application.py:post()] - Processing Uploaded File: SS_ABS_260C_Calibration cube.gcode
+2024-04-23 07:15:03,550 [shell_command.py:pipe_data_received()] - INFO:metadata:Object Processing is enabled
+
+2024-04-23 07:15:03,569 [shell_command.py:pipe_data_received()] - INFO:metadata:File 'SS_ABS_260C_Calibration cube.gcode' currently supports cancellation, processing aborted
+
+2024-04-23 07:15:03,649 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/printer_data/gcodes -f "SS_ABS_260C_Calibration cube.gcode" --check-objects) successfully finished
+2024-04-23 07:15:03,672 [application.py:log_request()] - 201 POST /api/files/local (192.168.1.70) [_TRUSTED_USER_] 582.93ms
+2024-04-23 07:15:03,672 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: server.files.metadata, Code: -32601, Message: Metadata not available for <.thumbs/SS_ABS_260C_Calibration cube-32x32.png>
+2024-04-23 07:15:03,673 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: server.files.metadata, Code: -32601, Message: Metadata not available for <.thumbs/SS_ABS_260C_Calibration cube-400x300.png>
+2024-04-23 07:15:03,788 [job_state.py:_status_update()] - Job Started: SS_ABS_260C_Calibration cube.gcode
+2024-04-23 07:19:59,078 [authorization.py:_check_trusted_connection()] - Trusted Connection Detected, IP: 192.168.1.236
+2024-04-23 07:19:59,080 [application.py:log_request()] - 101 GET /websocket (192.168.1.236) [_TRUSTED_USER_] 3.37ms
+2024-04-23 07:19:59,081 [websockets.py:open()] - Websocket Opened: ID: 548285158880, Proxied: True, User Agent: Dart/3.3 (dart:io), Host Name: trident.local
+2024-04-23 07:19:59,089 [websockets.py:_handle_identify()] - Websocket 548285158880 Client Identified - Name: Mobileraker-ios, Version: 2.6.14-424, Type: mobile
+2024-04-23 07:20:59,327 [websockets.py:write_to_socket()] - Websocket closed while writing: 548285158880
+2024-04-23 07:21:04,084 [websockets.py:on_close()] - Websocket Closed: ID: 548285158880 Close Code: None, Close Reason: None, Pong Time Elapsed: 44.99
+2024-04-23 07:34:23,593 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundarymgBkkgGXJhx7PWiB
+2024-04-23 07:34:23,610 [application.py:post()] - Processing Uploaded File: printing_macros.cfg
+2024-04-23 07:34:23,621 [application.py:log_request()] - 201 POST /server/files/upload (192.168.1.70) [_TRUSTED_USER_] 30.04ms
+2024-04-23 07:35:40,950 [websockets.py:on_close()] - Websocket Closed: ID: 548281886992 Close Code: 1001, Close Reason: None, Pong Time Elapsed: 9.75
+2024-04-23 07:38:03,664 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary1Ob9pxZ67QPwYbOf
+2024-04-23 07:38:03,683 [application.py:post()] - Processing Uploaded File: PA_INTERNALPERM.gcode
+2024-04-23 07:38:03,901 [shell_command.py:pipe_data_received()] - INFO:metadata:Object Processing is enabled
+
+2024-04-23 07:38:03,952 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/printer_data/gcodes -f "PA_INTERNALPERM.gcode" --check-objects) successfully finished
+2024-04-23 07:38:03,956 [application.py:log_request()] - 201 POST /server/files/upload (192.168.1.70) [_TRUSTED_USER_] 293.29ms
+2024-04-23 07:39:02,986 [file_manager.py:get_file_list()] - Updating File List <gcodes>...
+2024-04-23 07:39:06,475 [job_state.py:_status_update()] - Job Started: PA_INTERNALPERM.gcode
+2024-04-23 07:40:52,464 [application.py:log_request()] - 101 GET /websocket (192.168.1.236) [_TRUSTED_USER_] 3.66ms
+2024-04-23 07:40:52,465 [websockets.py:open()] - Websocket Opened: ID: 548282057776, Proxied: True, User Agent: Dart/3.3 (dart:io), Host Name: trident.local
+2024-04-23 07:41:42,485 [websockets.py:write_to_socket()] - Websocket closed while writing: 548282057776
+2024-04-23 07:41:47,489 [websockets.py:on_close()] - Websocket Closed: ID: 548282057776 Close Code: None, Close Reason: None, Pong Time Elapsed: 45.01
+2024-04-23 07:46:34,708 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryJ6uh0nbUWkvrcRUE
+2024-04-23 07:46:34,718 [application.py:post()] - Processing Uploaded File: printing_macros.cfg
+2024-04-23 07:46:34,724 [application.py:log_request()] - 201 POST /server/files/upload (192.168.1.70) [_TRUSTED_USER_] 17.48ms
+2024-04-23 07:46:34,752 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: machine.services.restart, Code: 400, Message: Service '{'isTrusted': True}' not allowed
+2024-04-23 07:48:36,640 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryNGLVxC2f05skykth
+2024-04-23 07:48:36,657 [application.py:post()] - Processing Uploaded File: macro_variables.cfg
+2024-04-23 07:48:36,668 [application.py:log_request()] - 201 POST /server/files/upload (192.168.1.70) [_TRUSTED_USER_] 30.01ms
+2024-04-23 07:49:18,090 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=------------------------8e74fd982ab8545f
+2024-04-23 07:49:18,443 [application.py:post()] - Processing Uploaded File: SS_ABS_260C_Calibration cube.gcode
+2024-04-23 07:49:18,668 [shell_command.py:pipe_data_received()] - INFO:metadata:Object Processing is enabled
+
+2024-04-23 07:49:18,685 [shell_command.py:pipe_data_received()] - INFO:metadata:File 'SS_ABS_260C_Calibration cube.gcode' currently supports cancellation, processing aborted
+
+2024-04-23 07:49:18,766 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/printer_data/gcodes -f "SS_ABS_260C_Calibration cube.gcode" --check-objects) successfully finished
+2024-04-23 07:49:18,772 [application.py:log_request()] - 201 POST /api/files/local (192.168.1.70) [_TRUSTED_USER_] 682.88ms
+2024-04-23 07:49:18,789 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: server.files.metadata, Code: -32601, Message: Metadata not available for <.thumbs/SS_ABS_260C_Calibration cube-32x32.png>
+2024-04-23 07:49:18,793 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: server.files.metadata, Code: -32601, Message: Metadata not available for <.thumbs/SS_ABS_260C_Calibration cube-400x300.png>
+2024-04-23 07:49:41,394 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryadQKqI6GGxvYoZGA
+2024-04-23 07:49:41,746 [application.py:post()] - Processing Uploaded File: SS_ABS_260C_Calibration cube.gcode
+2024-04-23 07:49:41,979 [shell_command.py:pipe_data_received()] - INFO:metadata:Object Processing is enabled
+
+2024-04-23 07:49:42,001 [shell_command.py:pipe_data_received()] - INFO:metadata:File 'SS_ABS_260C_Calibration cube.gcode' currently supports cancellation, processing aborted
+
+2024-04-23 07:49:42,087 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/printer_data/gcodes -f "SS_ABS_260C_Calibration cube.gcode" --check-objects) successfully finished
+2024-04-23 07:49:42,092 [application.py:log_request()] - 201 POST /server/files/upload (192.168.1.70) [_TRUSTED_USER_] 699.93ms
+2024-04-23 07:49:42,110 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: server.files.metadata, Code: -32601, Message: Metadata not available for <.thumbs/SS_ABS_260C_Calibration cube-32x32.png>
+2024-04-23 07:49:42,110 [common.py:build_error()] - JSON-RPC Request Error - Requested Method: server.files.metadata, Code: -32601, Message: Metadata not available for <.thumbs/SS_ABS_260C_Calibration cube-400x300.png>
+2024-04-23 07:49:49,451 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryhtQPBVJA3AnUBjad
+2024-04-23 07:49:49,482 [application.py:post()] - Processing Uploaded File: PA_INTERNALPERM.gcode
+2024-04-23 07:49:49,737 [shell_command.py:pipe_data_received()] - INFO:metadata:Object Processing is enabled
+
+2024-04-23 07:49:49,749 [shell_command.py:pipe_data_received()] - INFO:metadata:File 'PA_INTERNALPERM.gcode' currently supports cancellation, processing aborted
+
+2024-04-23 07:49:49,790 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/printer_data/gcodes -f "PA_INTERNALPERM.gcode" --check-objects) successfully finished
+2024-04-23 07:49:49,795 [application.py:log_request()] - 201 POST /server/files/upload (192.168.1.70) [_TRUSTED_USER_] 347.67ms
+2024-04-23 07:49:52,241 [job_state.py:_status_update()] - Job Started: PA_INTERNALPERM.gcode
+2024-04-23 08:04:32,552 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryah7Ss88bGlG5EDhg
+2024-04-23 08:04:32,575 [application.py:post()] - Processing Uploaded File: PA_INTERNALPERM.gcode
+2024-04-23 08:04:32,857 [shell_command.py:pipe_data_received()] - INFO:metadata:Object Processing is enabled
+
+2024-04-23 08:04:32,867 [shell_command.py:pipe_data_received()] - INFO:metadata:File 'PA_INTERNALPERM.gcode' currently supports cancellation, processing aborted
+
+2024-04-23 08:04:32,908 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/printer_data/gcodes -f "PA_INTERNALPERM.gcode" --check-objects) successfully finished
+2024-04-23 08:04:32,912 [application.py:log_request()] - 201 POST /server/files/upload (192.168.1.70) [_TRUSTED_USER_] 362.95ms
+2024-04-23 08:04:36,996 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryHgQRmewF49yX3jcP
+2024-04-23 08:04:37,020 [application.py:post()] - Processing Uploaded File: PAEXTERNAL.gcode
+2024-04-23 08:04:37,236 [shell_command.py:pipe_data_received()] - INFO:metadata:Object Processing is enabled
+
+2024-04-23 08:04:37,294 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/printer_data/gcodes -f "PAEXTERNAL.gcode" --check-objects) successfully finished
+2024-04-23 08:04:37,299 [application.py:log_request()] - 201 POST /server/files/upload (192.168.1.70) [_TRUSTED_USER_] 303.64ms
+2024-04-23 08:04:46,259 [application.py:prepare()] - Upload Request Received from 192.168.1.70
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryUvGWbI9OB8oUtlcN
+2024-04-23 08:04:46,291 [application.py:post()] - Processing Uploaded File: PAEXTERNAL.gcode
+2024-04-23 08:04:46,537 [shell_command.py:pipe_data_received()] - INFO:metadata:Object Processing is enabled
+
+2024-04-23 08:04:46,551 [shell_command.py:pipe_data_received()] - INFO:metadata:File 'PAEXTERNAL.gcode' currently supports cancellation, processing aborted
+
+2024-04-23 08:04:46,594 [shell_command.py:_check_proc_success()] - Command (/home/pi/moonraker-env/bin/python /home/pi/moonraker/moonraker/components/file_manager/metadata.py -p /home/pi/printer_data/gcodes -f "PAEXTERNAL.gcode" --check-objects) successfully finished
+2024-04-23 08:04:46,599 [application.py:log_request()] - 201 POST /server/files/upload (192.168.1.70) [_TRUSTED_USER_] 341.36ms
+2024-04-23 08:04:49,988 [job_state.py:_status_update()] - Job Started: PAEXTERNAL.gcode
+2024-04-23 08:06:11,464 [authorization.py:_prune_conn_handler()] - Trusted Connection Expired, IP: 127.0.0.1
+2024-04-23 08:07:55,594 [job_state.py:_status_update()] - Job Started: PAEXTERNAL.gcode
